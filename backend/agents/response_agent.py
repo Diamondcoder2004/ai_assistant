@@ -214,7 +214,27 @@ class ResponseAgent:
             }
             sources.append(source)
 
-        # 3. Умное ранжирование
+        # 3. Если LLM не создал ссылки [1], [2] — возвращаем все результаты по порядку
+        if not citation_counts:
+            # LLM не создал ссылки, возвращаем первые 5 результатов
+            final_sources = []
+            for source in sources[:5]:
+                final_source = {
+                    "id": source["id"],
+                    "filename": source["filename"],
+                    "breadcrumbs": source["breadcrumbs"],
+                    "category": source["category"],
+                    "summary": source["summary"],
+                    "content": source["content"],
+                    "chunk_id": source["chunk_id"],
+                    "score_hybrid": source["score_hybrid"],
+                    "score_semantic": source["score_semantic"],
+                    "score_lexical": source["score_lexical"],
+                }
+                final_sources.append(final_source)
+            return final_sources, answer_text
+
+        # 4. Умное ранжирование (если есть цитирования)
         # Комбинированный скор: цитирования × важность
         def compute_ranking_score(source):
             """
@@ -237,7 +257,7 @@ class ResponseAgent:
         # Сортируем по комбинированному рейтингу
         sources.sort(key=lambda x: compute_ranking_score(x), reverse=True)
 
-        # 4. Создаём маппинг: old_index (1-based) → new_index (1-based)
+        # 5. Создаём маппинг: old_index (1-based) → new_index (1-based)
         # original_rank хранится как 0-based, поэтому +1
         index_mapping = {}
         for new_idx, source in enumerate(sources[:5]):
@@ -245,7 +265,7 @@ class ResponseAgent:
             new_idx = new_idx + 1  # Конвертируем в 1-based
             index_mapping[old_idx] = new_idx
 
-        # 5. Перемапливаем индексы в ответе
+        # 6. Перемапливаем индексы в ответе
         updated_answer = answer_text
         if answer_text and index_mapping:
             import re
@@ -257,7 +277,7 @@ class ResponseAgent:
 
             updated_answer = re.sub(r'\[(\d+)\]', replace_index, answer_text)
 
-        # 6. Возвращаем топ-5 источников
+        # 7. Возвращаем топ-5 источников
         # Удаляем служебные поля перед возвратом
         final_sources = []
         for source in sources[:5]:

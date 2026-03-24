@@ -114,6 +114,20 @@ class QueryGeneratorAgent:
                     logger.warning(f"Попытка {attempt + 1}: Неверный формат ответа")
                     continue
                 
+                # Если queries пустой — создаем дефолтный запрос
+                if not result_data.get("queries") and not result_data.get("clarification_needed"):
+                    result_data["queries"] = [{"text": user_query, "reason": "дефолтный запрос"}]
+                    result_data["search_params"] = {
+                        "k": 10,
+                        "pref_weight": config.RETRIEVE_PREF_WEIGHT,
+                        "hype_weight": config.RETRIEVE_HYPE_WEIGHT,
+                        "lexical_weight": config.RETRIEVE_LEXICAL_WEIGHT,
+                        "contextual_weight": config.RETRIEVE_CONTEXTUAL_WEIGHT,
+                        "strategy": "concat"
+                    }
+                    result_data["confidence"] = 0.5
+                    result_data["reasoning"] = "Использован дефолтный запрос"
+
                 logger.info(f"Генерация успешна с попытки {attempt + 1}")
                 return QueryGenerationResult.from_dict(result_data)
                 

@@ -444,11 +444,30 @@ async def get_history_sessions(
             
             # Формируем превью сообщений
             messages_preview = []
-            for msg in session["messages"][:3]:  # Первые 3 сообщения для превью
+            messages = session["messages"]
+            
+            if len(messages) > 0:
+                # Первый вопрос
                 messages_preview.append({
-                    "question": msg["question"][:100] if len(msg["question"]) > 100 else msg["question"],
-                    "answer": msg["answer"][:200] if len(msg["answer"]) > 200 else msg["answer"],
+                    "type": "question",
+                    "text": messages[0]["question"][:150] if len(messages[0]["question"]) > 150 else messages[0]["question"]
                 })
+                
+                # Первый ответ (если есть)
+                if len(messages) > 1:
+                    messages_preview.append({
+                        "type": "answer",
+                        "text": messages[0]["answer"][:200] if len(messages[0]["answer"]) > 200 else messages[0]["answer"]
+                    })
+                
+                # Последнее сообщение (если это не первое сообщение)
+                if len(messages) > 2:
+                    last_msg = messages[-1]
+                    preview_text = last_msg["question"] if last_msg["id"] % 2 == 1 else last_msg["answer"]
+                    messages_preview.append({
+                        "type": "last",
+                        "text": preview_text[:150] if len(preview_text) > 150 else preview_text
+                    })
             
             session_data = {
                 "session_id": session_id,

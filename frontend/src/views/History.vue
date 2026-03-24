@@ -87,9 +87,12 @@
                 <div class="session-question">{{ session.first_question }}</div>
                 <div class="session-preview" v-if="session.preview.length > 0">
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
-                  <span class="preview-text" v-if="session.preview[0]">
-                    {{ truncate(session.preview[0].question, 80) }}
-                  </span>
+                  <div class="preview-messages">
+                    <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
+                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
+                      <span class="preview-text">{{ msg.text }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="session-meta">
@@ -126,9 +129,12 @@
                 <div class="session-question">{{ session.first_question }}</div>
                 <div class="session-preview" v-if="session.preview.length > 0">
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
-                  <span class="preview-text" v-if="session.preview[0]">
-                    {{ truncate(session.preview[0].question, 80) }}
-                  </span>
+                  <div class="preview-messages">
+                    <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
+                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
+                      <span class="preview-text">{{ msg.text }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="session-meta">
@@ -165,9 +171,12 @@
                 <div class="session-question">{{ session.first_question }}</div>
                 <div class="session-preview" v-if="session.preview.length > 0">
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
-                  <span class="preview-text" v-if="session.preview[0]">
-                    {{ truncate(session.preview[0].question, 80) }}
-                  </span>
+                  <div class="preview-messages">
+                    <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
+                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
+                      <span class="preview-text">{{ msg.text }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
               <div class="session-meta">
@@ -278,12 +287,6 @@ function formatDate(dateString) {
   
   // Полный формат
   return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })
-}
-
-// Обрезка текста
-function truncate(text, length) {
-  if (!text) return ''
-  return text.length > length ? text.slice(0, length) + '...' : text
 }
 
 onMounted(async () => {
@@ -545,8 +548,8 @@ onMounted(async () => {
 
 .session-preview {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
+  gap: 8px;
   font-size: 13px;
   color: #6b7280;
 }
@@ -556,13 +559,45 @@ onMounted(async () => {
   padding: 2px 8px;
   border-radius: 6px;
   font-weight: 500;
+  align-self: flex-start;
   flex-shrink: 0;
+}
+
+.preview-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preview-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.preview-message.question {
+  color: #0066cc;
+}
+
+.preview-message.answer {
+  color: #059669;
+}
+
+.preview-message.last {
+  color: #6b7280;
+}
+
+.preview-icon {
+  flex-shrink: 0;
+  font-size: 12px;
 }
 
 .preview-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 600px;
 }
 
 .session-meta {

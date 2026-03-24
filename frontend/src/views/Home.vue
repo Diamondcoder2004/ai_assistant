@@ -3,11 +3,20 @@
     <Header />
 
     <div class="main-layout">
-      <!-- Левая колонка: параметры поиска -->
+      <!-- Левая колонка: параметры поиска + источники -->
       <aside class="sidebar-left">
         <SearchParamsPanel
+          v-show="!showSourcesPanel"
           v-model="searchParams"
           @show-info="showInfoModal = 'settings'"
+        />
+        <!-- Источники (показываются поверх параметров) -->
+        <SourcesPanel
+          v-if="expandedMessage && showSourcesPanel"
+          :class="{ 'visible': showSourcesPanel }"
+          :expanded-message="expandedMessage"
+          @close="expandedMessage = null; showSourcesPanel = false"
+          @open-source="openSourceModal"
         />
       </aside>
 
@@ -40,15 +49,6 @@
           @use-template="handleUseTemplate"
         />
       </main>
-
-      <!-- Правая колонка: источники -->
-      <SourcesPanel
-        v-if="expandedMessage"
-        :class="{ 'hidden': !showSourcesPanel }"
-        :expanded-message="expandedMessage"
-        @close="expandedMessage = null; showSourcesPanel = false"
-        @open-source="openSourceModal"
-      />
     </div>
 
     <Footer :force-show="showFooter" @hide="showFooter = false" />
@@ -424,6 +424,7 @@ onMounted(async () => {
   top: 0;
   height: 100%;
   max-height: 100%;
+  position: relative;
 }
 
 /* Центральная колонка (чат) - скроллится */
@@ -440,23 +441,24 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Правая колонка с источниками - фиксированная, показывается по клику */
+/* Правая колонка с источниками - теперь слева поверх параметров */
 .sources-panel {
-  width: 400px;
-  background: #f8f9fa;
-  border-left: 1px solid #ddd;
-  position: sticky;
-  right: 0;
+  position: absolute;
   top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
-  max-height: 100%;
+  background: #f8f9fa;
   overflow-y: auto;
-  flex-shrink: 0;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
   transition: all 0.3s ease;
 }
 
-.sources-panel.hidden {
-  display: none;
+.sources-panel.visible {
+  opacity: 1;
+  pointer-events: all;
 }
 
 /* FAQ под чатом */

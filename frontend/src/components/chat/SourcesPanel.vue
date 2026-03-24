@@ -67,51 +67,50 @@ function formatBreadcrumbs(breadcrumbs) {
   // Убираем специальные термины и упрощаем путь
   return breadcrumbs
     .replace(/→/g, ' → ')
-    .replace(/\s+/g, ' ')
-    .trim()
 }
 </script>
 
 <style scoped>
 .sources-panel {
-  width: 400px;
-  background: #ffffff;
-  border-left: 1px solid #ddd;
-  padding: 0;
-  overflow-y: auto;
-  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
+  background: #f8f9fa;
+  overflow-y: auto;
+  z-index: 10;
 }
 
 .sources-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 16px;
   border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
+  background: white;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 1;
 }
 
 .sources-header h3 {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
   color: #1f2937;
 }
 
 .close-sources-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 4px;
-  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
   transition: all 0.2s;
 }
 
@@ -131,7 +130,7 @@ function formatBreadcrumbs(breadcrumbs) {
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: #f9f9f9;
+  background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   cursor: pointer;

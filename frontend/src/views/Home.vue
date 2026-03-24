@@ -108,7 +108,8 @@ const searchParams = ref({
   k: 10,
   temperature: 0.8,
   max_tokens: 2000,
-  min_score: 0.0
+  min_score: 0.0,
+  joker_mode: false  // Пасхалка: шуточный режим
 })
 
 // Модальные окна

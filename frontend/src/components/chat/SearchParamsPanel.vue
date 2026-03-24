@@ -118,6 +118,20 @@
       <span class="param-hint">Рекомендуется: 0–0.2</span>
     </div>
 
+    <!-- Пасхалка: Joker Mode -->
+    <div class="param-row joker-mode">
+      <label class="joker-checkbox-label">
+        <input
+          type="checkbox"
+          :checked="modelValue.joker_mode"
+          @change="updateParam('joker_mode', $event.target.checked)"
+          class="joker-checkbox"
+        />
+        <span class="joker-text">🎭 Joker Mode</span>
+      </label>
+      <span class="param-hint">Шуточный режим (пасхалка)</span>
+    </div>
+
     <button @click="$emit('showInfo')" class="info-link">
       <img src="../../assets/images/question-circle-svgrepo-com.svg" alt="?" width="16" height="16" />
       Что означают параметры?
@@ -134,7 +148,8 @@ const props = defineProps({
       k: 8,
       temperature: 0.8,
       max_tokens: 2000,
-      min_score: 0.0
+      min_score: 0.0,
+      joker_mode: false
     })
   }
 })
@@ -278,6 +293,39 @@ function updateParam(key, value, min, max, step) {
   color: #6b7280;
   margin-top: 6px;
   font-style: italic;
+}
+
+/* Joker Mode */
+.joker-mode {
+  margin-top: 16px;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px;
+}
+
+.joker-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+}
+
+.joker-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: #fbbf24;
+}
+
+.joker-text {
+  font-size: 15px;
+}
+
+.joker-mode .param-hint {
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 6px;
 }
 
 .info-link {

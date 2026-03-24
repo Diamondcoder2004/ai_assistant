@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { authService } from '../services/supabase'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { supabase } from '../services/supabase'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -11,14 +11,49 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isAuthenticated = computed(() => !!user.value)
 
+  // Восстановление из localStorage при создании store
+  try {
+    const savedUser = localStorage.getItem('auth_user')
+    if (savedUser) {
+      user.value = JSON.parse(savedUser)
+      console.log('User restored from localStorage:', user.value?.email)
+    }
+  } catch (err) {
+    console.error('Error restoring user from localStorage:', err)
+    localStorage.removeItem('auth_user')
+  }
+
+  // Сохранение в localStorage при изменении user
+  watch(user, (newUser) => {
+    if (newUser) {
+      localStorage.setItem('auth_user', JSON.stringify({
+        id: newUser.id,
+        email: newUser.email,
+        user_metadata: newUser.user_metadata
+      }))
+    } else {
+      localStorage.removeItem('auth_user')
+    }
+  }, { deep: true })
+
   async function init() {
     try {
       console.log('Инициализация auth store...')
+      
+      // Сначала пробуем из Supabase (проверка сессии)
       const currentUser = await authService.getCurrentUser()
-      user.value = currentUser
-
+      
       if (currentUser) {
+        user.value = currentUser
+        console.log('User from Supabase:', user.value?.email)
         await loadProfile()
+      } else {
+        // Если сессия истекла, но есть в localStorage - очищаем
+        if (user.value) {
+          console.log('Session expired, clearing localStorage')
+          user.value = null
+          profile.value = null
+        }
       }
 
       console.log('Auth store инициализирован')

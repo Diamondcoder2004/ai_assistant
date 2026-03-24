@@ -102,7 +102,8 @@ export const useChatStore = defineStore('chat', () => {
         k: parameters.k || 10,
         temperature: parameters.temperature || 0.8,
         max_tokens: parameters.max_tokens || 2000,
-        min_score: parameters.min_score || 0.0
+        min_score: parameters.min_score || 0.0,
+        joker_mode: parameters.joker_mode || false  // Пасхалка: шуточный режим
       }
 
       // Добавляем session_id только если он есть, иначе не передаём

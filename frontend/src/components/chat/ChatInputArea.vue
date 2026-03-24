@@ -6,7 +6,7 @@
         ref="textareaRef"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        @keydown="handleKeydown"
+        @keydown.enter.prevent="$emit('send')"
         placeholder="Введите ваш вопрос..."
         rows="1"
         class="chat-textarea"
@@ -44,7 +44,6 @@
 
 <script setup>
 import { ref, watch, nextTick } from 'vue'
-import { useHotkeysStore } from '../../stores/hotkeysStore'
 
 const props = defineProps({
   modelValue: {
@@ -58,49 +57,17 @@ const props = defineProps({
   questions: {
     type: Array,
     default: () => [
-      { icon: '', label: 'Как подать заявку?', text: 'Как подать заявку на подключение?' },
-      { icon: '', label: 'Какие документы?', text: 'Какие документы нужны для подключения?' },
-      { icon: '', label: 'Сроки', text: 'Сроки подключения' },
-      { icon: '', label: 'Стоимость', text: 'Стоимость подключения' }
+      { icon: '📋', label: 'Как подать заявку?', text: 'Как подать заявку на подключение?' },
+      { icon: '📄', label: 'Какие документы?', text: 'Какие документы нужны для подключения?' },
+      { icon: '⏱️', label: 'Сроки', text: 'Сроки подключения' },
+      { icon: '💰', label: 'Стоимость', text: 'Стоимость подключения' }
     ]
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'send', 'useTemplate'])
+defineEmits(['update:modelValue', 'send', 'useTemplate'])
 
 const textareaRef = ref(null)
-const hotkeysStore = useHotkeysStore()
-
-// Обработка горячих клавиш
-function handleKeydown(event) {
-  const combination = hotkeysStore.captureKeyCombination(event)
-  const sendMessageKey = hotkeysStore.hotkeys.sendMessage
-  const newLineKey = hotkeysStore.hotkeys.newLine
-
-  // Проверка на отправку сообщения
-  if (combination === sendMessageKey) {
-    event.preventDefault()
-    emit('send')
-    return
-  }
-
-  // Проверка на новую строку
-  if (combination === newLineKey) {
-    event.preventDefault()
-    // Вставляем новую строку в позицию курсора
-    const textarea = textareaRef.value
-    if (textarea) {
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      const value = textarea.value
-      textarea.value = value.substring(0, start) + '\n' + value.substring(end)
-      textarea.selectionStart = textarea.selectionEnd = start + 1
-      emit('update:modelValue', textarea.value)
-      autoResize()
-    }
-    return
-  }
-}
 
 // Авто-увеличение высоты textarea
 function autoResize() {

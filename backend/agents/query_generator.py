@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from openai import OpenAI
 import config
 from prompts.query_generation import get_query_generation_prompt
+from utils.timing import timing
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +56,7 @@ class QueryGeneratorAgent:
         self.model = config.DEFAULT_LLM_MODEL
         logger.info(f"QueryGeneratorAgent инициализирован: {self.model}")
     
+    @timing("QueryGenerator.generate")
     def generate(
         self,
         user_query: str,

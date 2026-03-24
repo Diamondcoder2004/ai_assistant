@@ -119,29 +119,59 @@ logger.info("CORS middleware настроен")
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Middleware для логирования всех входящих запросов"""
+    """Middleware для логирования всех входящих запросов с таймингами"""
     import time
     import uuid
-
+    from utils.timing import timing_stats
+    
     start_time = time.time()
     request_id = str(uuid.uuid4())
+    
+    # Снимок статистики таймингов до запроса
+    agent_times_before = {name: stat.last_time_ms for name, stat in timing_stats.stats.items()}
 
     logger.info(f"[{request_id}] {request.method} {request.url.path}")
 
     try:
         response = await call_next(request)
         process_time = time.time() - start_time
-
-        logger.info(f"[{request_id}] Статус: {response.status_code}, Время: {process_time:.3f}s")
-
+        
+        # Снимок статистики таймингов после запроса
+        agent_times_after = {name: stat.last_time_ms for name, stat in timing_stats.stats.items()}
+        
+        # Вычисляем время работы агентов для этого запроса
+        agent_times = {
+            name: elapsed 
+            for name, elapsed in agent_times_after.items() 
+            if elapsed > agent_times_before.get(name, 0)
+        }
+        
+        # Запись в глобальную статистику
+        timing_stats.record_request(
+            method=request.method,
+            path=request.url.path,
+            elapsed_ms=process_time * 1000,
+            agent_times=agent_times
+        )
+        
+        logger.info(
+            f"[{request_id}] {request.method} {request.url.path} | "
+            f"status: {response.status_code} | "
+            f"time: {process_time * 1000:.2f}ms"
+        )
+        
         response.headers["X-Process-Time"] = str(process_time)
         response.headers["X-Request-ID"] = request_id
-
         return response
-
+        
     except Exception as e:
         process_time = time.time() - start_time
-        error_logger.error(f"[{request_id}] Ошибка: {e}", exc_info=True)
+        logger.error(
+            f"[{request_id}] {request.method} {request.url.path} | "
+            f"time: {process_time * 1000:.2f}ms | "
+            f"error: {e}",
+            exc_info=True
+        )
         raise
 
 

@@ -197,22 +197,8 @@ async function copyToClipboard(text) {
   try {
     // Очищаем текст от Markdown для копирования
     const cleanText = text.replace(/\[(\d+)\]/g, '') // Убираем ссылки на источники
+    await navigator.clipboard.writeText(cleanText)
     
-    // Пробуем современный API
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      await navigator.clipboard.writeText(cleanText)
-    } else {
-      // Fallback для HTTP и старых браузеров
-      const textarea = document.createElement('textarea')
-      textarea.value = cleanText
-      textarea.style.position = 'fixed'
-      textarea.style.opacity = '0'
-      document.body.appendChild(textarea)
-      textarea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textarea)
-    }
-
     // Визуальное подтверждение
     copySuccess.value = true
     setTimeout(() => {

@@ -7,6 +7,7 @@ from typing import List, Optional, Dict, Any
 import config
 from tools.search_tool import SearchTool, SearchRequest, SearchResult
 from agents.query_generator import QueryGeneratorAgent, QueryGenerationResult
+from utils.timing import timing, timing_context
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,7 @@ class SearchAgent:
         self.query_generator = QueryGeneratorAgent()
         logger.info("SearchAgent инициализирован")
     
+    @timing("SearchAgent.search")
     def search(
         self,
         user_query: str,
@@ -61,13 +63,14 @@ class SearchAgent:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
 
         # 1. Генерация поисковых запросов с учётом рекомендаций
-        gen_result = self.query_generator.generate(
-            user_query=user_query,
-            history=history,
-            category=category,
-            user_hints=user_hints  # Передаём рекомендации
-        )
-        
+        with timing_context("SearchAgent.query_generation"):
+            gen_result = self.query_generator.generate(
+                user_query=user_query,
+                history=history,
+                category=category,
+                user_hints=user_hints  # Передаём рекомендации
+            )
+
         # 2. Проверка необходимости уточнения
         if self.query_generator.needs_clarification(gen_result):
             logger.info("Требуется уточнение")
@@ -80,19 +83,20 @@ class SearchAgent:
                 "confidence": gen_result.confidence,
                 "reasoning": gen_result.reasoning
             }
-        
+
         # 3. Выполнение поиска
         queries = self.query_generator.get_queries_text(gen_result)
         strategy = gen_result.search_params.get("strategy", "concat")
         k_per_query = gen_result.search_params.get("k", 10)
-        
+
         logger.info(f"Поиск по запросам: {queries}, стратегия: {strategy}")
-        
-        results = self.search_tool.search_multiple(
-            queries=queries,
-            k_per_query=k_per_query // len(queries) if strategy == "separate" else k_per_query,
-            strategy=strategy
-        )
+
+        with timing_context("SearchAgent.tool_search"):
+            results = self.search_tool.search_multiple(
+                queries=queries,
+                k_per_query=k_per_query // len(queries) if strategy == "separate" else k_per_query,
+                strategy=strategy
+            )
         
         # 4. Оценка качества результатов
         confidence = gen_result.confidence

@@ -241,31 +241,47 @@ export const chatService = {
 
     console.log('Sending token:', session.access_token.substring(0, 20) + '...');
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
-        query,
-        k: params.k || 10,
-        temperature: params.temperature || 0.8,
-        max_tokens: params.max_tokens || 2000,
-        min_score: params.min_score || 0.0,
-        session_id: params.session_id || null
-      })
-    });
+    // Создаём AbortController для установки таймаута
+    const controller = new AbortController();
+    // Таймаут 120 секунд для долгих запросов к LLM
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
 
-    console.log('Response status:', response.status);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/query`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          query,
+          k: params.k || 10,
+          temperature: params.temperature || 0.8,
+          max_tokens: params.max_tokens || 2000,
+          min_score: params.min_score || 0.0,
+          session_id: params.session_id || null
+        }),
+        signal: controller.signal
+      });
 
-    if (!response.ok) {
-      const error = await response.text();
-      console.error('API error response:', error);
-      throw new Error(`API error: ${error}`);
+      clearTimeout(timeoutId);
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('API error response:', error);
+        throw new Error(`API error: ${error}`);
+      }
+
+      return response.json();
+    } catch (err) {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('Превышено время ожидания ответа. Попробуйте позже.');
+      }
+      throw err;
     }
-
-    return response.json();
   },
 
   // Streaming запрос с чтением токенов (SSE)
@@ -273,113 +289,129 @@ export const chatService = {
     const session = await authService.getSession();
     if (!session) throw new Error('Not authenticated');
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/query/stream`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
-        query,
-        k: params.k || 10,
-        temperature: params.temperature || 0.8,
-        max_tokens: params.max_tokens || 2000,
-        min_score: params.min_score || 0.0,
-        session_id: params.session_id || null
-      })
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`API error: ${error}`);
-    }
-
-    // Читаем поток данных (SSE format)
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    let sources = [];
-    let sessionId = null;
-    let currentEvent = null;
+    // Создаём AbortController для установки таймаута
+    const controller = new AbortController();
+    // Таймаут 120 секунд для долгих запросов к LLM
+    const timeoutId = setTimeout(() => controller.abort(), 120000);
 
     try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/query/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+          query,
+          k: params.k || 10,
+          temperature: params.temperature || 0.8,
+          max_tokens: params.max_tokens || 2000,
+          min_score: params.min_score || 0.0,
+          session_id: params.session_id || null
+        }),
+        signal: controller.signal
+      });
 
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
+      clearTimeout(timeoutId);
 
-        // Разделяем по строкам SSE формата
-        const lines = buffer.split('\n');
-        buffer = lines.pop(); // Последняя неполная строка остаётся в буфере
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`API error: ${error}`);
+      }
 
-        for (const line of lines) {
-          // Пропускаем пустые строки
-          if (!line.trim()) continue;
+      // Читаем поток данных (SSE format)
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let sources = [];
+      let sessionId = null;
+      let currentEvent = null;
 
-          // Обработка event: строки
-          if (line.startsWith('event: ')) {
-            currentEvent = line.slice(7).trim();
-            continue;
-          }
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-          // Обработка data: строки
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6).trim();
+          const chunk = decoder.decode(value, { stream: true });
+          buffer += chunk;
 
-            try {
-              // Для token событий данные могут быть простой строкой
-              if (currentEvent === 'token') {
-                onToken?.(data)
-                continue
-              }
+          // Разделяем по строкам SSE формата
+          const lines = buffer.split('\n');
+          buffer = lines.pop(); // Последняя неполная строка остаётся в буфере
 
-              // Для остальных событий парсим JSON
-              if (data.startsWith('{') || data.startsWith('[')) {
-                const parsed = JSON.parse(data)
+          for (const line of lines) {
+            // Пропускаем пустые строки
+            if (!line.trim()) continue;
 
-                if (currentEvent === 'sources') {
-                  sources = parsed;
-                  onSources?.(sources);
-                } else if (currentEvent === 'session_id') {
-                  sessionId = parsed;
-                  onSessionId?.(sessionId);
-                } else if (currentEvent === 'status') {
-                  onStatus?.(parsed);
-                } else if (currentEvent === 'done') {
-                  // Завершение, данные - полный ответ
-                  return {
-                    session_id: sessionId,
-                    sources,
-                    answer: parsed
-                  };
-                } else if (currentEvent === 'error') {
-                  throw new Error(parsed);
+            // Обработка event: строки
+            if (line.startsWith('event: ')) {
+              currentEvent = line.slice(7).trim();
+              continue;
+            }
+
+            // Обработка data: строки
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim();
+
+              try {
+                // Для token событий данные могут быть простой строкой
+                if (currentEvent === 'token') {
+                  onToken?.(data)
+                  continue
                 }
+
+                // Для остальных событий парсим JSON
+                if (data.startsWith('{') || data.startsWith('[')) {
+                  const parsed = JSON.parse(data)
+
+                  if (currentEvent === 'sources') {
+                    sources = parsed;
+                    onSources?.(sources);
+                  } else if (currentEvent === 'session_id') {
+                    sessionId = parsed;
+                    onSessionId?.(sessionId);
+                  } else if (currentEvent === 'status') {
+                    onStatus?.(parsed);
+                  } else if (currentEvent === 'done') {
+                    // Завершение, данные - полный ответ
+                    return {
+                      session_id: sessionId,
+                      sources,
+                      answer: parsed
+                    };
+                  } else if (currentEvent === 'error') {
+                    throw new Error(parsed);
+                  }
+                }
+              } catch {
+                // Игнорируем ошибки парсинга для неполных данных
               }
-            } catch {
-              // Игнорируем ошибки парсинга для неполных данных
             }
           }
         }
+      } catch (err) {
+        console.error('Stream reading error:', err);
+        throw err;
       }
+
+      return {
+        session_id: sessionId,
+        sources
+      };
     } catch (err) {
-      console.error('Stream reading error:', err);
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        throw new Error('Превышено время ожидания ответа. Попробуйте позже.');
+      }
       throw err;
     }
-
-    return {
-      session_id: sessionId,
-      sources
-    };
   },
 
-  async getHistory(limit = 50) {
+  async getHistory(limit = 20, offset = 0) {
     const session = await authService.getSession();
     if (!session) throw new Error('Not authenticated');
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history?limit=${limit}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history?limit=${limit}&offset=${offset}`, {
       headers: {
         'Authorization': `Bearer ${session.access_token}`
       }

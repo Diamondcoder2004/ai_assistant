@@ -25,12 +25,12 @@
         />
       </div>
 
-      <div v-if="loading" class="loading">
+      <div v-if="loading && chats.length === 0" class="loading">
         <div class="spinner"></div>
         <p>Загрузка истории...</p>
       </div>
 
-      <div v-else-if="filteredChats.length === 0" class="empty">
+      <div v-else-if="chats.length === 0 && !loading" class="empty">
         <div class="empty-icon">📭</div>
         <p v-if="searchQuery">Ничего не найдено по запросу "{{ searchQuery }}"</p>
         <p v-else>История чатов пуста</p>
@@ -52,7 +52,6 @@
           <div class="chat-content">
             <div class="chat-header-row">
               <span class="chat-date">{{ formatDate(chat.created_at) }}</span>
-              <span v-if="chat.session_id" class="session-badge">Сессия</span>
             </div>
             <div class="chat-question">
               <strong>Вопрос:</strong> {{ chat.question }}
@@ -67,6 +66,17 @@
             </svg>
           </div>
         </div>
+
+        <!-- Индикатор загрузки при скролле -->
+        <div v-if="loadingMore" class="loading-more">
+          <div class="spinner-small"></div>
+          <p>Загрузка...</p>
+        </div>
+
+        <!-- Сообщение, что всё загружено -->
+        <div v-if="noMoreData && chats.length > 0" class="no-more-data">
+          <p>Все записи загружены</p>
+        </div>
       </div>
     </div>
 
@@ -75,23 +85,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import { useAuthStore } from '../stores/authStore'
-import { useChatStore } from '../stores/chatStore'
 import { chatService } from '../services/supabase'
 
 const router = useRouter()
 const authStore = useAuthStore()
-const chatStore = useChatStore()
+
 const chats = ref([])
 const filteredChats = ref([])
 const searchQuery = ref('')
 const loading = ref(true)
+const loadingMore = ref(false)
+const noMoreData = ref(false)
 
-// Загрузка истории
+const PAGE_SIZE = 20
+let offset = 0
+
+// Загрузка истории (первая страница)
 async function loadHistory() {
   if (!authStore.user) {
     console.log('User not authenticated, cannot load history')
@@ -102,16 +116,16 @@ async function loadHistory() {
   }
 
   loading.value = true
+  noMoreData.value = false
+  offset = 0
+  chats.value = []
+
   try {
-    // Загружаем историю через chatStore, чтобы данные сохранились
-    console.log('History.vue: before loadHistory, chatStore.history:', chatStore.history, 'length:', chatStore.history?.length)
-    await chatStore.loadHistory(100)
-    console.log('History.vue: after loadHistory, chatStore.history:', chatStore.history, 'length:', chatStore.history?.length)
-    chats.value = chatStore.history || []
+    const data = await chatService.getHistory(PAGE_SIZE, offset)
+    chats.value = data || []
     filteredChats.value = chats.value
-    console.log('History.vue: loaded chats:', chats.value.length)
-    console.log('History.vue: first chat:', chats.value[0])
-    console.log('History.vue: session_ids:', chats.value.map(c => c.session_id))
+    offset = chats.value.length
+    console.log('History loaded:', chats.value.length, 'items')
   } catch (error) {
     console.error('Ошибка загрузки истории:', error)
     chats.value = []
@@ -121,6 +135,60 @@ async function loadHistory() {
   }
 }
 
+// Загрузка следующей страницы (infinite scroll)
+async function loadMore() {
+  if (loadingMore.value || noMoreData.value || loading.value) return
+
+  loadingMore.value = true
+  console.log('Loading more history, current offset:', offset)
+
+  try {
+    const data = await chatService.getHistory(PAGE_SIZE, offset)
+    console.log('Loaded more:', data.length, 'items')
+    
+    if (data.length === 0 || data.length < PAGE_SIZE) {
+      noMoreData.value = true
+      console.log('No more data to load')
+    }
+    
+    if (data.length > 0) {
+      chats.value = [...chats.value, ...data]
+      offset += data.length
+      console.log('Updated chats:', chats.value.length, 'items, new offset:', offset)
+    }
+    
+    filteredChats.value = chats.value
+  } catch (error) {
+    console.error('Ошибка загрузки дополнительной истории:', error)
+  } finally {
+    loadingMore.value = false
+  }
+}
+
+// Обработка скролла для infinite scroll
+let scrollContainer = null
+let scrollTimeout = null
+
+function handleScroll() {
+  // Используем debounce для предотвращения слишком частых вызовов
+  if (scrollTimeout) return
+  
+  scrollTimeout = setTimeout(() => {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop
+    const scrollHeight = document.documentElement.scrollHeight
+    const clientHeight = window.innerHeight
+    
+    console.log('Scroll:', { scrollTop, scrollHeight, clientHeight, remaining: scrollHeight - scrollTop - clientHeight })
+    
+    // Загружаем больше, когда до конца осталось 100px
+    if (scrollHeight - scrollTop - clientHeight < 100) {
+      loadMore()
+    }
+    
+    scrollTimeout = null
+  }, 100)
+}
+
 // Поиск по истории
 function searchHistory() {
   if (!searchQuery.value.trim()) {
@@ -128,10 +196,9 @@ function searchHistory() {
     return
   }
 
-  // Нормализуем поисковый запрос: убираем лишние пробелы, приводим к нижнему регистру
+  // Нормализуем поисковый запрос
   const query = searchQuery.value.toLowerCase().replace(/\s+/g, ' ').trim()
   filteredChats.value = chats.value.filter(chat => {
-    // Нормализуем вопрос и ответ для лучшего совпадения
     const question = (chat.question || '').toLowerCase().replace(/\s+/g, ' ').trim()
     const answer = (chat.answer || '').toLowerCase().replace(/\s+/g, ' ').trim()
     return question.includes(query) || answer.includes(query)
@@ -229,7 +296,18 @@ onMounted(async () => {
   if (!authStore.user && authStore.init) {
     await authStore.init()
   }
+  
+  // Устанавливаем обработчик скролла на window
+  window.addEventListener('scroll', handleScroll)
+  
   loadHistory()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
 })
 </script>
 
@@ -413,15 +491,6 @@ onMounted(async () => {
   color: #6b7280;
 }
 
-.session-badge {
-  font-size: 11px;
-  background: #dbeafe;
-  color: #1e40af;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-weight: 500;
-}
-
 .chat-question, .chat-answer {
   margin-bottom: 6px;
   line-height: 1.5;
@@ -534,5 +603,32 @@ onMounted(async () => {
 
 .chat-item:hover .chat-arrow {
   color: #0066cc;
+}
+
+.loading-more, .no-more-data {
+  text-align: center;
+  padding: 20px;
+  color: #6b7280;
+}
+
+.loading-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.spinner-small {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #0066cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.no-more-data p {
+  font-size: 14px;
+  color: #9ca3af;
 }
 </style>

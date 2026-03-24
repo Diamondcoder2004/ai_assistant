@@ -106,15 +106,16 @@ async def get_chat_history(session_id: str, limit: int = 10):
     return history
 
 
-async def get_user_chats(user_id: str, limit: int = 50):
-    """Получение истории чатов пользователя"""
+async def get_user_chats(user_id: str, limit: int = 50, offset: int = 0):
+    """Получение истории чатов пользователя с пагинацией"""
     result = supabase.table("chats") \
         .select("*") \
         .eq("user_id", user_id) \
         .order("created_at", desc=True) \
         .limit(limit) \
+        .range(offset, offset + limit - 1) \
         .execute()
-    
+
     return result.data
 
 

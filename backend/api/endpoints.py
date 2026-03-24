@@ -29,6 +29,7 @@ from .database import (
 from main import AgenticRAG
 import config
 from .auth import get_current_user
+from utils.timing import get_timing_stats, print_timing_stats, save_timing_stats, reset_timing_stats
 
 logger = logging.getLogger(__name__)
 retrieval_logger = logging.getLogger(__name__ + ".retrieval")
@@ -314,14 +315,15 @@ async def query(
 
 @router.get("/history", response_model=List[ChatHistoryItem])
 async def get_history(
-    limit: int = Query(default=50, ge=1, le=100),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     user_id: str = Depends(get_current_user)
 ):
-    """Получение истории чатов пользователя"""
-    db_logger.info(f"Запрос истории для пользователя {user_id[:8]}, limit={limit}")
+    """Получение истории чатов пользователя с пагинацией"""
+    db_logger.info(f"Запрос истории для пользователя {user_id[:8]}, limit={limit}, offset={offset}")
 
     try:
-        chats_result = await get_user_chats(user_id, limit)
+        chats_result = await get_user_chats(user_id, limit, offset)
         db_logger.info(f"Получено чатов: {len(chats_result)}")
 
         history = []
@@ -490,3 +492,34 @@ async def delete_feedback(
     except Exception as e:
         db_logger.error(f"Ошибка удаления фидбека: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error deleting feedback: {e}")
+
+
+# =============================================================================
+# TIMING STATISTICS ENDPOINTS
+# =============================================================================
+
+@router.get("/timing/stats")
+async def get_timing_statistics():
+    """Получение статистики таймингов по агентам и операциям"""
+    return get_timing_stats()
+
+
+@router.get("/timing/stats/print")
+async def print_timing_statistics():
+    """Вывод сводки таймингов в лог"""
+    print_timing_stats()
+    return {"status": "ok", "message": "Statistics printed to log"}
+
+
+@router.post("/timing/stats/save")
+async def save_timing_statistics(filepath: Optional[str] = "logs/timing_stats.json"):
+    """Сохранение статистики таймингов в файл"""
+    save_timing_stats(filepath)
+    return {"status": "ok", "filepath": filepath}
+
+
+@router.post("/timing/stats/reset")
+async def reset_timing_statistics():
+    """Сброс статистики таймингов"""
+    reset_timing_stats()
+    return {"status": "ok", "message": "Statistics reset"}

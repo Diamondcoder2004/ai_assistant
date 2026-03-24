@@ -9,6 +9,7 @@ import config
 from prompts.system_prompt import get_system_prompt
 from tools.search_tool import SearchResult
 from agents.search_agent import SearchAgent
+from utils.timing import timing, timing_context
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ class ResponseAgent:
         self.model = config.DEFAULT_LLM_MODEL
         logger.info(f"ResponseAgent инициализирован: {self.model}")
     
+    @timing("ResponseAgent.generate_response")
     def generate_response(
         self,
         user_query: str,
@@ -42,14 +44,14 @@ class ResponseAgent:
     ) -> Dict[str, Any]:
         """
         Генерация ответа.
-        
+
         Args:
             user_query: Вопрос пользователя
             search_results: Результаты поиска
             history: История диалога
             temperature: Температура генерации
             max_tokens: Максимум токенов
-        
+
         Returns:
             Словарь с ответом:
             - answer: текст ответа
@@ -57,48 +59,52 @@ class ResponseAgent:
             - confidence: уверенность
         """
         # Формирование контекста из результатов поиска
-        context = self._format_context(search_results)
-        
+        with timing_context("ResponseAgent.format_context"):
+            context = self._format_context(search_results)
+
         # Формирование истории диалога
         history_context = self._format_history(history)
-        
+
         # Системный промпт
         system_prompt = get_system_prompt()
-        
+
         # Пользовательский промпт
-        user_prompt = self._create_user_prompt(
-            user_query=user_query,
-            context=context,
-            history=history_context
-        )
-        
-        logger.info(f"Генерация ответа для '{user_query[:50]}...'")
-        
-        try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=temperature,
-                max_tokens=max_tokens
+        with timing_context("ResponseAgent.create_prompt"):
+            user_prompt = self._create_user_prompt(
+                user_query=user_query,
+                context=context,
+                history=history_context
             )
-            
+
+        logger.info(f"Генерация ответа для '{user_query[:50]}...'")
+
+        try:
+            with timing_context("ResponseAgent.llm_completion"):
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt}
+                    ],
+                    temperature=temperature,
+                    max_tokens=max_tokens
+                )
+
             answer = response.choices[0].message.content
-            
-            # Извлечение источников из ответа
-            sources = self._extract_sources(search_results)
-            
-            logger.info(f"Ответ сгенерирован: {len(answer)} символов")
-            
+
+            # Извлечение источников с перемаппингом индексов
+            with timing_context("ResponseAgent.extract_sources"):
+                sources, updated_answer = self._extract_sources(search_results, answer)
+
+            logger.info(f"Ответ сгенерирован: {len(updated_answer)} символов, источников: {len(sources)}")
+
             return {
-                "answer": answer,
+                "answer": updated_answer,
                 "sources": sources,
                 "confidence": 0.8 if search_results else 0.3,
                 "context_used": context
             }
-            
+
         except Exception as e:
             logger.error(f"Ошибка генерации ответа: {e}")
             return {
@@ -158,11 +164,40 @@ class ResponseAgent:
 Если информации недостаточно, честно скажи об этом.
 """
     
-    def _extract_sources(self, results: List[SearchResult]) -> List[Dict[str, Any]]:
-        """Извлечение информации об источниках."""
+    def _extract_sources(self, results: List[SearchResult], answer_text: str = "") -> tuple[List[Dict[str, Any]], str]:
+        """
+        Извлечение информации об источниках с умным ранжированием.
+
+        Ранжирование основано на:
+        1. Количестве упоминаний источника в ответе (цитирований)
+        2. Важности источника (score_hybrid)
+        3. Комбинированном рейтинге
+
+        Args:
+            results: Результаты поиска
+            answer_text: Текст ответа (для подсчёта упоминаний)
+
+        Returns:
+            Кортеж (список источников, обновлённый текст ответа с перемапленными индексами)
+        """
+        if not results:
+            return [], answer_text
+
         sources = []
-        for result in results[:5]:
-            sources.append({
+        citation_counts = {}  # {source_index: count}
+
+        # 1. Подсчитываем упоминания каждого источника в ответе
+        if answer_text:
+            import re
+            # Находим все упоминания вида [1], [2], [1][3], и т.д.
+            mentions = re.findall(r'\[(\d+)\]', answer_text)
+            for idx_str in mentions:
+                idx = int(idx_str) - 1  # Конвертируем в 0-based индекс
+                citation_counts[idx] = citation_counts.get(idx, 0) + 1
+
+        # 2. Создаём источники с метаданными (сохраняем original_rank для перемаппинга)
+        for i, result in enumerate(results[:10]):  # Берём топ-10 для анализа
+            source = {
                 "id": result.id,
                 "filename": result.filename,
                 "breadcrumbs": result.breadcrumbs,
@@ -172,9 +207,75 @@ class ResponseAgent:
                 "chunk_id": result.metadata.get("chunk_id", ""),
                 "score_hybrid": result.score_hybrid,
                 "score_semantic": result.score_semantic,
-                "score_lexical": result.score_lexical
-            })
-        return sources
+                "score_lexical": result.score_lexical,
+                # Добавляем метрики для ранжирования
+                "citation_count": citation_counts.get(i, 0),
+                "original_rank": i,  # Позиция в исходном поиске (0-based)
+            }
+            sources.append(source)
+
+        # 3. Умное ранжирование
+        # Комбинированный скор: цитирования × важность
+        def compute_ranking_score(source):
+            """
+            Вычисляет рейтинг источника.
+
+            Формула:
+            - Если источник цитируется: citation_count × 0.5 + score_hybrid × 0.5
+            - Если не цитируется: score_hybrid × 0.3 (пониженный вес)
+            """
+            citation_score = min(source["citation_count"], 5) * 0.5  # Максимум 2.5
+            importance_score = source["score_hybrid"]
+
+            if source["citation_count"] > 0:
+                # Цитируемый источник: полный вес
+                return citation_score + importance_score * 0.5
+            else:
+                # Не цитируется: пониженный вес
+                return importance_score * 0.3
+
+        # Сортируем по комбинированному рейтингу
+        sources.sort(key=lambda x: compute_ranking_score(x), reverse=True)
+
+        # 4. Создаём маппинг: old_index (1-based) → new_index (1-based)
+        # original_rank хранится как 0-based, поэтому +1
+        index_mapping = {}
+        for new_idx, source in enumerate(sources[:5]):
+            old_idx = source["original_rank"] + 1  # Конвертируем в 1-based
+            new_idx = new_idx + 1  # Конвертируем в 1-based
+            index_mapping[old_idx] = new_idx
+
+        # 5. Перемапливаем индексы в ответе
+        updated_answer = answer_text
+        if answer_text and index_mapping:
+            import re
+
+            def replace_index(match):
+                old_num = int(match.group(1))
+                new_num = index_mapping.get(old_num, old_num)  # Если нет в маппинге, оставляем как есть
+                return f"[{new_num}]"
+
+            updated_answer = re.sub(r'\[(\d+)\]', replace_index, answer_text)
+
+        # 6. Возвращаем топ-5 источников
+        # Удаляем служебные поля перед возвратом
+        final_sources = []
+        for source in sources[:5]:
+            final_source = {
+                "id": source["id"],
+                "filename": source["filename"],
+                "breadcrumbs": source["breadcrumbs"],
+                "category": source["category"],
+                "summary": source["summary"],
+                "content": source["content"],
+                "chunk_id": source["chunk_id"],
+                "score_hybrid": source["score_hybrid"],
+                "score_semantic": source["score_semantic"],
+                "score_lexical": source["score_lexical"],
+            }
+            final_sources.append(final_source)
+
+        return final_sources, updated_answer
     
     def generate_clarification_response(
         self,

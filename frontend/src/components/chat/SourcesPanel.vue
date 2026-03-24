@@ -21,9 +21,6 @@
           <div class="source-filename">{{ removeExtension(source.filename) }}</div>
           <div class="source-breadcrumbs" v-if="source.breadcrumbs && source.breadcrumbs.trim()">{{ formatBreadcrumbs(source.breadcrumbs) }}</div>
           <div class="source-summary">{{ truncate(source.summary || 'Нет описания', 80) }}</div>
-          
-          
-          
           <div class="source-scores">
             <span class="score semantic">Смысл: {{ formatScore(source.score_semantic) }}</span>
             <span class="score lexical">Слова: {{ formatScore(source.score_lexical) }}</span>
@@ -199,32 +196,6 @@ function formatBreadcrumbs(breadcrumbs) {
   color: #4b5563;
   margin-bottom: 6px;
   line-height: 1.4;
-}
-
-.source-content-preview {
-  margin-bottom: 8px;
-}
-
-.show-full-content-btn {
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 12px;
-  color: #0369a1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-  width: 100%;
-  justify-content: center;
-}
-
-.show-full-content-btn:hover {
-  background: #e0f2fe;
-  border-color: #38bdf8;
-  color: #075985;
 }
 
 .source-scores {

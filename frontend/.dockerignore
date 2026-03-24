@@ -12,3 +12,6 @@ build
 .vscode
 .idea
 *.log
+Dockerfile
+Dockerfile.dev
+.dockerignore.dev

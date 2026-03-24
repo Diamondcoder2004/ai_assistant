@@ -182,8 +182,8 @@ export const useChatStore = defineStore('chat', () => {
     }
   }
 
-  // Загрузить историю чатов пользователя
-  async function loadHistory(limit = 50) {
+  // Загрузить историю чатов пользователя (с пагинацией)
+  async function loadHistory(limit = 20, offset = 0, append = false) {
     console.log('loadHistory called, isLoadingHistory:', isLoadingHistory.value, 'history.length:', history.value?.length)
 
     if (!authStore.user) {
@@ -197,8 +197,8 @@ export const useChatStore = defineStore('chat', () => {
       return
     }
 
-    // Если история уже загружена, не загружаем снова
-    if (history.value.length > 0) {
+    // Если история уже загружена и это не append, не загружаем снова
+    if (history.value.length > 0 && !append && offset === 0) {
       console.log('History already loaded:', history.value.length, 'items')
       return
     }
@@ -206,19 +206,36 @@ export const useChatStore = defineStore('chat', () => {
     isLoadingHistory.value = true
 
     try {
-      const data = await chatService.getHistory(limit)
+      const data = await chatService.getHistory(limit, offset)
       console.log('loadHistory: received data:', data?.length, 'items')
-      history.value = data || []
+      
+      if (append) {
+        history.value = [...history.value, ...(data || [])]
+      } else {
+        history.value = data || []
+      }
+      
       console.log('loadHistory: set history.value to:', history.value.length, 'items')
       console.log('Chat history loaded:', history.value.length, 'items')
       console.log('History data:', history.value)
+      
       // Обновляем сессии из истории
       updateSessionsFromHistory(history.value)
+      
+      return data?.length || 0 // Возвращаем количество загруженных элементов
     } catch (err) {
       console.error('Failed to load chat history:', err)
+      throw err
     } finally {
       isLoadingHistory.value = false
     }
+  }
+
+  // Загрузить больше истории (для infinite scroll)
+  async function loadMoreHistory(pageSize = 20) {
+    const currentLength = history.value.length
+    const loadedCount = await loadHistory(pageSize, currentLength, true)
+    return loadedCount
   }
 
   // Очистить текущий чат (синоним newChat)
@@ -242,6 +259,7 @@ export const useChatStore = defineStore('chat', () => {
     clearChat,
     loadSession,
     loadHistory,
+    loadMoreHistory,
     submitFeedback,
     removeFeedback,
     loadFeedback

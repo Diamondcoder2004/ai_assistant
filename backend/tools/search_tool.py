@@ -133,12 +133,13 @@ class SearchTool:
         bm25 = BM25Plus(self.documents)
         scores = bm25.get_scores(query_tokens)
 
-        # Нормализация через tanh с меньшим делителем (строже)
-        # Делитель 15 вместо 5 даёт более широкий диапазон оценок
+        # Нормализация через max score (классический подход)
+        max_score = max(scores) if len(scores) > 0 else 1.0
         normalized = {}
         for idx, score in enumerate(scores):
             point_id = self.point_ids[idx]
-            normalized[point_id] = float(np.tanh(score / 15.0))
+            # Нормализуем к [0, 1] через деление на максимальный score
+            normalized[point_id] = float(score / max_score) if max_score > 0 else 0.0
 
         return normalized
     

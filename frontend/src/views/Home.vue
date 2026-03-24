@@ -50,7 +50,14 @@
       />
     </div>
 
-    <Footer />
+    <Footer :force-show="showFooter" @hide="showFooter = false" />
+
+    <!-- Кнопка для показа футера -->
+    <button v-if="!showFooter" @click="showFooter = true" class="show-footer-btn" title="Показать футер">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </button>
 
     <!-- Модальное окно деталей источника -->
     <SourceDetailModal
@@ -117,6 +124,9 @@ const feedbackCooldowns = ref({}) // { sessionId: timestamp }
 // Развёрнутое сообщение для показа источников
 const expandedMessage = ref(null)
 const expandedMessageId = computed(() => expandedMessage.value?.id || null)
+
+// Показывать ли футер
+const showFooter = ref(false)
 
 // Использование шаблона (быстрый вопрос)
 function handleUseTemplate(text) {
@@ -355,16 +365,44 @@ onMounted(async () => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
 }
 
 .main-layout {
   display: flex;
   flex: 1;
   min-height: 0;
-  height: calc(100vh - 140px);
+  height: calc(100vh - 180px);
   overflow: hidden;
+}
+
+/* Кнопка для показа футера */
+.show-footer-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #0066cc;
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 100;
+}
+
+.show-footer-btn:hover {
+  background: #0052a3;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+.show-footer-btn:active {
+  transform: translateY(0);
 }
 
 /* Левая колонка с прокруткой */

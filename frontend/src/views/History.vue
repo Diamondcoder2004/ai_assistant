@@ -89,7 +89,6 @@
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
                   <div class="preview-messages">
                     <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
-                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
                       <span class="preview-text">{{ msg.text }}</span>
                     </div>
                   </div>
@@ -131,7 +130,6 @@
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
                   <div class="preview-messages">
                     <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
-                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
                       <span class="preview-text">{{ msg.text }}</span>
                     </div>
                   </div>
@@ -173,7 +171,6 @@
                   <span class="preview-label">{{ session.messages_count }} сообщений</span>
                   <div class="preview-messages">
                     <div v-for="(msg, idx) in session.preview" :key="idx" class="preview-message" :class="msg.type">
-                      <span class="preview-icon">{{ msg.type === 'question' ? '❓' : msg.type === 'answer' ? '💬' : '⏱️' }}</span>
                       <span class="preview-text">{{ msg.text }}</span>
                     </div>
                   </div>
@@ -592,12 +589,13 @@ onMounted(async () => {
   font-weight: 500;
   align-self: flex-start;
   flex-shrink: 0;
+  font-size: 12px;
 }
 
 .preview-messages {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .preview-message {
@@ -605,10 +603,12 @@ onMounted(async () => {
   align-items: flex-start;
   gap: 6px;
   line-height: 1.4;
+  font-size: 13px;
 }
 
 .preview-message.question {
   color: #0066cc;
+  font-weight: 500;
 }
 
 .preview-message.answer {
@@ -617,11 +617,7 @@ onMounted(async () => {
 
 .preview-message.last {
   color: #6b7280;
-}
-
-.preview-icon {
-  flex-shrink: 0;
-  font-size: 12px;
+  font-style: italic;
 }
 
 .preview-text {

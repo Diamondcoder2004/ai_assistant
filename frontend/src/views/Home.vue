@@ -3,20 +3,11 @@
     <Header />
 
     <div class="main-layout">
-      <!-- Левая колонка: параметры поиска + источники -->
+      <!-- Левая колонка: параметры поиска -->
       <aside class="sidebar-left">
         <SearchParamsPanel
-          v-show="!showSourcesPanel"
           v-model="searchParams"
           @show-info="showInfoModal = 'settings'"
-        />
-        <!-- Источники (показываются поверх параметров) -->
-        <SourcesPanel
-          v-if="expandedMessage && showSourcesPanel"
-          :class="{ 'visible': showSourcesPanel }"
-          :expanded-message="expandedMessage"
-          @close="expandedMessage = null; showSourcesPanel = false"
-          @open-source="openSourceModal"
         />
       </aside>
 
@@ -49,6 +40,14 @@
           @use-template="handleUseTemplate"
         />
       </main>
+
+      <!-- Правая колонка: источники -->
+      <SourcesPanel
+        v-if="expandedMessage && showSourcesPanel"
+        :expanded-message="expandedMessage"
+        @close="expandedMessage = null; showSourcesPanel = false"
+        @open-source="openSourceModal"
+      />
     </div>
 
     <Footer :force-show="showFooter" @hide="showFooter = false" />
@@ -424,7 +423,6 @@ onMounted(async () => {
   top: 0;
   height: 100%;
   max-height: 100%;
-  position: relative;
 }
 
 /* Центральная колонка (чат) - скроллится */
@@ -441,24 +439,15 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Правая колонка с источниками - теперь слева поверх параметров */
+/* Правая колонка с источниками - фиксированная */
 .sources-panel {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #f8f9fa;
+  width: 400px;
+  background: #ffffff;
+  border-left: 1px solid #ddd;
+  padding: 0;
   overflow-y: auto;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.sources-panel.visible {
-  opacity: 1;
-  pointer-events: all;
+  flex-shrink: 0;
+  height: 100%;
 }
 
 /* FAQ под чатом */

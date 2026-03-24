@@ -232,12 +232,19 @@ async def query(
         if user_hints:
             retrieval_logger.info(f"[{query_id}] Рекомендации от пользователя: {user_hints}")
 
+        # Пасхалка: проверяем на шуточный режим (ключевая фраза "шутка" или "joker")
+        joker_mode = any(phrase in request.query.lower() for phrase in ["шутка", "joker", "пошути", "расскажи шутку"])
+        
+        if joker_mode:
+            retrieval_logger.info(f"[{query_id}] 🎭 Joker mode activated!")
+
         # Выполняем запрос через Agentic RAG с историей и рекомендациями
         result = rag.query(
             user_query=request.query,
             auto_retry=True,
             history=history,  # Передаём историю из БД
-            user_hints=user_hints if user_hints else None  # Передаём рекомендации
+            user_hints=user_hints if user_hints else None,  # Передаём рекомендации
+            joker_mode=joker_mode  # Пасхалка: шуточный режим
         )
 
         # Формирование источников

@@ -46,7 +46,8 @@ class AgenticRAG:
         user_query: str,
         auto_retry: bool = True,
         history: List[Dict[str, str]] = None,
-        user_hints: Optional[Dict[str, Any]] = None
+        user_hints: Optional[Dict[str, Any]] = None,
+        joker_mode: bool = False  # Пасхалка: шуточный режим
     ) -> dict:
         """
         Обработка запроса пользователя.
@@ -109,7 +110,8 @@ class AgenticRAG:
         response_result = self.response_agent.generate_response(
             user_query=user_query,
             search_results=search_result["results"],
-            history=dialog_history  # ✅ Используем историю из БД
+            history=dialog_history,  # ✅ Используем историю из БД
+            joker_mode=joker_mode  # Пасхалка: шуточный режим
         )
 
         # 4. Обновление истории

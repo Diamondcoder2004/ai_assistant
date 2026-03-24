@@ -2,6 +2,7 @@
 Response Agent — агент формирования ответов
 """
 import logging
+import random
 from typing import List, Optional, Dict, Any
 
 from openai import OpenAI
@@ -9,6 +10,7 @@ import config
 from prompts.system_prompt import get_system_prompt
 from tools.search_tool import SearchResult
 from agents.search_agent import SearchAgent
+from agents.joker_agent import JokerAgent
 from utils.timing import timing, timing_context
 
 logger = logging.getLogger(__name__)
@@ -31,6 +33,7 @@ class ResponseAgent:
             base_url=config.ROUTERAI_BASE_URL
         )
         self.model = config.DEFAULT_LLM_MODEL
+        self.joker_agent = JokerAgent()
         logger.info(f"ResponseAgent инициализирован: {self.model}")
     
     @timing("ResponseAgent.generate_response")
@@ -40,7 +43,8 @@ class ResponseAgent:
         search_results: List[SearchResult],
         history: str = "",
         temperature: float = 0.7,
-        max_tokens: int = 2000
+        max_tokens: int = 2000,
+        joker_mode: bool = False  # Пасхалка: шуточный режим
     ) -> Dict[str, Any]:
         """
         Генерация ответа.
@@ -58,6 +62,11 @@ class ResponseAgent:
             - sources: список источников
             - confidence: уверенность
         """
+        # Пасхалка: шуточный режим
+        if joker_mode:
+            logger.info("🎭 Joker mode activated!")
+            return self.joker_agent.generate_response(user_query, search_results)
+        
         # Формирование контекста из результатов поиска
         with timing_context("ResponseAgent.format_context"):
             context = self._format_context(search_results)

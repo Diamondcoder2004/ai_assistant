@@ -99,9 +99,9 @@
             type="number"
             :value="modelValue.min_score"
             :min="0"
-            :max="1"
+            :max="0.95"
             step="0.05"
-            @input="updateParam('min_score', $event.target.value, 0, 1, 0.05)"
+            @input="updateParam('min_score', $event.target.value, 0, 0.95, 0.05)"
             class="param-number-input"
           />
         </div>
@@ -110,10 +110,10 @@
         type="range"
         :value="modelValue.min_score"
         min="0"
-        max="1"
+        max="0.95"
         step="0.05"
         class="param-range"
-        @input="updateParam('min_score', $event.target.value, 0, 1, 0.05)"
+        @input="updateParam('min_score', $event.target.value, 0, 0.95, 0.05)"
       />
       <span class="param-hint">Рекомендуется: 0–0.2</span>
     </div>

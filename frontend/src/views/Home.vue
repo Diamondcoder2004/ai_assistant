@@ -457,6 +457,13 @@ onMounted(async () => {
   height: 100%;
 }
 
+.sources-panel .sources-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f9fafb;
+}
+
 /* FAQ под чатом */
 .faq-below-chat {
   padding: 20px;

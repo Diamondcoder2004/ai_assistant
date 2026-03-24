@@ -1,0 +1,17 @@
+{
+  "total_samples": 5,
+  "total_time_sec": 207.4225935935974,
+  "avg_time_sec": 41.484518718719485,
+  "avg_retrieval_time_sec": 33.18737759590149,
+  "avg_generation_time_sec": 8.29694504737854,
+  "avg_confidence": 0.8,
+  "clarification_count": 0,
+  "avg_queries_per_request": 3.0,
+  "avg_sources_per_request": 5.0,
+  "llm_judge_enabled": true,
+  "llm_evaluated_count": 5,
+  "avg_relevance_score": 5.0,
+  "avg_completeness_score": 4.4,
+  "avg_hallucination_risk": 3.6,
+  "avg_llm_overall_score": 4.333333333333333
+}

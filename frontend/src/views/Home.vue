@@ -1,0 +1,423 @@
+<template>
+  <div class="home">
+    <Header />
+
+    <div class="main-layout">
+      <!-- Левая колонка: параметры поиска -->
+      <aside class="sidebar-left">
+        <SearchParamsPanel
+          v-model="searchParams"
+          @show-info="showInfoModal = 'settings'"
+        />
+      </aside>
+
+      <!-- Основная область чата -->
+      <main class="chat-area">
+        <!-- Шапка чата -->
+        <ChatHeader
+          :session-title="chatStore.currentSessionTitle"
+          :is-loading="chatStore.isLoading"
+          @new-chat="handleNewChat"
+        />
+
+        <!-- Сообщения -->
+        <ChatMessages
+          :messages="chatStore.messages"
+          :is-loading="chatStore.isLoading"
+          :expanded-message-id="expandedMessageId"
+          :feedbacks="chatStore.feedbacks"
+          @toggle-sources="toggleSources"
+          @feedback="handleFeedback"
+          @open-star-rating="openStarRating"
+          @scroll-to-source="handleScrollToSource"
+        />
+
+        <!-- Поле ввода и быстрые вопросы -->
+        <ChatInputArea
+          v-model="newMessage"
+          :is-loading="chatStore.isLoading"
+          @send="sendMessage"
+          @use-template="handleUseTemplate"
+        />
+      </main>
+
+      <!-- Правая колонка: источники -->
+      <SourcesPanel
+        v-if="expandedMessage"
+        :expanded-message="expandedMessage"
+        @close="expandedMessage = null"
+        @open-source="openSourceModal"
+      />
+    </div>
+
+    <Footer />
+
+    <!-- Модальное окно деталей источника -->
+    <SourceDetailModal
+      v-if="selectedSource"
+      :source="selectedSource"
+      @close="selectedSource = null"
+    />
+
+    <!-- Модальное окно информации о параметрах -->
+    <ParamsInfoModal
+      v-if="showInfoModal === 'settings'"
+      @close="showInfoModal = null"
+    />
+
+    <!-- Модальное окно звёздного рейтинга -->
+    <StarRatingModal
+      v-if="showStarRating"
+      :selected-stars="selectedStars"
+      @close="showStarRating = false"
+      @submit="submitStarRating"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, nextTick } from 'vue'
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
+import SearchParamsPanel from '../components/chat/SearchParamsPanel.vue'
+import ChatHeader from '../components/chat/ChatHeader.vue'
+import ChatMessages from '../components/chat/ChatMessages.vue'
+import ChatInputArea from '../components/chat/ChatInputArea.vue'
+import SourcesPanel from '../components/chat/SourcesPanel.vue'
+import SourceDetailModal from '../components/chat/modals/SourceDetailModal.vue'
+import ParamsInfoModal from '../components/chat/modals/ParamsInfoModal.vue'
+import StarRatingModal from '../components/chat/modals/StarRatingModal.vue'
+import { useChatStore } from '../stores/chatStore'
+import { useAuthStore } from '../stores/authStore'
+
+const authStore = useAuthStore()
+const chatStore = useChatStore()
+
+// Поле ввода
+const newMessage = ref('')
+
+// Параметры поиска
+const searchParams = ref({
+  k: 10,
+  temperature: 0.8,
+  max_tokens: 2000,
+  min_score: 0.0
+})
+
+// Модальные окна
+const selectedSource = ref(null)
+const showInfoModal = ref(null)
+const showStarRating = ref(false)
+const currentFeedbackSessionId = ref(null)
+const selectedStars = ref(0)
+
+// Debouncing для фидбека
+const feedbackCooldowns = ref({}) // { sessionId: timestamp }
+
+// Развёрнутое сообщение для показа источников
+const expandedMessage = ref(null)
+const expandedMessageId = computed(() => expandedMessage.value?.id || null)
+
+// Использование шаблона (быстрый вопрос)
+function handleUseTemplate(text) {
+  newMessage.value = text
+  nextTick(() => {
+    const textarea = document.querySelector('textarea')
+    if (textarea) {
+      textarea.focus()
+      textarea.scrollTop = textarea.scrollHeight
+    }
+  })
+}
+
+// Отправка сообщения
+async function sendMessage() {
+  const text = newMessage.value.trim()
+  if (!text || chatStore.isLoading) return
+  newMessage.value = ''
+  try {
+    await chatStore.sendQuestion(text, searchParams.value)
+    await nextTick()
+    scrollToBottom()
+  } catch (err) {
+    console.error('Ошибка отправки:', err)
+  }
+}
+
+// Прокрутка вниз
+function scrollToBottom() {
+  const container = document.querySelector('.messages-container')
+  if (container) {
+    container.scrollTop = container.scrollHeight
+  }
+}
+
+// Начать новый чат
+function handleNewChat() {
+  chatStore.newChat()
+  newMessage.value = ''
+  expandedMessage.value = null
+}
+
+// Показать/скрыть источники для сообщения
+function toggleSources(message) {
+  if (expandedMessage.value?.id === message.id) {
+    expandedMessage.value = null
+  } else {
+    expandedMessage.value = message
+  }
+}
+
+// Прокрутка к источнику
+function scrollToSource(sourceNum) {
+  const sourceElement = document.getElementById(`source-${sourceNum}`)
+  if (sourceElement) {
+    sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    sourceElement.classList.add('highlight')
+    setTimeout(() => {
+      sourceElement.classList.remove('highlight')
+    }, 2000)
+  }
+}
+
+// Обработчик события прокрутки к источнику
+function handleScrollToSource({ sourceNum, messageId }) {
+  if (expandedMessage.value) {
+    // Если панель уже открыта, проверяем, то ли это сообщение
+    if (expandedMessage.value.id === messageId) {
+      scrollToSource(sourceNum)
+    } else {
+      // Если другое сообщение — переключаемся на него
+      const targetMessage = chatStore.messages.find(m => m.id === messageId)
+      if (targetMessage) {
+        expandedMessage.value = targetMessage
+        nextTick(() => {
+          scrollToSource(sourceNum)
+        })
+      }
+    }
+  } else {
+    // Если панель закрыта, находим нужное сообщение
+    const targetMessage = chatStore.messages.find(m => m.id === messageId)
+    if (targetMessage) {
+      expandedMessage.value = targetMessage
+      nextTick(() => {
+        scrollToSource(sourceNum)
+      })
+    }
+  }
+}
+
+// Фидбек
+async function handleFeedback(queryId, type) {
+  if (!queryId) {
+    console.warn('Нет queryId для фидбека')
+    return
+  }
+
+  // Проверка cooldown (1 секунда задержка)
+  const now = Date.now()
+  const lastFeedbackTime = feedbackCooldowns.value[queryId] || 0
+  if (now - lastFeedbackTime < 1000) {
+    console.log('Feedback cooldown active')
+    return
+  }
+
+  const current = chatStore.feedbacks[queryId]
+  try {
+    // Если кликнули на ту же кнопку — снимаем фидбек
+    if (current?.feedback_type === type) {
+      await chatStore.removeFeedback(queryId)
+    } else {
+      // Иначе ставим новый фидбек
+      await chatStore.submitFeedback(queryId, type)
+      feedbackCooldowns.value[queryId] = now
+    }
+  } catch (err) {
+    console.error('Ошибка фидбека:', err)
+    alert('Не удалось отправить оценку. Попробуйте позже.')
+  }
+}
+
+function openStarRating(queryId) {
+  if (!queryId) {
+    console.warn('Нет queryId для звёздного рейтинга')
+    return
+  }
+  currentFeedbackSessionId.value = queryId
+  showStarRating.value = true
+}
+
+async function submitStarRating(rating) {
+  console.log('submitStarRating called with:', rating, 'queryId:', currentFeedbackSessionId.value)
+  if (!currentFeedbackSessionId.value || !rating || rating < 1) {
+    console.warn('Invalid rating or queryId:', { rating, queryId: currentFeedbackSessionId.value })
+    showStarRating.value = false
+    return
+  }
+
+  // Проверка cooldown
+  const now = Date.now()
+  const lastFeedbackTime = feedbackCooldowns.value[currentFeedbackSessionId.value] || 0
+  if (now - lastFeedbackTime < 1000) {
+    console.log('Star rating cooldown active')
+    showStarRating.value = false
+    return
+  }
+
+  selectedStars.value = rating
+  try {
+    await chatStore.submitFeedback(currentFeedbackSessionId.value, 'star', rating)
+    feedbackCooldowns.value[currentFeedbackSessionId.value] = now
+  } catch (err) {
+    console.error('Ошибка фидбека:', err)
+    alert('Не удалось отправить оценку. Попробуйте позже.')
+  } finally {
+    showStarRating.value = false
+    currentFeedbackSessionId.value = null
+  }
+}
+
+// Модалка с деталями источника
+function openSourceModal(source) {
+  selectedSource.value = source
+}
+
+// Загрузка истории при монтировании
+onMounted(async () => {
+  console.log('Home mounted, checking for resumeSessionId...')
+  // Восстановление сессии из History.vue
+  const resumeSessionId = localStorage.getItem('resumeSessionId')
+  console.log('resumeSessionId:', resumeSessionId)
+  console.log('authStore.user:', authStore.user)
+  console.log('chatStore.history before load:', chatStore.history?.length || 0)
+
+  if (resumeSessionId) {
+    localStorage.removeItem('resumeSessionId')
+
+    // Загружаем историю для этой сессии
+    if (authStore.user) {
+      await chatStore.loadHistory(50)
+      console.log('chatStore.history after load:', chatStore.history?.length || 0)
+
+      // Находим записи для этой сессии
+      // resumeSessionId может быть session_id или id записи
+      const sessionChats = (chatStore.history || [])
+        .filter(c => c.session_id === resumeSessionId || c.id == resumeSessionId)
+        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+
+      console.log('sessionChats found:', sessionChats.length)
+
+      if (sessionChats.length > 0) {
+        // Устанавливаем session_id (используем session_id из первой записи, если есть)
+        const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
+        chatStore.sessionId = actualSessionId
+        chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
+
+        // Очищаем и добавляем все сообщения из сессии
+        chatStore.messages = []
+        for (const chat of sessionChats) {
+          chatStore.messages.push({
+            id: Date.now() + chat.id,
+            role: 'user',
+            content: chat.question,
+            sessionId: actualSessionId,
+            timestamp: new Date(chat.created_at)
+          })
+          chatStore.messages.push({
+            id: Date.now() + chat.id + 1,
+            role: 'assistant',
+            content: chat.answer,
+            sources: chat.sources || [],
+            sessionId: actualSessionId,
+            queryId: chat.id,
+            timestamp: new Date(chat.created_at)
+          })
+        }
+        console.log('Session restored:', chatStore.messages.length, 'messages')
+      } else {
+        console.warn('No chats found for session:', resumeSessionId)
+      }
+    }
+  } else if (authStore.user) {
+    // Просто загружаем историю для сессий, но не показываем сообщения
+    // История будет загружена в chatStore и доступна через chatStore.chatSessions
+    console.log('No resumeSessionId, initializing chat sessions')
+    if ((chatStore.history?.length || 0) === 0) {
+      await chatStore.loadHistory(50)
+    }
+  }
+})
+</script>
+
+<style scoped>
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  height: calc(100vh - 140px);
+  overflow: hidden;
+}
+
+/* Левая колонка с прокруткой */
+.sidebar-left {
+  width: 320px;
+  background: #f8f9fa;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+/* Центральная колонка (чат) */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* FAQ под чатом */
+.faq-below-chat {
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
+  background: #f9fafb;
+  overflow-y: auto;
+  max-height: 300px;
+  flex-shrink: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+  .sidebar-left {
+    width: 280px;
+  }
+}
+
+@media (max-width: 992px) {
+  .sidebar-left {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-area {
+    max-width: 100%;
+  }
+}
+</style>

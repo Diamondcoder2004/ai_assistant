@@ -1,0 +1,46 @@
+{
+  "name": "bashkirenergo-chat",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "lint": "eslint . --fix --cache",
+    "format": "prettier --write --experimental-cli src/"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.87.1",
+    "axios": "^1.13.2",
+    "bootstrap": "^5.3.8",
+    "katex": "^0.16.40",
+    "marked": "^17.0.5",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.3",
+    "vue3-toastify": "^0.2.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vitest/eslint-plugin": "^1.5.0",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.22",
+    "eslint": "^9.39.1",
+    "eslint-plugin-vue": "~10.5.1",
+    "globals": "^16.5.0",
+    "jsdom": "^27.2.0",
+    "postcss": "^8.5.6",
+    "prettier": "3.6.2",
+    "tailwindcss": "^4.1.17",
+    "vite": "npm:rolldown-vite@latest",
+    "vite-plugin-vue-devtools": "^8.0.5",
+    "vitest": "^4.0.14"
+  }
+}

@@ -30,6 +30,8 @@ from main import AgenticRAG
 import config
 from .auth import get_current_user
 from utils.timing import get_timing_stats, print_timing_stats, save_timing_stats, reset_timing_stats
+from datetime import datetime, timedelta
+import re
 
 logger = logging.getLogger(__name__)
 retrieval_logger = logging.getLogger(__name__ + ".retrieval")
@@ -357,6 +359,121 @@ async def get_history(
     except Exception as e:
         db_logger.error(f"Ошибка получения истории: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Error fetching history: {e}")
+
+
+@router.get("/history/sessions")
+async def get_history_sessions(
+    search: Optional[str] = Query(None, description="Поиск по вопросам и ответам"),
+    start_date: Optional[str] = Query(None, description="Начальная дата (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="Конечная дата (YYYY-MM-DD)"),
+    user_id: str = Depends(get_current_user)
+):
+    """
+    Получение истории чатов с группировкой по сессиям и дням.
+    
+    - search: поиск по тексту вопросов и ответов
+    - start_date: фильтр по начальной дате
+    - end_date: фильтр по конечной дате
+    """
+    db_logger.info(f"Запрос сгруппированной истории для пользователя {user_id[:8]}")
+    
+    try:
+        # Получаем все чаты пользователя
+        all_chats = await get_user_chats(user_id, limit=1000, offset=0)
+        
+        # Фильтрация по дате
+        if start_date:
+            try:
+                start = datetime.strptime(start_date, "%Y-%m-%d")
+                all_chats = [c for c in all_chats if datetime.strptime(c["created_at"][:10], "%Y-%m-%d") >= start]
+            except ValueError:
+                pass
+        
+        if end_date:
+            try:
+                end = datetime.strptime(end_date, "%Y-%m-%d")
+                all_chats = [c for c in all_chats if datetime.strptime(c["created_at"][:10], "%Y-%m-%d") <= end]
+            except ValueError:
+                pass
+        
+        # Поиск по тексту
+        if search:
+            search_lower = search.lower()
+            all_chats = [
+                c for c in all_chats 
+                if search_lower in c.get("question", "").lower() or search_lower in c.get("answer", "").lower()
+            ]
+        
+        # Группировка по сессиям
+        sessions_map = {}
+        for chat in all_chats:
+            session_id = str(chat.get("session_id", chat.get("id", "unknown")))
+            if session_id not in sessions_map:
+                sessions_map[session_id] = {
+                    "session_id": session_id,
+                    "messages": [],
+                    "created_at": chat["created_at"],
+                    "updated_at": chat["created_at"],
+                    "first_question": chat["question"]
+                }
+            
+            sessions_map[session_id]["messages"].append({
+                "id": chat["id"],
+                "question": chat["question"],
+                "answer": chat["answer"],
+                "created_at": chat["created_at"],
+                "sources": chat.get("sources", [])
+            })
+            
+            # Обновляем дату обновления сессии
+            if chat["created_at"] > sessions_map[session_id]["updated_at"]:
+                sessions_map[session_id]["updated_at"] = chat["created_at"]
+        
+        # Группировка сессий по дням
+        grouped = {
+            "today": [],
+            "yesterday": [],
+            "earlier": []
+        }
+        
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+        
+        for session_id, session in sessions_map.items():
+            session_date = datetime.strptime(session["updated_at"][:10], "%Y-%m-%d").date()
+            
+            # Формируем превью сообщений
+            messages_preview = []
+            for msg in session["messages"][:3]:  # Первые 3 сообщения для превью
+                messages_preview.append({
+                    "question": msg["question"][:100] if len(msg["question"]) > 100 else msg["question"],
+                    "answer": msg["answer"][:200] if len(msg["answer"]) > 200 else msg["answer"],
+                })
+            
+            session_data = {
+                "session_id": session_id,
+                "messages_count": len(session["messages"]),
+                "first_question": session["first_question"],
+                "updated_at": session["updated_at"],
+                "preview": messages_preview
+            }
+            
+            if session_date == today:
+                grouped["today"].append(session_data)
+            elif session_date == yesterday:
+                grouped["yesterday"].append(session_data)
+            else:
+                grouped["earlier"].append(session_data)
+        
+        # Сортировка сессий внутри групп по дате (новые первые)
+        for key in grouped:
+            grouped[key].sort(key=lambda x: x["updated_at"], reverse=True)
+        
+        return grouped
+
+    except Exception as e:
+        db_logger.error(f"Ошибка получения сгруппированной истории: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error fetching grouped history: {e}")
 
 
 @router.get("/history/{chat_id}", response_model=ChatHistoryItem)

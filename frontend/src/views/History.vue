@@ -13,69 +13,172 @@
         </button>
       </div>
 
-      <div class="search-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input
-          v-model="searchQuery"
-          placeholder="Поиск по вопросам и ответам..."
-          @input="searchHistory"
-        />
+      <!-- Фильтры и поиск -->
+      <div class="filters-bar">
+        <div class="search-box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input
+            v-model="searchQuery"
+            placeholder="Поиск по вопросам и ответам..."
+            @input="applyFilters"
+          />
+        </div>
+        
+        <div class="date-filters">
+          <input
+            type="date"
+            v-model="startDate"
+            @change="applyFilters"
+            class="date-input"
+            title="Начальная дата"
+          />
+          <span class="date-separator">—</span>
+          <input
+            type="date"
+            v-model="endDate"
+            @change="applyFilters"
+            class="date-input"
+            title="Конечная дата"
+          />
+          <button @click="resetFilters" class="reset-filters-btn" title="Сбросить фильтры">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/>
+              <path d="M3 3v9h9"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
-      <div v-if="loading && chats.length === 0" class="loading">
+      <!-- Загрузка -->
+      <div v-if="loading && sessions.today.length === 0 && sessions.yesterday.length === 0 && sessions.earlier.length === 0" class="loading">
         <div class="spinner"></div>
         <p>Загрузка истории...</p>
       </div>
 
-      <div v-else-if="chats.length === 0 && !loading" class="empty">
+      <!-- Пустое состояние -->
+      <div v-else-if="!loading && sessions.today.length === 0 && sessions.yesterday.length === 0 && sessions.earlier.length === 0" class="empty">
         <div class="empty-icon">📭</div>
-        <p v-if="searchQuery">Ничего не найдено по запросу "{{ searchQuery }}"</p>
+        <p v-if="searchQuery || startDate || endDate">Ничего не найдено по заданным фильтрам</p>
         <p v-else>История чатов пуста</p>
         <p class="hint">Задайте вопрос в чате, чтобы начать историю</p>
       </div>
 
-      <div v-else class="chat-list">
-        <div
-          v-for="chat in filteredChats"
-          :key="chat.id"
-          class="chat-item"
-          @click="resumeChat(chat)"
-        >
-          <div class="chat-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <div class="chat-content">
-            <div class="chat-header-row">
-              <span class="chat-date">{{ formatDate(chat.created_at) }}</span>
+      <!-- Сессии: Сегодня -->
+      <div v-if="sessions.today.length > 0" class="sessions-group">
+        <h2 class="group-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Сегодня
+        </h2>
+        <div class="sessions-list">
+          <div
+            v-for="session in sessions.today"
+            :key="session.session_id"
+            class="session-card"
+            @click="resumeSession(session)"
+          >
+            <div class="session-header">
+              <div class="session-info">
+                <div class="session-question">{{ session.first_question }}</div>
+                <div class="session-preview" v-if="session.preview.length > 0">
+                  <span class="preview-label">{{ session.messages_count }} сообщений</span>
+                  <span class="preview-text" v-if="session.preview[0]">
+                    {{ truncate(session.preview[0].question, 80) }}
+                  </span>
+                </div>
+              </div>
+              <div class="session-meta">
+                <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+                <svg class="session-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </div>
             </div>
-            <div class="chat-question">
-              <strong>Вопрос:</strong> {{ chat.question }}
-            </div>
-            <div class="chat-answer">
-              <strong>Ответ:</strong> <span v-html="renderAnswer(truncate(chat.answer, 150))"></span>
-            </div>
-          </div>
-          <div class="chat-arrow">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
           </div>
         </div>
+      </div>
 
-        <!-- Индикатор загрузки при скролле -->
-        <div v-if="loadingMore" class="loading-more">
-          <div class="spinner-small"></div>
-          <p>Загрузка...</p>
+      <!-- Сессии: Вчера -->
+      <div v-if="sessions.yesterday.length > 0" class="sessions-group">
+        <h2 class="group-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Вчера
+        </h2>
+        <div class="sessions-list">
+          <div
+            v-for="session in sessions.yesterday"
+            :key="session.session_id"
+            class="session-card"
+            @click="resumeSession(session)"
+          >
+            <div class="session-header">
+              <div class="session-info">
+                <div class="session-question">{{ session.first_question }}</div>
+                <div class="session-preview" v-if="session.preview.length > 0">
+                  <span class="preview-label">{{ session.messages_count }} сообщений</span>
+                  <span class="preview-text" v-if="session.preview[0]">
+                    {{ truncate(session.preview[0].question, 80) }}
+                  </span>
+                </div>
+              </div>
+              <div class="session-meta">
+                <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+                <svg class="session-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- Сообщение, что всё загружено -->
-        <div v-if="noMoreData && chats.length > 0" class="no-more-data">
-          <p>Все записи загружены</p>
+      <!-- Сессии: Ранее -->
+      <div v-if="sessions.earlier.length > 0" class="sessions-group">
+        <h2 class="group-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Ранее
+        </h2>
+        <div class="sessions-list">
+          <div
+            v-for="session in sessions.earlier"
+            :key="session.session_id"
+            class="session-card"
+            @click="resumeSession(session)"
+          >
+            <div class="session-header">
+              <div class="session-info">
+                <div class="session-question">{{ session.first_question }}</div>
+                <div class="session-preview" v-if="session.preview.length > 0">
+                  <span class="preview-label">{{ session.messages_count }} сообщений</span>
+                  <span class="preview-text" v-if="session.preview[0]">
+                    {{ truncate(session.preview[0].question, 80) }}
+                  </span>
+                </div>
+              </div>
+              <div class="session-meta">
+                <span class="session-date">{{ formatDate(session.updated_at) }}</span>
+                <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+                <svg class="session-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -85,7 +188,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
@@ -95,141 +198,86 @@ import { chatService } from '../services/supabase'
 const router = useRouter()
 const authStore = useAuthStore()
 
-const chats = ref([])
-const filteredChats = ref([])
+const sessions = ref({
+  today: [],
+  yesterday: [],
+  earlier: []
+})
+
 const searchQuery = ref('')
+const startDate = ref('')
+const endDate = ref('')
 const loading = ref(true)
-const loadingMore = ref(false)
-const noMoreData = ref(false)
 
-const PAGE_SIZE = 20
-let offset = 0
-
-// Загрузка истории (первая страница)
+// Загрузка истории сессий
 async function loadHistory() {
   if (!authStore.user) {
     console.log('User not authenticated, cannot load history')
     loading.value = false
-    chats.value = []
-    filteredChats.value = []
     return
   }
 
   loading.value = true
-  noMoreData.value = false
-  offset = 0
-  chats.value = []
-
+  
   try {
-    const data = await chatService.getHistory(PAGE_SIZE, offset)
-    chats.value = data || []
-    filteredChats.value = chats.value
-    offset = chats.value.length
-    console.log('History loaded:', chats.value.length, 'items')
+    const params = {}
+    if (searchQuery.value) params.search = searchQuery.value
+    if (startDate.value) params.start_date = startDate.value
+    if (endDate.value) params.end_date = endDate.value
+    
+    const data = await chatService.getHistorySessions(params.search || null, params.start_date || null, params.end_date || null)
+    
+    sessions.value = data || { today: [], yesterday: [], earlier: [] }
+    console.log('History loaded:', {
+      today: sessions.value.today.length,
+      yesterday: sessions.value.yesterday.length,
+      earlier: sessions.value.earlier.length
+    })
   } catch (error) {
     console.error('Ошибка загрузки истории:', error)
-    chats.value = []
-    filteredChats.value = []
+    sessions.value = { today: [], yesterday: [], earlier: [] }
   } finally {
     loading.value = false
   }
 }
 
-// Загрузка следующей страницы (infinite scroll)
-async function loadMore() {
-  if (loadingMore.value || noMoreData.value || loading.value) return
-
-  loadingMore.value = true
-  console.log('Loading more history, current offset:', offset)
-
-  try {
-    const data = await chatService.getHistory(PAGE_SIZE, offset)
-    console.log('Loaded more:', data.length, 'items')
-    
-    if (data.length === 0 || data.length < PAGE_SIZE) {
-      noMoreData.value = true
-      console.log('No more data to load')
-    }
-    
-    if (data.length > 0) {
-      chats.value = [...chats.value, ...data]
-      offset += data.length
-      console.log('Updated chats:', chats.value.length, 'items, new offset:', offset)
-    }
-    
-    filteredChats.value = chats.value
-  } catch (error) {
-    console.error('Ошибка загрузки дополнительной истории:', error)
-  } finally {
-    loadingMore.value = false
-  }
+// Применение фильтров
+function applyFilters() {
+  loadHistory()
 }
 
-// Обработка скролла для infinite scroll
-let scrollContainer = null
-let scrollTimeout = null
-
-function handleScroll() {
-  // Используем debounce для предотвращения слишком частых вызовов
-  if (scrollTimeout) return
-  
-  scrollTimeout = setTimeout(() => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop
-    const scrollHeight = document.documentElement.scrollHeight
-    const clientHeight = window.innerHeight
-    
-    console.log('Scroll:', { scrollTop, scrollHeight, clientHeight, remaining: scrollHeight - scrollTop - clientHeight })
-    
-    // Загружаем больше, когда до конца осталось 100px
-    if (scrollHeight - scrollTop - clientHeight < 100) {
-      loadMore()
-    }
-    
-    scrollTimeout = null
-  }, 100)
+// Сброс фильтров
+function resetFilters() {
+  searchQuery.value = ''
+  startDate.value = ''
+  endDate.value = ''
+  loadHistory()
 }
 
-// Поиск по истории
-function searchHistory() {
-  if (!searchQuery.value.trim()) {
-    filteredChats.value = chats.value
-    return
-  }
+// Возобновить сессию
+function resumeSession(session) {
+  localStorage.setItem('resumeSessionId', session.session_id)
+  router.push('/')
+}
 
-  // Нормализуем поисковый запрос
-  const query = searchQuery.value.toLowerCase().replace(/\s+/g, ' ').trim()
-  filteredChats.value = chats.value.filter(chat => {
-    const question = (chat.question || '').toLowerCase().replace(/\s+/g, ' ').trim()
-    const answer = (chat.answer || '').toLowerCase().replace(/\s+/g, ' ').trim()
-    return question.includes(query) || answer.includes(query)
-  })
+// Форматирование времени
+function formatTime(dateString) {
+  const date = new Date(dateString)
+  return date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
 }
 
 // Форматирование даты
 function formatDate(dateString) {
   const date = new Date(dateString)
   const now = new Date()
-  const diff = now - date
-  
-  // Если сегодня
-  if (diff < 24 * 60 * 60 * 1000) {
-    return 'Сегодня, ' + date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-  }
-  
-  // Если вчера
-  const yesterday = new Date(now)
-  yesterday.setDate(yesterday.getDate() - 1)
-  if (date.toDateString() === yesterday.toDateString()) {
-    return 'Вчера, ' + date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-  }
   
   // Если в этом году
   if (date.getFullYear() === now.getFullYear()) {
-    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })
+    return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })
   }
   
   // Полный формат
-  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })
 }
 
 // Обрезка текста
@@ -238,76 +286,11 @@ function truncate(text, length) {
   return text.length > length ? text.slice(0, length) + '...' : text
 }
 
-// Рендеринг ответа (поддержка HTML и Markdown)
-function renderAnswer(text) {
-  if (!text) return ''
-  
-  // Если контент уже содержит HTML-теги, используем его как есть
-  if (text.includes('<br>') || text.includes('<table') || text.includes('<tr>') || 
-      text.includes('<td>') || text.includes('<h') || text.includes('<p>') || 
-      text.includes('<strong>') || text.includes('<ul>') || text.includes('<li>')) {
-    return text
-  }
-  
-  let content = text
-  
-  // Экранируем HTML для безопасности
-  content = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-  
-  // Заголовки
-  content = content.replace(/^###### (.*$)/gim, '<h6>$1</h6>')
-  content = content.replace(/^##### (.*$)/gim, '<h5>$1</h5>')
-  content = content.replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-  content = content.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-  content = content.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-  content = content.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-  
-  // Жирный текст
-  content = content.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-  content = content.replace(/__(.*?)__/gim, '<strong>$1</strong>')
-  
-  // Курсив
-  content = content.replace(/\*(.*?)\*/gim, '<em>$1</em>')
-  content = content.replace(/_(.*?)_/gim, '<em>$1</em>')
-  
-  // Переносы строк
-  content = content.replace(/\n/g, '<br>')
-  
-  return content
-}
-
-// Возобновить чат (переход на главную с session_id)
-function resumeChat(chat) {
-  // Сохраняем session_id в localStorage для восстановления на главной
-  // Если session_id нет, используем id записи
-  const sessionIdToSave = chat.session_id || chat.id
-  console.log('resumeChat: saving sessionId:', sessionIdToSave, 'from chat:', chat)
-  if (sessionIdToSave) {
-    localStorage.setItem('resumeSessionId', sessionIdToSave)
-  }
-  router.push('/')
-}
-
 onMounted(async () => {
-  // Ждем инициализации authStore, если нужно
   if (!authStore.user && authStore.init) {
     await authStore.init()
   }
-  
-  // Устанавливаем обработчик скролла на window
-  window.addEventListener('scroll', handleScroll)
-  
   loadHistory()
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout)
-  }
 })
 </script>
 
@@ -371,7 +354,17 @@ onUnmounted(() => {
   to { transform: rotate(360deg); }
 }
 
+/* Фильтры и поиск */
+.filters-bar {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
 .search-box {
+  flex: 1;
+  min-width: 280px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -379,7 +372,6 @@ onUnmounted(() => {
   border: 1px solid #d1d5db;
   border-radius: 12px;
   padding: 12px 16px;
-  margin-bottom: 24px;
   transition: all 0.2s;
 }
 
@@ -397,10 +389,57 @@ onUnmounted(() => {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 15px;
   background: transparent;
 }
 
+.date-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input {
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.date-input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.date-separator {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.reset-filters-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.reset-filters-btn:hover {
+  background: #f3f4f6;
+  color: #0066cc;
+  border-color: #0066cc;
+}
+
+/* Загрузка и пустое состояние */
 .loading, .empty {
   text-align: center;
   padding: 60px 20px;
@@ -438,16 +477,36 @@ onUnmounted(() => {
   color: #9ca3af;
 }
 
-.chat-list {
+/* Группы сессий */
+.sessions-group {
+  margin-bottom: 32px;
+}
+
+.group-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #003366;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.group-title svg {
+  color: #0066cc;
+}
+
+.sessions-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.chat-item {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
+.session-card {
+  display: block;
+  padding: 16px 20px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -455,180 +514,114 @@ onUnmounted(() => {
   transition: all 0.2s;
 }
 
-.chat-item:hover {
+.session-card:hover {
   background: #eff6ff;
   border-color: #3b82f6;
   transform: translateX(4px);
   box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
 }
 
-.chat-icon {
-  width: 44px;
-  height: 44px;
-  background: #0066cc;
-  color: white;
-  border-radius: 10px;
+.session-header {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
 }
 
-.chat-content {
+.session-info {
   flex: 1;
   min-width: 0;
 }
 
-.chat-header-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
+.session-question {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.chat-date {
+.session-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 13px;
   color: #6b7280;
 }
 
-.chat-question, .chat-answer {
-  margin-bottom: 6px;
-  line-height: 1.5;
-  font-size: 15px;
-}
-
-.chat-question {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.chat-question strong, .chat-answer strong {
-  color: #0066cc;
-  margin-right: 4px;
-}
-
-.chat-answer {
-  color: #4b5563;
-}
-
-.chat-answer h1,
-.chat-answer h2,
-.chat-answer h3,
-.chat-answer h4,
-.chat-answer h5,
-.chat-answer h6 {
-  margin: 0.5em 0;
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 1em;
-  line-height: 1.4;
-}
-
-.chat-answer p {
-  margin: 0.5em 0;
-}
-
-.chat-answer strong {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.chat-answer em {
-  font-style: italic;
-}
-
-.chat-answer code {
-  background: #e5e7eb;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Courier New', monospace;
-  font-size: 0.9em;
-  color: #dc2626;
-}
-
-.chat-answer pre {
-  background: #1f2937;
-  color: #f9fafb;
-  padding: 12px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin: 0.5em 0;
-}
-
-.chat-answer pre code {
-  background: none;
-  padding: 0;
-  color: inherit;
-}
-
-.chat-answer ul,
-.chat-answer ol {
-  margin: 0.5em 0;
-  padding-left: 1.5em;
-}
-
-.chat-answer li {
-  margin: 0.25em 0;
-}
-
-.chat-answer table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.5em 0;
-  font-size: 13px;
-}
-
-.chat-answer th,
-.chat-answer td {
-  border: 1px solid #d1d5db;
-  padding: 6px 10px;
-  text-align: left;
-}
-
-.chat-answer th {
+.preview-label {
   background: #f3f4f6;
-  font-weight: 600;
-}
-
-.chat-answer tr:nth-child(even) {
-  background: #f9fafb;
-}
-
-.chat-arrow {
-  display: flex;
-  align-items: center;
-  color: #9ca3af;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 500;
   flex-shrink: 0;
 }
 
-.chat-item:hover .chat-arrow {
+.preview-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.session-date {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.session-time {
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.session-arrow {
+  color: #d1d5db;
+  transition: all 0.2s;
+}
+
+.session-card:hover .session-arrow {
   color: #0066cc;
 }
 
-.loading-more, .no-more-data {
-  text-align: center;
-  padding: 20px;
-  color: #6b7280;
-}
-
-.loading-more {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-}
-
-.spinner-small {
-  width: 24px;
-  height: 24px;
-  border: 3px solid #e5e7eb;
-  border-top-color: #0066cc;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.no-more-data p {
-  font-size: 14px;
-  color: #9ca3af;
+/* Адаптивность */
+@media (max-width: 768px) {
+  .filters-bar {
+    flex-direction: column;
+  }
+  
+  .search-box {
+    min-width: 100%;
+  }
+  
+  .date-filters {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .date-input {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .session-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .session-meta {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }
 </style>

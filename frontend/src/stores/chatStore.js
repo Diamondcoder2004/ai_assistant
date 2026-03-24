@@ -139,8 +139,11 @@ export const useChatStore = defineStore('chat', () => {
 
   // Отправить фидбек (лайк/дизлайк/звезда)
   async function submitFeedback(queryId, type, rating = null, comment = null) {
+    // Конвертируем queryId в строку (бэкенд ожидает string)
+    const queryIdStr = String(queryId)
+    
     // Проверка на уже существующий фидбек того же типа
-    const existing = feedbacks.value[queryId]
+    const existing = feedbacks.value[queryIdStr]
     if (existing && existing.feedback_type === type) {
       // Если такой же тип — ничего не делаем (уже проголосовано)
       return existing
@@ -149,11 +152,11 @@ export const useChatStore = defineStore('chat', () => {
     try {
       // Если есть существующий фидбек — сначала удаляем его
       if (existing) {
-        await feedbackService.deleteFeedback(queryId)
+        await feedbackService.deleteFeedback(queryIdStr)
       }
 
-      const result = await feedbackService.createFeedback(queryId, type, rating, comment)
-      feedbacks.value[queryId] = result
+      const result = await feedbackService.createFeedback(queryIdStr, type, rating, comment)
+      feedbacks.value[queryIdStr] = result
       return result
     } catch (err) {
       console.error('Failed to submit feedback:', err)

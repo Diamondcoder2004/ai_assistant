@@ -44,8 +44,9 @@
       <!-- Правая колонка: источники -->
       <SourcesPanel
         v-if="expandedMessage"
+        :class="{ 'hidden': !showSourcesPanel }"
         :expanded-message="expandedMessage"
-        @close="expandedMessage = null"
+        @close="expandedMessage = null; showSourcesPanel = false"
         @open-source="openSourceModal"
       />
     </div>
@@ -124,6 +125,7 @@ const feedbackCooldowns = ref({}) // { sessionId: timestamp }
 // Развёрнутое сообщение для показа источников
 const expandedMessage = ref(null)
 const expandedMessageId = computed(() => expandedMessage.value?.id || null)
+const showSourcesPanel = ref(false) // Показывать ли панель источников
 
 // Показывать ли футер
 const showFooter = ref(false)
@@ -172,9 +174,13 @@ function handleNewChat() {
 // Показать/скрыть источники для сообщения
 function toggleSources(message) {
   if (expandedMessage.value?.id === message.id) {
+    // Если уже открыто — закрываем
     expandedMessage.value = null
+    showSourcesPanel.value = false
   } else {
+    // Открываем новое
     expandedMessage.value = message
+    showSourcesPanel.value = true
   }
 }
 
@@ -405,7 +411,7 @@ onMounted(async () => {
   transform: translateY(0);
 }
 
-/* Левая колонка с прокруткой */
+/* Левая колонка с параметрами - фиксированная */
 .sidebar-left {
   width: 320px;
   background: #f8f9fa;
@@ -413,10 +419,14 @@ onMounted(async () => {
   padding: 20px;
   overflow-y: auto;
   flex-shrink: 0;
+  position: sticky;
+  left: 0;
+  top: 0;
   height: 100%;
+  max-height: 100%;
 }
 
-/* Центральная колонка (чат) */
+/* Центральная колонка (чат) - скроллится */
 .chat-area {
   flex: 1;
   display: flex;
@@ -428,6 +438,25 @@ onMounted(async () => {
   min-width: 0;
   height: 100%;
   overflow: hidden;
+}
+
+/* Правая колонка с источниками - фиксированная, показывается по клику */
+.sources-panel {
+  width: 400px;
+  background: #f8f9fa;
+  border-left: 1px solid #ddd;
+  position: sticky;
+  right: 0;
+  top: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.sources-panel.hidden {
+  display: none;
 }
 
 /* FAQ под чатом */

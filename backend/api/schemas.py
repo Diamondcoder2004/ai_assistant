@@ -20,7 +20,7 @@ class QueryRequest(BaseModel):
     k: Optional[int] = Field(default=10, ge=1, le=15, description="Количество документов")
     temperature: Optional[float] = Field(default=0.8, ge=0.0, le=1.5, description="Температура генерации")
     max_tokens: Optional[int] = Field(default=2000, ge=500, le=4000, description="Максимум токенов")
-    min_score: Optional[float] = Field(default=0.0, ge=0.0, le=1.0, description="Минимальный скор")
+    min_score: Optional[float] = Field(default=0.0, ge=0.0, le=0.95, description="Минимальный порог схожести (0.0-0.95)")
     
     # session_id должен быть строкой (конвертируем из int если нужно)
     session_id: Optional[str] = Field(None, description="ID сессии для контекста")

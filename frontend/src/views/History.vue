@@ -218,6 +218,16 @@ const startDate = ref('')
 const endDate = ref('')
 const loading = ref(true)
 
+// Установка дат по умолчанию (за последние 24 часа)
+function setDefaultDates() {
+  const now = new Date()
+  const yesterday = new Date(now)
+  yesterday.setHours(yesterday.getHours() - 24)
+  
+  endDate.value = now.toISOString().split('T')[0]
+  startDate.value = yesterday.toISOString().split('T')[0]
+}
+
 // Загрузка истории сессий
 async function loadHistory() {
   if (!authStore.user) {
@@ -252,14 +262,34 @@ async function loadHistory() {
 
 // Применение фильтров
 function applyFilters() {
+  // Валидация дат
+  if (startDate.value && endDate.value) {
+    const start = new Date(startDate.value)
+    const end = new Date(endDate.value)
+    const now = new Date()
+    now.setHours(23, 59, 59, 999) // Конец текущего дня
+    
+    if (start > end) {
+      alert('Дата начала не может быть позже даты окончания!')
+      // Меняем даты местами
+      const temp = startDate.value
+      startDate.value = endDate.value
+      endDate.value = temp
+    }
+    
+    if (end > now) {
+      alert('Дата окончания не может быть в будущем!')
+      endDate.value = new Date().toISOString().split('T')[0]
+    }
+  }
+  
   loadHistory()
 }
 
 // Сброс фильтров
 function resetFilters() {
   searchQuery.value = ''
-  startDate.value = ''
-  endDate.value = ''
+  setDefaultDates()
   loadHistory()
 }
 
@@ -279,12 +309,12 @@ function formatTime(dateString) {
 function formatDate(dateString) {
   const date = new Date(dateString)
   const now = new Date()
-  
+
   // Если в этом году
   if (date.getFullYear() === now.getFullYear()) {
     return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long' })
   }
-  
+
   // Полный формат
   return date.toLocaleDateString('ru-RU', { day: '2-digit', month: 'long', year: 'numeric' })
 }
@@ -293,6 +323,7 @@ onMounted(async () => {
   if (!authStore.user && authStore.init) {
     await authStore.init()
   }
+  setDefaultDates()
   loadHistory()
 })
 </script>

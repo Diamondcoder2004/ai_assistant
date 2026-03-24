@@ -185,6 +185,11 @@ function toggleSources(message) {
 
 // Прокрутка к источнику
 function scrollToSource(sourceNum) {
+  // Сначала открываем панель источников если закрыта
+  if (!showSourcesPanel.value && expandedMessage.value) {
+    showSourcesPanel.value = true
+  }
+  
   const sourceElement = document.getElementById(`source-${sourceNum}`)
   if (sourceElement) {
     sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -206,6 +211,7 @@ function handleScrollToSource({ sourceNum, messageId }) {
       const targetMessage = chatStore.messages.find(m => m.id === messageId)
       if (targetMessage) {
         expandedMessage.value = targetMessage
+        showSourcesPanel.value = true
         nextTick(() => {
           scrollToSource(sourceNum)
         })
@@ -216,6 +222,7 @@ function handleScrollToSource({ sourceNum, messageId }) {
     const targetMessage = chatStore.messages.find(m => m.id === messageId)
     if (targetMessage) {
       expandedMessage.value = targetMessage
+      showSourcesPanel.value = true
       nextTick(() => {
         scrollToSource(sourceNum)
       })

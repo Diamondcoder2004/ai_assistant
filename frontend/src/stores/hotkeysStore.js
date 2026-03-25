@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-// Горячие клавиши по умолчанию
+// Горячие клавиши по умолчанию (временно отключены)
 const DEFAULT_HOTKEYS = {
-  sendMessage: 'Enter',           // Отправить сообщение
-  newLine: 'Shift+Enter',         // Новая строка
-  newChat: 'Ctrl+N',              // Новый чат
-  showHistory: 'Ctrl+H',          // Показать историю
-  copyLastAnswer: 'Ctrl+Shift+C', // Копировать последний ответ
-  focusInput: 'Ctrl+L',           // Фокус на поле ввода
-  toggleSources: 'Ctrl+S',        // Показать/скрыть источники
+  sendMessage: '',           // Отправить сообщение (отключено)
+  newLine: '',               // Новая строка (отключено)
+  newChat: '',               // Новый чат (отключено)
+  showHistory: '',           // Показать историю (отключено)
+  copyLastAnswer: '',        // Копировать последний ответ (отключено)
+  focusInput: '',            // Фокус на поле ввода (отключено)
+  toggleSources: '',         // Показать/скрыть источники (отключено)
 }
 
 // Допустимые модификаторы

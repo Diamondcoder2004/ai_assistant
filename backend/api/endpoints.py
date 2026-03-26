@@ -442,9 +442,14 @@ async def get_history_sessions(
         
         today = datetime.now().date()
         yesterday = today - timedelta(days=1)
-        
+
+        db_logger.info(f"Группировка сессий: today={today}, yesterday={yesterday}")
+        db_logger.info(f"Всего сессий для группировки: {len(sessions_map)}")
+
         for session_id, session in sessions_map.items():
             session_date = datetime.strptime(session["updated_at"][:10], "%Y-%m-%d").date()
+            
+            db_logger.info(f"Сессия {session_id[:8]}: updated_at={session['updated_at']}, date={session_date}")
             
             # Формируем превью сообщений
             messages_preview = []

@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
   const profile = ref(null)
   const isLoading = ref(false)
   const error = ref(null)
+  const isInitialized = ref(false)
 
   const isAuthenticated = computed(() => !!user.value)
 
@@ -42,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
       
       // Сначала пробуем из Supabase (проверка сессии)
       const currentUser = await authService.getCurrentUser()
-      
+
       if (currentUser) {
         user.value = currentUser
         console.log('User from Supabase:', user.value?.email)
@@ -57,10 +58,12 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       console.log('Auth store инициализирован')
+      isInitialized.value = true
     } catch (err) {
       console.error('Auth init error:', err)
       user.value = null
       profile.value = null
+      isInitialized.value = true
     }
   }
 
@@ -250,6 +253,7 @@ export const useAuthStore = defineStore('auth', () => {
     profile,
     isLoading,
     error,
+    isInitialized,
     isAuthenticated,
     init,
     login,

@@ -50,13 +50,21 @@ const router = createRouter({
 })
 
 // Простая проверка аутентификации
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+
+  // Ждём инициализации authStore
+  if (!authStore.isInitialized) {
+    await authStore.init()
+  }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/login')
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next('/')
+  } else if (to.path === '/' && !authStore.isAuthenticated) {
+    // Если заходим на главную без авторизации - редирект на логин
+    next('/login')
   } else {
     next()
   }

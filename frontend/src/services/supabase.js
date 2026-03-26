@@ -426,22 +426,35 @@ export const chatService = {
   },
 
   async getHistorySessions(search = null, startDate = null, endDate = null) {
+    console.log('getHistorySessions: получение сессии...')
     const session = await authService.getSession();
-    if (!session) throw new Error('Not authenticated');
+    console.log('getHistorySessions: session =', session ? '✅ exists' : '❌ null')
+    
+    if (!session) {
+      console.error('getHistorySessions: Not authenticated')
+      throw new Error('Not authenticated')
+    }
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/history/sessions?${params}`, {
+    const url = `${import.meta.env.VITE_API_BASE_URL}/history/sessions?${params}`
+    console.log('getHistorySessions: URL =', url)
+    console.log('getHistorySessions: Token preview =', session.access_token.substring(0, 20) + '...')
+
+    const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${session.access_token}`
       }
     });
 
+    console.log('getHistorySessions: Response status =', response.status)
+
     if (!response.ok) {
       const error = await response.text();
+      console.error('getHistorySessions: API error =', error)
       throw new Error(`API error: ${error}`);
     }
 

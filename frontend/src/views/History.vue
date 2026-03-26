@@ -317,9 +317,23 @@ function formatDate(dateString) {
 }
 
 onMounted(async () => {
+  console.log('History.vue: onMounted, начинаем инициализацию...')
+  
+  // Ждём инициализации authStore
   if (!authStore.user && authStore.init) {
+    console.log('History.vue: вызываем authStore.init()...')
     await authStore.init()
+    console.log('History.vue: authStore.init() завершён, user =', authStore.user?.email)
   }
+  
+  // Проверяем аутентификацию
+  if (!authStore.user) {
+    console.log('History.vue: пользователь не аутентифицирован, редирект на /login')
+    router.push('/login')
+    return
+  }
+  
+  console.log('History.vue: загружаем историю...')
   setDefaultDates()
   loadHistory()
 })

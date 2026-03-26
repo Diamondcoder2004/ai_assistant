@@ -47,19 +47,19 @@
         <div v-if="msg.role === 'assistant' && msg.queryId" class="feedback">
           <!-- Кнопка копирования слева -->
           <button
-            @click="copyToClipboard(msg.content)"
+            @click="copyToClipboard(msg.content, msg.queryId)"
             class="feedback-btn copy-btn"
-            :class="{ 'copied': copySuccess }"
+            :class="{ 'copied': copiedMessages[msg.queryId] }"
             title="Копировать ответ"
           >
-            <svg v-if="!copySuccess" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg v-if="!copiedMessages[msg.queryId]" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
             </svg>
             <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="20 6 9 17 4 12"/>
             </svg>
-            <span class="copy-label">Копировать</span>
+            <span class="copy-label">{{ copiedMessages[msg.queryId] ? 'Скопировано' : 'Копировать' }}</span>
           </button>
           
           <div class="feedback-divider"></div>
@@ -191,13 +191,13 @@ function handleSourceClick(event, msg) {
 }
 
 // Копирование в буфер обмена
-const copySuccess = ref(false)
+const copiedMessages = ref({})
 
-async function copyToClipboard(text) {
+async function copyToClipboard(text, queryId) {
   try {
     // Очищаем текст от Markdown для копирования
     const cleanText = text.replace(/\[(\d+)\]/g, '') // Убираем ссылки на источники
-    
+
     // Проверяем поддержку Clipboard API
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(cleanText)
@@ -213,10 +213,10 @@ async function copyToClipboard(text) {
       document.body.removeChild(textarea)
     }
 
-    // Визуальное подтверждение
-    copySuccess.value = true
+    // Визуальное подтверждение только для конкретного сообщения
+    copiedMessages.value[queryId] = true
     setTimeout(() => {
-      copySuccess.value = false
+      copiedMessages.value[queryId] = false
     }, 2000)
   } catch (err) {
     console.error('Ошибка копирования:', err)
@@ -267,8 +267,8 @@ function handleGlobalKeydown(event) {
           break
         case 'copyLastAnswer':
           const lastMessage = props.messages.filter(m => m.role === 'assistant').pop()
-          if (lastMessage?.content) {
-            copyToClipboard(lastMessage.content)
+          if (lastMessage?.content && lastMessage?.queryId) {
+            copyToClipboard(lastMessage.content, lastMessage.queryId)
           }
           break
       }

@@ -196,7 +196,8 @@ class ResponseAgent:
                 citation_counts[idx] = citation_counts.get(idx, 0) + 1
 
         # 2. Создаём источники с метаданными (сохраняем original_rank для перемаппинга)
-        for i, result in enumerate(results[:10]):  # Берём топ-10 для анализа
+        # Берём все результаты, на которые может ссылаться модель (до 10)
+        for i, result in enumerate(results[:10]):
             source = {
                 "id": result.id,
                 "filename": result.filename,
@@ -216,9 +217,9 @@ class ResponseAgent:
 
         # 3. Если LLM не создал ссылки [1], [2] — возвращаем все результаты по порядку
         if not citation_counts:
-            # LLM не создал ссылки, возвращаем первые 5 результатов
+            # LLM не создал ссылки, возвращаем первые 10 результатов
             final_sources = []
-            for source in sources[:5]:
+            for source in sources[:10]:
                 final_source = {
                     "id": source["id"],
                     "filename": source["filename"],
@@ -260,7 +261,7 @@ class ResponseAgent:
         # 5. Создаём маппинг: old_index (1-based) → new_index (1-based)
         # original_rank хранится как 0-based, поэтому +1
         index_mapping = {}
-        for new_idx, source in enumerate(sources[:5]):
+        for new_idx, source in enumerate(sources):
             old_idx = source["original_rank"] + 1  # Конвертируем в 1-based
             new_idx = new_idx + 1  # Конвертируем в 1-based
             index_mapping[old_idx] = new_idx
@@ -277,10 +278,10 @@ class ResponseAgent:
 
             updated_answer = re.sub(r'\[(\d+)\]', replace_index, answer_text)
 
-        # 7. Возвращаем топ-5 источников
+        # 7. Возвращаем все источники, отсортированные по рейтингу
         # Удаляем служебные поля перед возвратом
         final_sources = []
-        for source in sources[:5]:
+        for source in sources:
             final_source = {
                 "id": source["id"],
                 "filename": source["filename"],

@@ -78,7 +78,7 @@ class SearchTool:
         """Загрузка документов для BM25."""
         if self._loaded and not force:
             return
-        
+
         logger.info("Загрузка документов для поиска...")
         scroll_result = self.client.scroll(
             collection_name=config.COLLECTION_NAME,
@@ -86,20 +86,29 @@ class SearchTool:
             with_vectors=False,
             limit=10000
         )
-        
+
         self.documents = []
         self.point_ids = []
         self.payloads = {}
-        
+
         points, next_page = scroll_result
         while points:
             for point in points:
                 payload = point.payload
                 content = payload.get("content", "") or payload.get("text", "")
-                self.documents.append(self._tokenize_text(content))
+                
+                # Для FAQ добавляем вопрос и гипотетические вопросы для лучшего BM25 поиска
+                full_text = content
+                if payload.get("category") == "faqs":
+                    # Добавляем summary (вопрос) и гипотетические вопросы
+                    summary = payload.get("summary", "")
+                    questions_str = payload.get("questions", "")
+                    full_text = f"{content} {summary} {questions_str}"
+                
+                self.documents.append(self._tokenize_text(full_text))
                 self.point_ids.append(point.id)
                 self.payloads[point.id] = payload
-            
+
             if next_page is None:
                 break
             scroll_result = self.client.scroll(
@@ -110,7 +119,7 @@ class SearchTool:
                 limit=10000
             )
             points, next_page = scroll_result
-        
+
         # BM25 будет загружен при первом запросе
         self._loaded = True
         logger.info(f"Загружено {len(self.documents)} документов")
@@ -130,16 +139,28 @@ class SearchTool:
         from rank_bm25 import BM25Plus
 
         query_tokens = self._tokenize_text(query)
+        
+        # Проверка на пустые токены
+        if not query_tokens:
+            return {pid: 0.0 for pid in self.point_ids}
+        
         bm25 = BM25Plus(self.documents)
         scores = bm25.get_scores(query_tokens)
 
         # Нормализация через max score (классический подход)
         max_score = max(scores) if len(scores) > 0 else 1.0
+        
+        # Защита от деления на ноль и отрицательных значений
+        if max_score <= 0:
+            return {pid: 0.0 for pid in self.point_ids}
+        
         normalized = {}
         for idx, score in enumerate(scores):
             point_id = self.point_ids[idx]
             # Нормализуем к [0, 1] через деление на максимальный score
-            normalized[point_id] = float(score / max_score) if max_score > 0 else 0.0
+            # Защита от отрицательных значений (BM25+ может давать небольшие отрицательные)
+            normalized_score = max(0.0, float(score / max_score))
+            normalized[point_id] = normalized_score if max_score > 0 else 0.0
 
         return normalized
     
@@ -215,34 +236,14 @@ class SearchTool:
         all_ids = set(pref_scores.keys()) | set(hype_scores.keys()) | \
                   set(contextual_scores.keys()) | set(bm25_scores.keys())
 
-        # Min-max scaling для BM25 перед softmax
-        bm25_values = list(bm25_scores.values()) if bm25_scores else [0]
-        bm25_min = min(bm25_values)
-        bm25_max = max(bm25_values)
-        bm25_range = bm25_max - bm25_min if bm25_max > bm25_min else 1.0
-
-        # Softmax с temperature=2 для BM25
-        temperature = 2.0
-        bm25_scaled = {}
-        exp_scores = {}
-        for pid in all_ids:
-            raw_score = bm25_scores.get(pid, 0.0)
-            # Min-max scaling [0, 1]
-            normalized = (raw_score - bm25_min) / bm25_range
-            # Применяем temperature и экспоненту для softmax
-            exp_scores[pid] = np.exp(normalized / temperature)
-
-        # Softmax нормализация
-        exp_sum = sum(exp_scores.values()) if exp_scores else 1.0
-        for pid in all_ids:
-            bm25_scaled[pid] = exp_scores[pid] / exp_sum if exp_sum > 0 else 0.0
-
+        # Используем raw BM25 score (уже нормализован к [0, 1] в _get_bm25_scores)
+        # Это даёт более честную гибридную оценку
         combined_scores = {}
         for pid in all_ids:
             s_pref = pref_scores.get(pid, 0.0)
             s_hype = hype_scores.get(pid, 0.0)
             s_contextual = contextual_scores.get(pid, 0.0)
-            s_bm25 = bm25_scaled.get(pid, 0.0)
+            s_bm25 = bm25_scores.get(pid, 0.0)  # Raw score [0, 1]
 
             combined_scores[pid] = (
                 request.pref_weight * s_pref +
@@ -279,15 +280,14 @@ class SearchTool:
                 score_semantic=(0.5 * pref_scores.get(pid, 0.0) +
                                0.35 * hype_scores.get(pid, 0.0) +
                                0.15 * contextual_scores.get(pid, 0.0)),
-                # Нормализованный BM25 (после min-max scaling)
-                score_lexical=(bm25_scores.get(pid, 0.0) - bm25_min) / bm25_range if bm25_range > 0 else 0.0,
+                # Нормализованный BM25 (raw score 0-1, то что используется в гибридной формуле ДО softmax)
+                score_lexical=bm25_scores.get(pid, 0.0),
                 metadata={
                     "chunk_id": payload.get("chunk_id"),
                     "pref_score": pref_scores.get(pid, 0.0),
                     "hype_score": hype_scores.get(pid, 0.0),
                     "contextual_score": contextual_scores.get(pid, 0.0),
                     "bm25_score": bm25_scores.get(pid, 0.0),
-                    "bm25_scaled": bm25_scaled.get(pid, 0.0),
                 }
             )
             results.append(result)

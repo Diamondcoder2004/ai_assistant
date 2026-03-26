@@ -54,10 +54,10 @@
           </div>
         </div>
 
-        <div class="detail-section" v-if="source.chunk_id">
+        <!-- <div class="detail-section" v-if="source.chunk_id">
           <h4>Chunk ID</h4>
           <p class="chunk-id">{{ source.chunk_id }}</p>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

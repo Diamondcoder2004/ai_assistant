@@ -214,14 +214,11 @@ const startDate = ref('')
 const endDate = ref('')
 const loading = ref(true)
 
-// Установка дат по умолчанию (за последние 24 часа)
+// Установка дат по умолчанию (без фильтрации - показываем все чаты)
 function setDefaultDates() {
-  const now = new Date()
-  const yesterday = new Date(now)
-  yesterday.setHours(yesterday.getHours() - 24)
-  
-  endDate.value = now.toISOString().split('T')[0]
-  startDate.value = yesterday.toISOString().split('T')[0]
+  // Оставляем даты пустыми - показываем все чаты
+  startDate.value = ''
+  endDate.value = ''
 }
 
 // Загрузка истории сессий

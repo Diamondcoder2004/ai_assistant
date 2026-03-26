@@ -166,12 +166,10 @@ class ResponseAgent:
     
     def _extract_sources(self, results: List[SearchResult], answer_text: str = "") -> tuple[List[Dict[str, Any]], str]:
         """
-        Извлечение информации об источниках с умным ранжированием.
+        Извлечение информации об источниках.
 
-        Ранжирование основано на:
-        1. Количестве упоминаний источника в ответе (цитирований)
-        2. Важности источника (score_hybrid)
-        3. Комбинированном рейтинге
+        Возвращает только те источники, на которые модель ссылается в ответе.
+        Источники сортируются по количеству цитирований и важности.
 
         Args:
             results: Результаты поиска
@@ -196,7 +194,6 @@ class ResponseAgent:
                 citation_counts[idx] = citation_counts.get(idx, 0) + 1
 
         # 2. Создаём источники с метаданными (сохраняем original_rank для перемаппинга)
-        # Берём все результаты, на которые может ссылаться модель (до 10)
         for i, result in enumerate(results[:10]):
             source = {
                 "id": result.id,
@@ -215,11 +212,10 @@ class ResponseAgent:
             }
             sources.append(source)
 
-        # 3. Если LLM не создал ссылки [1], [2] — возвращаем все результаты по порядку
+        # 3. Если LLM не создал ссылки [1], [2] — возвращаем первые 5 результатов
         if not citation_counts:
-            # LLM не создал ссылки, возвращаем первые 10 результатов
             final_sources = []
-            for source in sources[:10]:
+            for source in sources[:5]:
                 final_source = {
                     "id": source["id"],
                     "filename": source["filename"],
@@ -235,53 +231,43 @@ class ResponseAgent:
                 final_sources.append(final_source)
             return final_sources, answer_text
 
-        # 4. Умное ранжирование (если есть цитирования)
-        # Комбинированный скор: цитирования × важность
+        # 4. Отбираем только те источники, на которые есть ссылки в ответе
+        cited_sources = [s for s in sources if s["citation_count"] > 0]
+
+        # 5. Сортируем цитируемые источники по комбинированному рейтингу
         def compute_ranking_score(source):
             """
             Вычисляет рейтинг источника.
-
-            Формула:
-            - Если источник цитируется: citation_count × 0.5 + score_hybrid × 0.5
-            - Если не цитируется: score_hybrid × 0.3 (пониженный вес)
+            Формула: citation_count × 0.5 + score_hybrid × 0.5
             """
             citation_score = min(source["citation_count"], 5) * 0.5  # Максимум 2.5
             importance_score = source["score_hybrid"]
+            return citation_score + importance_score * 0.5
 
-            if source["citation_count"] > 0:
-                # Цитируемый источник: полный вес
-                return citation_score + importance_score * 0.5
-            else:
-                # Не цитируется: пониженный вес
-                return importance_score * 0.3
+        cited_sources.sort(key=lambda x: compute_ranking_score(x), reverse=True)
 
-        # Сортируем по комбинированному рейтингу
-        sources.sort(key=lambda x: compute_ranking_score(x), reverse=True)
-
-        # 5. Создаём маппинг: old_index (1-based) → new_index (1-based)
-        # original_rank хранится как 0-based, поэтому +1
+        # 6. Создаём маппинг: old_index (1-based) → new_index (1-based)
         index_mapping = {}
-        for new_idx, source in enumerate(sources):
+        for new_idx, source in enumerate(cited_sources):
             old_idx = source["original_rank"] + 1  # Конвертируем в 1-based
             new_idx = new_idx + 1  # Конвертируем в 1-based
             index_mapping[old_idx] = new_idx
 
-        # 6. Перемапливаем индексы в ответе
+        # 7. Перемапливаем индексы в ответе
         updated_answer = answer_text
         if answer_text and index_mapping:
             import re
 
             def replace_index(match):
                 old_num = int(match.group(1))
-                new_num = index_mapping.get(old_num, old_num)  # Если нет в маппинге, оставляем как есть
+                new_num = index_mapping.get(old_num, old_num)
                 return f"[{new_num}]"
 
             updated_answer = re.sub(r'\[(\d+)\]', replace_index, answer_text)
 
-        # 7. Возвращаем все источники, отсортированные по рейтингу
-        # Удаляем служебные поля перед возвратом
+        # 8. Возвращаем только цитируемые источники
         final_sources = []
-        for source in sources:
+        for source in cited_sources:
             final_source = {
                 "id": source["id"],
                 "filename": source["filename"],

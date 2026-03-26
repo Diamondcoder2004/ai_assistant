@@ -219,6 +219,7 @@ function setDefaultDates() {
   // Оставляем даты пустыми - показываем все чаты
   startDate.value = ''
   endDate.value = ''
+  console.log('setDefaultDates: даты сброшены, start=', startDate.value, 'end=', endDate.value)
 }
 
 // Загрузка истории сессий
@@ -230,13 +231,16 @@ async function loadHistory() {
   }
 
   loading.value = true
-  
+
   try {
     const params = {}
     if (searchQuery.value) params.search = searchQuery.value
     if (startDate.value) params.start_date = startDate.value
     if (endDate.value) params.end_date = endDate.value
-    
+
+    console.log('loadHistory: отправка параметров:', params)
+    console.log('loadHistory: startDate=', startDate.value, 'endDate=', endDate.value)
+
     const data = await chatService.getHistorySessions(params.search || null, params.start_date || null, params.end_date || null)
     
     sessions.value = data || { today: [], yesterday: [], earlier: [] }

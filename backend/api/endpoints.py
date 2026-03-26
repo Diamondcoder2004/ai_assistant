@@ -370,17 +370,19 @@ async def get_history_sessions(
 ):
     """
     Получение истории чатов с группировкой по сессиям и дням.
-    
+
     - search: поиск по тексту вопросов и ответов
     - start_date: фильтр по начальной дате
     - end_date: фильтр по конечной дате
     """
-    db_logger.info(f"Запрос сгруппированной истории для пользователя {user_id[:8]}")
-    
+    db_logger.info(f"Запрос сгруппированной истории для пользователя {str(user_id)[:8]}")
+    db_logger.info(f"Параметры: search={search}, start_date={start_date}, end_date={end_date}")
+
     try:
         # Получаем все чаты пользователя
         all_chats = await get_user_chats(user_id, limit=1000, offset=0)
-        
+        db_logger.info(f"Получено чатов: {len(all_chats)}")
+
         # Фильтрация по дате
         if start_date:
             try:
@@ -388,21 +390,23 @@ async def get_history_sessions(
                 all_chats = [c for c in all_chats if datetime.strptime(c["created_at"][:10], "%Y-%m-%d") >= start]
             except ValueError:
                 pass
-        
+
         if end_date:
             try:
                 end = datetime.strptime(end_date, "%Y-%m-%d")
                 all_chats = [c for c in all_chats if datetime.strptime(c["created_at"][:10], "%Y-%m-%d") <= end]
             except ValueError:
                 pass
-        
+
         # Поиск по тексту
         if search:
             search_lower = search.lower()
             all_chats = [
-                c for c in all_chats 
+                c for c in all_chats
                 if search_lower in c.get("question", "").lower() or search_lower in c.get("answer", "").lower()
             ]
+        
+        db_logger.info(f"Чатов после фильтрации: {len(all_chats)}")
         
         # Группировка по сессиям
         sessions_map = {}

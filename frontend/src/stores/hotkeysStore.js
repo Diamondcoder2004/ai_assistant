@@ -36,20 +36,17 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
   const hotkeys = ref({ ...DEFAULT_HOTKEYS })
   const isLoading = ref(false)
   
-  // Загрузка из localStorage
+  // Загрузка из localStorage (отключено)
   function loadFromStorage() {
+    // Горячие клавиши временно отключены - не загружаем из localStorage
     try {
       const saved = localStorage.getItem('hotkeys')
       if (saved) {
-        const parsed = JSON.parse(saved)
-        for (const key in DEFAULT_HOTKEYS) {
-          if (parsed[key]) {
-            hotkeys.value[key] = parsed[key]
-          }
-        }
+        // Очищаем сохранённые горячие клавиши
+        localStorage.removeItem('hotkeys')
       }
     } catch (e) {
-      console.error('Ошибка загрузки горячих клавиш из localStorage:', e)
+      console.error('Error clearing hotkeys from localStorage:', e)
     }
   }
   

@@ -6,7 +6,6 @@
         ref="textareaRef"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        @keydown.enter.prevent="$emit('send')"
         placeholder="Введите ваш вопрос..."
         rows="1"
         class="chat-textarea"

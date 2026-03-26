@@ -6,6 +6,7 @@
         ref="textareaRef"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
+        @keydown="handleKeydown"
         placeholder="Введите ваш вопрос..."
         rows="1"
         class="chat-textarea"
@@ -43,6 +44,7 @@
 
 <script setup>
 import { ref, watch, nextTick } from 'vue'
+import { useHotkeysStore } from '../../stores/hotkeysStore'
 
 const props = defineProps({
   modelValue: {
@@ -64,9 +66,10 @@ const props = defineProps({
   }
 })
 
-defineEmits(['update:modelValue', 'send', 'useTemplate'])
+const emit = defineEmits(['update:modelValue', 'send', 'useTemplate'])
 
 const textareaRef = ref(null)
+const hotkeysStore = useHotkeysStore()
 
 // Авто-увеличение высоты textarea
 function autoResize() {
@@ -76,6 +79,32 @@ function autoResize() {
       textareaRef.value.style.height = textareaRef.value.scrollHeight + 'px'
     }
   })
+}
+
+// Обработка клавиш в textarea
+function handleKeydown(event) {
+  if (event.key === 'Enter') {
+    // Проверяем настройки горячих клавиш
+    const sendMessageEnabled = hotkeysStore.enabled.sendMessage && hotkeysStore.hotkeys.sendMessage === 'Enter'
+    const newLineEnabled = hotkeysStore.enabled.newLine && hotkeysStore.hotkeys.newLine === 'Shift+Enter'
+    
+    if (event.shiftKey) {
+      // Shift+Enter - новая строка (разрешаем стандартное поведение)
+      if (newLineEnabled) {
+        // Разрешаем стандартное поведение textarea
+        return
+      }
+    } else {
+      // Просто Enter - отправка
+      if (sendMessageEnabled) {
+        event.preventDefault()
+        if (props.modelValue?.trim() && !props.isLoading) {
+          emit('send')
+        }
+        return
+      }
+    }
+  }
 }
 
 // Слушаем изменения значения

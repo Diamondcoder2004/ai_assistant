@@ -10,18 +10,30 @@
 
     <div class="hotkeys-list">
       <div v-for="action in availableActions" :key="action.key" class="hotkey-item">
-        <div class="hotkey-info">
-          <span class="hotkey-label">{{ action.label }}</span>
-          <span class="hotkey-default">По умолчанию: {{ formatCombination(action.default) }}</span>
+        <div class="hotkey-header">
+          <div class="hotkey-info">
+            <span class="hotkey-label">{{ action.label }}</span>
+            <span class="hotkey-default">По умолчанию: {{ formatCombination(action.default) }}</span>
+          </div>
+          
+          <label class="toggle-switch" :title="enabled[action.key] ? 'Включено' : 'Выключено'">
+            <input
+              type="checkbox"
+              :checked="enabled[action.key]"
+              @change="toggleEnabled(action.key)"
+            />
+            <span class="toggle-slider"></span>
+          </label>
         </div>
-        
+
         <div class="hotkey-controls">
-          <div 
+          <div
             class="hotkey-capture"
-            :class="{ 
+            :class="{
               'capturing': capturing === action.key,
               'error': errors[action.key],
-              'conflict': conflicts[action.key]
+              'conflict': conflicts[action.key],
+              'disabled': !enabled[action.key]
             }"
             @click="startCapture(action.key)"
             @keydown.prevent="captureKey"
@@ -31,12 +43,15 @@
             <span v-if="capturing === action.key" class="capture-prompt">
               Нажмите комбинацию...
             </span>
+            <span v-else-if="!enabled[action.key]" class="disabled-text">
+              Отключено
+            </span>
             <span v-else class="current-combination">
-              {{ formatCombination(hotkeys[action.key]) }}
+              {{ formatCombination(hotkeys[action.key]) || 'Не назначено' }}
             </span>
           </div>
-          
-          <button 
+
+          <button
             v-if="hotkeys[action.key] !== action.default"
             @click="resetHotkey(action.key)"
             class="reset-hotkey-btn"
@@ -45,7 +60,7 @@
             ↺
           </button>
         </div>
-        
+
         <!-- Ошибки -->
         <div v-if="errors[action.key]" class="hotkey-error">
           {{ errors[action.key] }}
@@ -61,8 +76,8 @@
       <h4>💡 Допустимые комбинации:</h4>
       <ul>
         <li>Можно использовать модификаторы: <kbd>Ctrl</kbd>, <kbd>Alt</kbd>, <kbd>Shift</kbd>, <kbd>Win</kbd></li>
-        <li>Обязательно должна быть хотя бы одна клавиша (буква, цифра, F1-F12)</li>
-        <li>Нельзя использовать только <kbd>Enter</kbd> или <kbd>Пробел</kbd> с модификаторами</li>
+        <li>Обязательно должна быть хотя бы одна клавиша (буква, цифра, F1-F12, символы)</li>
+        <li>Поддерживаются символы: <kbd>.</kbd> <kbd>,</kbd> <kbd>;</kbd> <kbd>/</kbd> <kbd>\</kbd> <kbd>[</kbd> <kbd>]</kbd> <kbd>-</kbd> <kbd>=</kbd> <kbd>`</kbd></li>
         <li>Одна комбинация не может использоваться для нескольких действий</li>
       </ul>
     </div>
@@ -70,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useHotkeysStore } from '../../stores/hotkeysStore'
 
 const hotkeysStore = useHotkeysStore()
@@ -79,11 +94,13 @@ const capturing = ref(null)
 const errors = ref({})
 const conflicts = ref({})
 
-const { 
-  hotkeys, 
-  availableActions, 
+const {
+  hotkeys,
+  enabled,
+  availableActions,
   DEFAULT_HOTKEYS,
-  updateHotkey, 
+  updateHotkey,
+  toggleEnabled,
   resetToDefaults,
   formatCombination,
   checkConflict,
@@ -93,10 +110,15 @@ const {
 
 // Начало захвата клавиши
 function startCapture(actionKey) {
+  // Не позволяем захватывать если отключено
+  if (!enabled.value[actionKey]) {
+    return
+  }
+  
   capturing.value = actionKey
   errors.value[actionKey] = null
   conflicts.value[actionKey] = null
-  
+
   // Фокус на элемент для захвата
   setTimeout(() => {
     const element = document.querySelector('.hotkey-capture.capturing')
@@ -148,7 +170,7 @@ function resetHotkey(actionKey) {
   // Сначала очищаем ошибки
   errors.value[actionKey] = null
   conflicts.value[actionKey] = null
-  
+
   // Затем сбрасываем к значению по умолчанию
   const defaultCombination = DEFAULT_HOTKEYS[actionKey]
   updateHotkey(actionKey, defaultCombination)
@@ -213,21 +235,27 @@ function getActionLabel(actionKey) {
 .hotkey-item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 12px;
+  gap: 10px;
+  padding: 14px;
   background: #f9fafb;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #e5e7eb;
 }
 
-.hotkey-info {
+.hotkey-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.hotkey-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .hotkey-label {
-  font-weight: 500;
+  font-weight: 600;
   color: #1f2937;
   font-size: 14px;
 }
@@ -236,6 +264,61 @@ function getActionLabel(actionKey) {
   font-size: 12px;
   color: #6b7280;
   font-style: italic;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #d1d5db;
+  transition: 0.3s;
+  border-radius: 26px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: #3b82f6;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(22px);
+}
+
+.toggle-switch:hover .toggle-slider {
+  background-color: #9ca3af;
+}
+
+.toggle-switch input:checked + .toggle-slider:hover {
+  background-color: #2563eb;
 }
 
 .hotkey-controls {
@@ -287,6 +370,13 @@ function getActionLabel(actionKey) {
   background: #fef3c7;
 }
 
+.hotkey-capture.disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
@@ -294,6 +384,11 @@ function getActionLabel(actionKey) {
 
 .capture-prompt {
   color: #d97706;
+  font-style: italic;
+}
+
+.disabled-text {
+  color: #9ca3af;
   font-style: italic;
 }
 

@@ -1,15 +1,26 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
-// Горячие клавиши по умолчанию (временно отключены)
+// Горячие клавиши по умолчанию
 const DEFAULT_HOTKEYS = {
-  sendMessage: '',           // Отправить сообщение (отключено)
-  newLine: '',               // Новая строка (отключено)
-  newChat: '',               // Новый чат (отключено)
-  showHistory: '',           // Показать историю (отключено)
-  copyLastAnswer: '',        // Копировать последний ответ (отключено)
-  focusInput: '',            // Фокус на поле ввода (отключено)
-  toggleSources: '',         // Показать/скрыть источники (отключено)
+  sendMessage: 'Enter',
+  newLine: 'Shift+Enter',
+  newChat: 'Ctrl+N',
+  showHistory: 'Ctrl+H',
+  copyLastAnswer: 'Ctrl+Shift+C',
+  focusInput: 'Ctrl+L',
+  toggleSources: 'Ctrl+S',
+}
+
+// Состояние включения по умолчанию
+const DEFAULT_ENABLED = {
+  sendMessage: true,
+  newLine: true,
+  newChat: true,
+  showHistory: true,
+  copyLastAnswer: true,
+  focusInput: true,
+  toggleSources: true,
 }
 
 // Допустимые модификаторы
@@ -27,26 +38,31 @@ const ALLOWED_KEYS = [
   // Специальные
   'Enter', 'Escape', 'Tab', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
   'Home', 'End', 'PageUp', 'PageDown', 'Delete', 'Backspace',
-  // Другие
-  'Plus', 'Minus', 'Equal', 'Comma', 'Period', 'Slash', 'Backslash'
+  // Знаки препинания и символы
+  'Period', 'Comma', 'Slash', 'Backslash', 'Semicolon', 'Quote', 'BracketLeft', 'BracketRight',
+  'Minus', 'Equal', 'Backquote', 'IntlBackslash'
 ]
 
 export const useHotkeysStore = defineStore('hotkeys', () => {
   // Загружаем из localStorage или используем значения по умолчанию
   const hotkeys = ref({ ...DEFAULT_HOTKEYS })
+  const enabled = ref({ ...DEFAULT_ENABLED })
   const isLoading = ref(false)
-  
-  // Загрузка из localStorage (отключено)
+
+  // Загрузка из localStorage
   function loadFromStorage() {
-    // Горячие клавиши временно отключены - не загружаем из localStorage
     try {
-      const saved = localStorage.getItem('hotkeys')
-      if (saved) {
-        // Очищаем сохранённые горячие клавиши
-        localStorage.removeItem('hotkeys')
+      const savedHotkeys = localStorage.getItem('hotkeys')
+      const savedEnabled = localStorage.getItem('hotkeysEnabled')
+      
+      if (savedHotkeys) {
+        hotkeys.value = JSON.parse(savedHotkeys)
+      }
+      if (savedEnabled) {
+        enabled.value = JSON.parse(savedEnabled)
       }
     } catch (e) {
-      console.error('Error clearing hotkeys from localStorage:', e)
+      console.error('Error loading hotkeys from localStorage:', e)
     }
   }
   
@@ -54,6 +70,7 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
   function saveToLocalStorage() {
     try {
       localStorage.setItem('hotkeys', JSON.stringify(hotkeys.value))
+      localStorage.setItem('hotkeysEnabled', JSON.stringify(enabled.value))
     } catch (e) {
       console.error('Ошибка сохранения в localStorage:', e)
     }
@@ -67,9 +84,10 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
   // Сброс к настройкам по умолчанию
   function resetToDefaults() {
     hotkeys.value = { ...DEFAULT_HOTKEYS }
+    enabled.value = { ...DEFAULT_ENABLED }
     saveToStorage()
   }
-  
+
   // Обновление горячей клавиши
   function updateHotkey(action, keyCombination) {
     if (validateKeyCombination(keyCombination)) {
@@ -78,6 +96,19 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
       return true
     }
     return false
+  }
+
+  // Переключение состояния горячей клавиши
+  function toggleEnabled(action) {
+    enabled.value[action] = !enabled.value[action]
+    saveToStorage()
+    return enabled.value[action]
+  }
+
+  // Включение горячей клавиши
+  function setEnabled(action, value) {
+    enabled.value[action] = value
+    saveToStorage()
   }
   
   // Валидация комбинации клавиш
@@ -133,7 +164,20 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
       'ArrowLeft': '←',
       'ArrowRight': '→',
       'Backspace': 'Backspace',
-      'Delete': 'Delete'
+      'Delete': 'Delete',
+      // Символы
+      'Period': '.',
+      'Comma': ',',
+      'Slash': '/',
+      'Backslash': '\\',
+      'Semicolon': ';',
+      'Quote': '\'',
+      'BracketLeft': '[',
+      'BracketRight': ']',
+      'Minus': '−',
+      'Equal': '=',
+      'Backquote': '`',
+      'IntlBackslash': '|'
     }
     return names[key] || key
   }
@@ -197,7 +241,20 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
       'Home': 'Home',
       'End': 'End',
       'PageUp': 'PageUp',
-      'PageDown': 'PageDown'
+      'PageDown': 'PageDown',
+      // Знаки препинания и символы
+      'Period': 'Period',
+      'Comma': 'Comma',
+      'Slash': 'Slash',
+      'Backslash': 'Backslash',
+      'Semicolon': 'Semicolon',
+      'Quote': 'Quote',
+      'BracketLeft': 'BracketLeft',
+      'BracketRight': 'BracketRight',
+      'Minus': 'Minus',
+      'Equal': 'Equal',
+      'Backquote': 'Backquote',
+      'IntlBackslash': 'IntlBackslash'
     }
 
     key = codeMap[code]
@@ -211,25 +268,29 @@ export const useHotkeysStore = defineStore('hotkeys', () => {
   
   // Вычисление доступных действий
   const availableActions = computed(() => [
-    { key: 'sendMessage', label: 'Отправить сообщение', default: DEFAULT_HOTKEYS.sendMessage },
-    { key: 'newLine', label: 'Новая строка', default: DEFAULT_HOTKEYS.newLine },
-    { key: 'newChat', label: 'Новый чат', default: DEFAULT_HOTKEYS.newChat },
-    { key: 'showHistory', label: 'Показать историю', default: DEFAULT_HOTKEYS.showHistory },
-    { key: 'copyLastAnswer', label: 'Копировать последний ответ', default: DEFAULT_HOTKEYS.copyLastAnswer },
-    { key: 'focusInput', label: 'Фокус на поле ввода', default: DEFAULT_HOTKEYS.focusInput },
-    { key: 'toggleSources', label: 'Показать/скрыть источники', default: DEFAULT_HOTKEYS.toggleSources },
+    { key: 'sendMessage', label: 'Отправить сообщение', default: DEFAULT_HOTKEYS.sendMessage, enabled: enabled.value.sendMessage },
+    { key: 'newLine', label: 'Новая строка', default: DEFAULT_HOTKEYS.newLine, enabled: enabled.value.newLine },
+    { key: 'newChat', label: 'Новый чат', default: DEFAULT_HOTKEYS.newChat, enabled: enabled.value.newChat },
+    { key: 'showHistory', label: 'Показать историю', default: DEFAULT_HOTKEYS.showHistory, enabled: enabled.value.showHistory },
+    { key: 'copyLastAnswer', label: 'Копировать последний ответ', default: DEFAULT_HOTKEYS.copyLastAnswer, enabled: enabled.value.copyLastAnswer },
+    { key: 'focusInput', label: 'Фокус на поле ввода', default: DEFAULT_HOTKEYS.focusInput, enabled: enabled.value.focusInput },
+    { key: 'toggleSources', label: 'Показать/скрыть источники', default: DEFAULT_HOTKEYS.toggleSources, enabled: enabled.value.toggleSources },
   ])
-  
+
   // Загрузка при инициализации
   loadFromStorage()
-  
+
   return {
     hotkeys,
+    enabled,
     availableActions,
     DEFAULT_HOTKEYS,
+    DEFAULT_ENABLED,
     ALLOWED_MODIFIERS,
     ALLOWED_KEYS,
     updateHotkey,
+    toggleEnabled,
+    setEnabled,
     resetToDefaults,
     validateKeyCombination,
     formatCombination,

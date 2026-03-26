@@ -228,13 +228,30 @@ async function copyToClipboard(text) {
 const hotkeysStore = useHotkeysStore()
 
 function handleGlobalKeydown(event) {
-  const combination = hotkeysStore.captureKeyCombination(event)
+  // Игнорируем горячие клавиши если фокус в поле ввода
+  const activeElement = document.activeElement
+  const isInputFocused = activeElement.tagName === 'TEXTAREA' || 
+                         activeElement.tagName === 'INPUT' ||
+                         activeElement.isContentEditable
   
+  // Для sendMessage и newLine всегда игнорируем если фокус в input
+  // Для остальных горячих клавиш тоже игнорируем если фокус в input
+  if (isInputFocused) {
+    return
+  }
+
+  const combination = hotkeysStore.captureKeyCombination(event)
+
   // Проверяем совпадения с горячими клавишами
   for (const [action, keyCombination] of Object.entries(hotkeysStore.hotkeys)) {
+    // Пропускаем отключенные горячие клавиши
+    if (!hotkeysStore.enabled[action]) {
+      continue
+    }
+    
     if (combination === keyCombination) {
       event.preventDefault()
-      
+
       switch (action) {
         case 'newChat':
           emit('new-chat')
@@ -255,7 +272,7 @@ function handleGlobalKeydown(event) {
           }
           break
       }
-      
+
       return false
     }
   }

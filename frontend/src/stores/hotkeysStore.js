@@ -5,22 +5,22 @@ import { ref, computed } from 'vue'
 const DEFAULT_HOTKEYS = {
   sendMessage: 'Enter',
   newLine: 'Shift+Enter',
-  newChat: 'Ctrl+N',
-  showHistory: 'Ctrl+H',
-  copyLastAnswer: 'Ctrl+Shift+C',
-  focusInput: 'Ctrl+L',
-  toggleSources: 'Ctrl+S',
+  newChat: '',
+  showHistory: '',
+  copyLastAnswer: '',
+  focusInput: '',
+  toggleSources: '',
 }
 
 // Состояние включения по умолчанию
 const DEFAULT_ENABLED = {
   sendMessage: true,
   newLine: true,
-  newChat: true,
-  showHistory: true,
-  copyLastAnswer: true,
-  focusInput: true,
-  toggleSources: true,
+  newChat: false,
+  showHistory: false,
+  copyLastAnswer: false,
+  focusInput: false,
+  toggleSources: false,
 }
 
 // Допустимые модификаторы

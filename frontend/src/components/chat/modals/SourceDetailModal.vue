@@ -37,10 +37,14 @@
         </div>
 
         <div class="detail-section">
-          <div class="section-header-with-help">
+          <div class="score-header-container">
             <h4>Оценки релевантности</h4>
-            <button @click="showScoreInfo = true" class="help-btn" title="Что означают оценки">
-              <img src="../../../assets/images/question-circle-svgrepo-com.svg" alt="?" width="16" height="16" />
+            <button @click="showScoreInfo = true" class="info-icon-btn" title="Что означают оценки">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
             </button>
           </div>
           <div class="scores-grid">
@@ -229,6 +233,55 @@ function formatFilename(filename) {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
+}
+
+/* Контейнер для заголовка и кнопки */
+.score-header-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px; /* Расстояние между текстом и иконкой */
+  margin-bottom: 10px;
+}
+
+.score-header-container h4 {
+  margin: 0;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+/* Стили кнопки-иконки */
+.info-icon-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af; /* Спокойный серый цвет по умолчанию */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 50%;
+  outline: none;
+}
+
+.info-icon-btn:hover {
+  color: #2563eb; /* Цвет становится синим при наведении */
+  transform: scale(1.1); /* Легкое увеличение */
+}
+
+/* Дополнительно: небольшая пульсация при фокусе для доступности */
+.info-icon-btn:focus-visible {
+  box-shadow: 0 0 0 2px #dbeafe;
+  color: #2563eb;
+}
+
+/* Убедимся, что сетка оценок стоит ровно под заголовком */
+.scores-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
 }
 
 .section-header-with-help {

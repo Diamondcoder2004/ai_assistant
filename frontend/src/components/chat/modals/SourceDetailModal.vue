@@ -2,12 +2,7 @@
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-content source-detail">
       <div class="modal-header">
-        <div class="modal-header-title">
-          <h3>Детали источника</h3>
-          <button @click="showScoreInfo = true" class="help-btn" title="Что означают оценки">
-            <img src="../../assets/images/question-circle-svgrepo-com.svg" alt="?" width="18" height="18" />
-          </button>
-        </div>
+        <h3>Детали источника</h3>
         <button @click="$emit('close')" class="modal-close-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12"/>
@@ -42,7 +37,12 @@
         </div>
 
         <div class="detail-section">
-          <h4>Оценки релевантности</h4>
+          <div class="section-header-with-help">
+            <h4>Оценки релевантности</h4>
+            <button @click="showScoreInfo = true" class="help-btn" title="Что означают оценки">
+              <img src="../../../assets/images/question-circle-svgrepo-com.svg" alt="?" width="16" height="16" />
+            </button>
+          </div>
           <div class="scores-grid">
             <div v-if="source.score_semantic !== undefined" class="score-card semantic">
               <span class="score-label">Смысловая</span>
@@ -224,20 +224,28 @@ function formatFilename(filename) {
   background: #f9fafb;
 }
 
-.modal-header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.modal-header-title h3 {
+.modal-header h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
 }
 
-.modal-header-title .help-btn {
+.section-header-with-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-header-with-help h4 {
+  margin: 0;
+  color: #374151;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.section-header-with-help .help-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -247,18 +255,19 @@ function formatFilename(filename) {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
-.modal-header-title .help-btn:hover {
+.section-header-with-help .help-btn:hover {
   background: #eff6ff;
 }
 
-.modal-header-title .help-btn img {
+.section-header-with-help .help-btn img {
   opacity: 0.6;
   transition: opacity 0.2s;
 }
 
-.modal-header-title .help-btn:hover img {
+.section-header-with-help .help-btn:hover img {
   opacity: 1;
 }
 

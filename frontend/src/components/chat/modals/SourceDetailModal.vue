@@ -2,7 +2,12 @@
   <div class="modal-overlay" @click.self="$emit('close')">
     <div class="modal-content source-detail">
       <div class="modal-header">
-        <h3>Детали источника</h3>
+        <div class="modal-header-title">
+          <h3>Детали источника</h3>
+          <button @click="showScoreInfo = true" class="help-btn" title="Что означают оценки">
+            <img src="../../assets/images/question-circle-svgrepo-com.svg" alt="?" width="18" height="18" />
+          </button>
+        </div>
         <button @click="$emit('close')" class="modal-close-btn">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 6L6 18M6 6l12 12"/>
@@ -54,6 +59,42 @@
           </div>
         </div>
 
+        <!-- Модальное окно с информацией об оценках -->
+        <div v-if="showScoreInfo" class="score-info-overlay" @click.self="showScoreInfo = false">
+          <div class="score-info-modal">
+            <div class="score-info-header">
+              <h4>Что означают оценки</h4>
+              <button @click="showScoreInfo = false" class="score-info-close-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div class="score-info-body">
+              <div class="info-section">
+                <h5>Как работает оценка релевантности</h5>
+                <p>В нашей системе используется гибридная модель поиска, которая объединяет несколько способов анализа текста. Это позволяет находить точные ответы, даже если пользователь использует разговорные выражения или специфические технические термины.</p>
+                <p>Итоговая оценка релевантности (Hybrid Score) складывается из четырех независимых компонентов, каждый из которых имеет свой «вес» в принятии решения.</p>
+              </div>
+
+              <div class="info-section">
+                <h5>Смысловая оценка (Semantic Score)</h5>
+                <p>Анализирует смысл запроса и документа с помощью векторных представлений. Позволяет находить документы, которые семантически близки к запросу, даже если они используют другие слова и формулировки.</p>
+              </div>
+
+              <div class="info-section">
+                <h5>Словесная оценка (Lexical Score)</h5>
+                <p>Оценивает точное совпадение слов и терминов между запросом и документом. Помогает находить документы с точными вхождениями ключевых слов, что особенно важно для технических терминов и специфических понятий.</p>
+              </div>
+
+              <div class="info-section">
+                <h5>Общая оценка (Hybrid Score)</h5>
+                <p>Комбинирует смысловую и словесную оценки с учётом их весовых коэффициентов. Это финальная оценка релевантности, которая используется для ранжирования документов и определения их соответствия запросу.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- <div class="detail-section" v-if="source.chunk_id">
           <h4>Chunk ID</h4>
           <p class="chunk-id">{{ source.chunk_id }}</p>
@@ -64,7 +105,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   source: {
@@ -75,6 +116,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
+
+const showScoreInfo = ref(false)
 
 // Рендерим контент (поддержка HTML и Markdown)
 const renderedContent = computed(() => {
@@ -181,11 +224,42 @@ function formatFilename(filename) {
   background: #f9fafb;
 }
 
-.modal-header h3 {
+.modal-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-header-title h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
+}
+
+.modal-header-title .help-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.modal-header-title .help-btn:hover {
+  background: #eff6ff;
+}
+
+.modal-header-title .help-btn img {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.modal-header-title .help-btn:hover img {
+  opacity: 1;
 }
 
 .modal-close-btn {
@@ -394,5 +468,95 @@ function formatFilename(filename) {
 .score-card .score-value {
   font-size: 16px;
   font-weight: 700;
+}
+
+/* Стили для модального окна с информацией об оценках */
+.score-info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.score-info-modal {
+  background: white;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.score-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.score-info-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.score-info-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.score-info-close-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.score-info-body {
+  padding: 20px;
+  max-height: calc(80vh - 70px);
+  overflow-y: auto;
+}
+
+.score-info-body .info-section {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.score-info-body .info-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.score-info-body .info-section h5 {
+  color: #1e3a8a;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 6px 0;
+}
+
+.score-info-body .info-section p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 13px;
 }
 </style>

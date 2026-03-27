@@ -167,17 +167,29 @@ async def stream_query(
             # Этап 3: Генерация ответа по токену
             retrieval_logger.info(f"[{query_id}] ✍️ Генерация ответа...")
             answer = result.get("answer", "")
-            
+
             # Отправляем ответ по словам (эмуляция стрима)
-            for word in answer.split(" "):
-                yield {"event": "message", "data": json.dumps({"token": word + " "})}
-                await asyncio.sleep(0.02)
+            answer_words = len(answer.split())
+            for i, word in enumerate(answer.split(" ")):
+                yield {"event": "message", "data": json.dumps({"token": word + " "}, ensure_ascii=False)}
+                await asyncio.sleep(0.005)  # 5ms задержка для плавного стрима
+                
+                # Прогресс для длинных ответов (>200 слов)
+                if answer_words > 200 and i % 50 == 0 and i > 0:
+                    yield {"event": "message", "data": json.dumps({
+                        "progress": f"Генерация: {i}/{answer_words} слов"
+                    }, ensure_ascii=False)}
 
             total_time = time.time() - start_time
             retrieval_logger.info(f"[{query_id}] Завершено за {total_time:.3f}s")
 
-            # Логирование ответа LLM
-            retrieval_logger.info(f"[{query_id}] LLM ответ (длина: {len(answer)}): {answer[:500]}...")
+            # Логирование ответа LLM с полной статистикой
+            retrieval_logger.info(f"[{query_id}] LLM ответ (длина: {len(answer)} символов, {answer_words} слов): {answer[:500]}...")
+            
+            # Предупреждение для очень длинных ответов
+            if len(answer) > 5000:
+                retrieval_logger.warning(f"[{query_id}] Очень длинный ответ: {len(answer)} символов")
+            
             retrieval_logger.info(f"[{query_id}] Источники: {len(sources_for_response)} шт.")
 
             # Финальный чанк с метаданными

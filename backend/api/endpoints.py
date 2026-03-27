@@ -32,6 +32,7 @@ from .auth import get_current_user
 from utils.timing import get_timing_stats, print_timing_stats, save_timing_stats, reset_timing_stats
 from datetime import datetime, timedelta
 import re
+from utils.bg_cache_loader import get_bm25_status, is_bm25_loaded
 
 logger = logging.getLogger(__name__)
 retrieval_logger = logging.getLogger(__name__ + ".retrieval")
@@ -69,6 +70,26 @@ async def health():
         "status": "ok",
         "timestamp": datetime.utcnow().isoformat() + "Z",
         "version": "v1"
+    }
+
+
+@router.get("/bm25/status")
+async def bm25_status():
+    """Статус BM25 кэша (без аутентификации)"""
+    return get_bm25_status()
+
+
+@router.post("/bm25/warmup")
+async def bm25_warmup():
+    """Принудительная загрузка BM25 кэша"""
+    from utils.bg_cache_loader import load_bm25_background
+    
+    # Запускаем в фоне
+    load_bm25_background()
+    
+    return {
+        "status": "loading",
+        "message": "BM25 кэш загружается в фоновом режиме"
     }
 
 

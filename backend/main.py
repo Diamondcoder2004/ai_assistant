@@ -9,6 +9,7 @@ import config
 from agents.search_agent import SearchAgent
 from agents.response_agent import ResponseAgent
 from prompts.system_prompt import get_system_prompt
+from utils.bg_cache_loader import schedule_bm25_warmup
 
 # Настройка логирования
 logging.basicConfig(
@@ -40,6 +41,9 @@ class AgenticRAG:
         self.history = ""
         self.category = "не известна"
         logger.info("AgenticRAG инициализирован")
+        
+        # Фоновая загрузка BM25 кэша
+        schedule_bm25_warmup(delay=1.0)
     
     def query(
         self,

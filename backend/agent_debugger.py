@@ -149,13 +149,16 @@ class AgentDebugger:
         result = agent.generate(query, user_hints=user_hints)
         duration_ms = (time.time() - start) * 1000
         
-        output = {
-            "queries": result.get("queries", []),
-            "search_params": result.get("search_params", {}),
-            "clarification_needed": result.get("clarification_needed", False),
-            "clarification_questions": result.get("clarification_questions", []),
-            "confidence": result.get("confidence", 0)
+        # Конвертируем результат в dict
+        result_dict = {
+            "queries": result.queries if hasattr(result, 'queries') else result.get("queries", []),
+            "search_params": result.search_params if hasattr(result, 'search_params') else result.get("search_params", {}),
+            "clarification_needed": result.clarification_needed if hasattr(result, 'clarification_needed') else result.get("clarification_needed", False),
+            "clarification_questions": result.clarification_questions if hasattr(result, 'clarification_questions') else result.get("clarification_questions", []),
+            "confidence": result.confidence if hasattr(result, 'confidence') else result.get("confidence", 0)
         }
+        
+        output = result_dict.copy()
         
         self._add_step(
             component="QueryGenerator",
@@ -167,7 +170,7 @@ class AgentDebugger:
         
         self._log_component_end("QueryGenerator", "generate", output, duration_ms)
         
-        return result
+        return result_dict
     
     def trace_search(self, queries: List[str], search_params: Dict) -> List[Dict]:
         """Трассировка поиска."""
@@ -182,31 +185,34 @@ class AgentDebugger:
         start = time.time()
         search_tool = SearchTool()
         
-        results = []
+        all_results = []
         for query in queries:
+            # SearchRequest использует отдельные параметры весов
             search_request = SearchRequest(
                 query=query,
                 k=search_params.get("k", 10),
-                weights=search_params.get("weights", {}),
-                strategy=search_params.get("strategy", "concat")
+                pref_weight=search_params.get("pref_weight", 0.4),
+                hype_weight=search_params.get("hype_weight", 0.3),
+                lexical_weight=search_params.get("lexical_weight", 0.2),
+                contextual_weight=search_params.get("contextual_weight", 0.1)
             )
             query_results = search_tool.search(search_request)
-            results.extend(query_results)
+            all_results.extend(query_results)
         
         duration_ms = (time.time() - start) * 1000
         
-        # Ограничиваем вывод для лога
+        # Ограничиваем вывод для лога (SearchResult - это объект)
         output = {
-            "total_results": len(results),
+            "total_results": len(all_results),
             "top_5_sources": [
                 {
-                    "filename": r.get("filename"),
-                    "breadcrumbs": r.get("breadcrumbs", "")[:100],
-                    "score_hybrid": r.get("score_hybrid", 0),
-                    "score_semantic": r.get("score_semantic", 0),
-                    "score_lexical": r.get("score_lexical", 0)
+                    "filename": getattr(r, "filename", "N/A"),
+                    "breadcrumbs": getattr(r, "breadcrumbs", "")[:100],
+                    "score_hybrid": getattr(r, "score_hybrid", 0),
+                    "score_semantic": getattr(r, "score_semantic", 0),
+                    "score_lexical": getattr(r, "score_lexical", 0)
                 }
-                for r in results[:5]
+                for r in all_results[:5]
             ]
         }
         
@@ -216,12 +222,12 @@ class AgentDebugger:
             input_data={"queries": queries, "search_params": search_params},
             output_data=output,
             duration_ms=duration_ms,
-            metadata={"all_results_count": len(results)}
+            metadata={"all_results_count": len(all_results)}
         )
         
         self._log_component_end("SearchTool", "search", output, duration_ms)
         
-        return results
+        return all_results
     
     def trace_response_generation(
         self,
@@ -244,16 +250,30 @@ class AgentDebugger:
         
         start = time.time()
         agent = ResponseAgent()
-        result = agent.generate(query=query, sources=sources, max_tokens=max_tokens)
+        
+        # ResponseAgent.generate_response возвращает dict
+        result = agent.generate_response(
+            user_query=query,
+            search_results=sources,
+            max_tokens=max_tokens
+        )
         duration_ms = (time.time() - start) * 1000
         
-        answer = result.get("answer", "")
+        # Обрабатываем и dict и объект
+        if isinstance(result, dict):
+            answer = result.get("answer", "")
+            confidence = result.get("confidence", 0)
+            sources_used = result.get("sources_count", len(sources))
+        else:
+            answer = result.answer if hasattr(result, 'answer') else ""
+            confidence = result.confidence if hasattr(result, 'confidence') else 0
+            sources_used = len(sources)
         
         output = {
             "answer_length": len(answer),
             "answer_preview": answer[:500] + "..." if len(answer) > 500 else answer,
-            "sources_used": result.get("sources_used", 0),
-            "confidence": result.get("confidence", 0)
+            "sources_used": sources_used,
+            "confidence": confidence
         }
         
         self._add_step(
@@ -298,7 +318,7 @@ class AgentDebugger:
                     errors=["Clarification needed"]
                 )
             
-            queries = query_result.get("queries", [])
+            queries = [q.get("text", "") if isinstance(q, dict) else str(q) for q in query_result.get("queries", [])]
             search_params = query_result.get("search_params", {})
             
             # Шаг 2: Поиск

@@ -367,6 +367,7 @@ export const useChatStore = defineStore('chat', () => {
     removeFeedback,
     loadFeedback,
     restoreFromStorage,
-    clearStorage
+    clearStorage,
+    saveToStorage
   }
 })

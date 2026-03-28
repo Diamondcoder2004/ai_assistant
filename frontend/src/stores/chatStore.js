@@ -23,53 +23,75 @@ export const useChatStore = defineStore('chat', () => {
   // Сохранение состояния в sessionStorage
   function saveToStorage() {
     try {
+      console.log('[chatStore.saveToStorage] Called, messages:', messages.value?.length || 0, 'sessionId:', sessionId.value)
+      
       if (messages.value.length > 0) {
         sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages.value))
+        console.log('[chatStore.saveToStorage] Saved messages:', messages.value.length)
       } else {
         sessionStorage.removeItem(STORAGE_KEY_MESSAGES)
+        console.log('[chatStore.saveToStorage] Removed messages (empty)')
       }
 
       if (sessionId.value) {
         sessionStorage.setItem(STORAGE_KEY_SESSION_ID, String(sessionId.value))
+        console.log('[chatStore.saveToStorage] Saved session_id:', sessionId.value)
       } else {
         sessionStorage.removeItem(STORAGE_KEY_SESSION_ID)
+        console.log('[chatStore.saveToStorage] Removed session_id (null)')
       }
 
       if (currentSessionTitle.value) {
         sessionStorage.setItem(STORAGE_KEY_SESSION_TITLE, currentSessionTitle.value)
+        console.log('[chatStore.saveToStorage] Saved title:', currentSessionTitle.value)
       } else {
         sessionStorage.removeItem(STORAGE_KEY_SESSION_TITLE)
+        console.log('[chatStore.saveToStorage] Removed title (empty)')
       }
+      
+      console.log('[chatStore.saveToStorage] Complete')
     } catch (err) {
-      console.error('Error saving chat state to storage:', err)
+      console.error('[chatStore.saveToStorage] Error:', err)
     }
   }
 
   // Восстановление состояния из sessionStorage
   function restoreFromStorage() {
     try {
+      console.log('[chatStore.restoreFromStorage] Called')
+      
       const savedMessages = sessionStorage.getItem(STORAGE_KEY_MESSAGES)
       const savedSessionId = sessionStorage.getItem(STORAGE_KEY_SESSION_ID)
       const savedTitle = sessionStorage.getItem(STORAGE_KEY_SESSION_TITLE)
+      
+      console.log('[chatStore.restoreFromStorage] Found messages:', !!savedMessages, 'sessionId:', !!savedSessionId, 'title:', !!savedTitle)
 
       if (savedMessages) {
         messages.value = JSON.parse(savedMessages)
-        console.log('Restored messages from storage:', messages.value.length, 'messages')
+        console.log('[chatStore.restoreFromStorage] Restored messages:', messages.value.length, 'messages')
+      } else {
+        console.log('[chatStore.restoreFromStorage] No saved messages')
       }
 
       if (savedSessionId) {
         sessionId.value = savedSessionId
-        console.log('Restored session_id:', sessionId.value)
+        console.log('[chatStore.restoreFromStorage] Restored session_id:', sessionId.value)
+      } else {
+        console.log('[chatStore.restoreFromStorage] No saved session_id')
       }
 
       if (savedTitle) {
         currentSessionTitle.value = savedTitle
-        console.log('Restored session title:', currentSessionTitle.value)
+        console.log('[chatStore.restoreFromStorage] Restored title:', currentSessionTitle.value)
+      } else {
+        console.log('[chatStore.restoreFromStorage] No saved title')
       }
 
-      return !!(savedMessages || savedSessionId)
+      const result = !!(savedMessages || savedSessionId)
+      console.log('[chatStore.restoreFromStorage] Result:', result)
+      return result
     } catch (err) {
-      console.error('Error restoring chat state from storage:', err)
+      console.error('[chatStore.restoreFromStorage] Error:', err)
       return false
     }
   }
@@ -165,11 +187,14 @@ export const useChatStore = defineStore('chat', () => {
 
   // Отправить вопрос (без streaming)
   async function sendQuestion(question, parameters = {}) {
+    console.log('[chatStore.sendQuestion] Called with:', question.substring(0, 50), 'sessionId:', sessionId.value)
+    
     isLoading.value = true
     error.value = null
 
     try {
       addMessage('user', question)
+      console.log('[chatStore.sendQuestion] Added user message, messages count:', messages.value.length)
 
       const params = {
         k: parameters.k || 10,
@@ -181,32 +206,34 @@ export const useChatStore = defineStore('chat', () => {
       // Добавляем session_id только если он есть, иначе не передаём
       if (sessionId.value) {
         params.session_id = String(sessionId.value)
-        console.log('sendQuestion: sending with session_id:', params.session_id)
+        console.log('[chatStore.sendQuestion] sending with session_id:', params.session_id)
       } else {
-        console.log('sendQuestion: no session_id, starting new session')
+        console.log('[chatStore.sendQuestion] no session_id, starting new session')
       }
 
       // Запускаем обычный запрос
       const response = await chatService.sendQuery(question, params)
-      console.log('sendQuestion: response session_id:', response.session_id)
+      console.log('[chatStore.sendQuestion] response session_id:', response.session_id)
 
       // Сохраняем session_id
       if (response.session_id) {
         sessionId.value = String(response.session_id)
-        console.log('sendQuestion: saved session_id:', sessionId.value)
+        console.log('[chatStore.sendQuestion] saved session_id:', sessionId.value)
       }
 
       // Добавляем сообщение с ответом и источниками, сохраняем query_id для фидбека
       addMessage('assistant', response.answer, response.sources || [], response.session_id, response.query_id)
+      console.log('[chatStore.sendQuestion] Added assistant message, messages count:', messages.value.length)
 
       return response
     } catch (err) {
       error.value = err.message || 'Ошибка при обработке вопроса'
-      console.error('Send question error:', err)
+      console.error('[chatStore.sendQuestion] Error:', err)
       addMessage('assistant', 'Извините, произошла ошибка. Пожалуйста, попробуйте позже.')
       throw err
     } finally {
       isLoading.value = false
+      console.log('[chatStore.sendQuestion] Complete, isLoading:', isLoading.value)
     }
   }
 

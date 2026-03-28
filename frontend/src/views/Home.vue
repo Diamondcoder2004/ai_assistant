@@ -307,19 +307,24 @@ function openSourceModal(source) {
 
 // Загрузка истории при монтировании
 onMounted(async () => {
+  console.log('===== Home.vue: onMounted START =====')
   console.log('Home mounted, checking for resumeSessionId...')
   
   // 1. Сначала пробуем восстановить сессию из History.vue
   const resumeSessionId = localStorage.getItem('resumeSessionId')
   console.log('resumeSessionId:', resumeSessionId)
   console.log('authStore.user:', authStore.user)
+  console.log('chatStore.messages before:', chatStore.messages?.length || 0)
+  console.log('chatStore.sessionId before:', chatStore.sessionId)
 
   if (authStore.user) {
     if (resumeSessionId) {
+      console.log('=== RESUME SESSION MODE ===')
       localStorage.removeItem('resumeSessionId')
 
       // 1. Включаем лоадер, чтобы UI сразу отреагировал на переход
       chatStore.isLoading = true
+      console.log('chatStore.isLoading set to:', chatStore.isLoading)
 
       try {
         // 2. Делаем тяжелый запрос к истории
@@ -333,6 +338,9 @@ onMounted(async () => {
           .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
 
         console.log('sessionChats found:', sessionChats.length)
+        if (sessionChats.length > 0) {
+          console.log('First chat:', sessionChats[0])
+        }
 
         if (sessionChats.length > 0) {
           const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
@@ -360,9 +368,11 @@ onMounted(async () => {
             })
           }
           console.log('Session restored from History.vue:', chatStore.messages.length, 'messages')
+          console.log('Messages:', chatStore.messages)
           
           // Сохраняем в sessionStorage для последующего восстановления после F5
           chatStore.saveToStorage()
+          console.log('Saved to sessionStorage')
           
           // Сохраняем текущую сессию для быстрого доступа
           localStorage.setItem('currentSession', JSON.stringify({
@@ -377,12 +387,23 @@ onMounted(async () => {
       } finally {
         // 3. Гарантированно выключаем лоадер
         chatStore.isLoading = false
+        console.log('chatStore.isLoading set to:', chatStore.isLoading)
       }
     } 
     // 2. Если resumeSessionId нет, пробуем восстановить из sessionStorage (после F5)
     else {
+      console.log('=== F5 REFRESH MODE ===')
       console.log('No resumeSessionId, trying to restore from sessionStorage...')
+      
+      // Проверяем, что есть в sessionStorage
+      console.log('sessionStorage keys:', Object.keys(sessionStorage))
+      console.log('sessionStorage.chat_messages:', sessionStorage.getItem('chat_messages'))
+      console.log('sessionStorage.chat_session_id:', sessionStorage.getItem('chat_session_id'))
+      
       const restored = chatStore.restoreFromStorage()
+      console.log('restoreFromStorage returned:', restored)
+      console.log('chatStore.messages after restore:', chatStore.messages?.length || 0)
+      console.log('chatStore.sessionId after restore:', chatStore.sessionId)
       
       if (restored) {
         console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
@@ -399,7 +420,15 @@ onMounted(async () => {
         }
       }
     }
+  } else {
+    console.log('User not authenticated')
   }
+  
+  console.log('===== Home.vue: onMounted END =====')
+  console.log('Final state:')
+  console.log('  chatStore.messages:', chatStore.messages?.length || 0)
+  console.log('  chatStore.sessionId:', chatStore.sessionId)
+  console.log('  chatStore.isLoading:', chatStore.isLoading)
 })
 </script>
 

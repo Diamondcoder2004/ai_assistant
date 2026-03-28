@@ -2,12 +2,15 @@
 Search Agent — агент поиска с Tool Calling
 """
 import logging
+import uuid
+import time
 from typing import List, Optional, Dict, Any
 
 import config
 from tools.search_tool import SearchTool, SearchRequest, SearchResult
 from agents.query_generator import QueryGeneratorAgent, QueryGenerationResult
 from utils.timing import timing, timing_context
+from utils.agent_logger import log_agent_response
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +39,9 @@ class SearchAgent:
         category: str = "не известна",
         auto_retry: bool = True,
         max_retries: int = 2,
-        user_hints: Optional[Dict[str, Any]] = None
+        user_hints: Optional[Dict[str, Any]] = None,
+        query_id: Optional[str] = None,
+        session_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Поиск с использованием агента.
@@ -48,6 +53,8 @@ class SearchAgent:
             auto_retry: Автоматическая повторная попытка при плохих результатах
             max_retries: Максимальное количество повторных попыток
             user_hints: Рекомендации от пользователя (k, weights, и т.д.)
+            query_id: Уникальный ID запроса (для логирования)
+            session_id: ID сессии (для логирования)
 
         Returns:
             Словарь с результатами:
@@ -58,6 +65,10 @@ class SearchAgent:
             - search_params: Dict
             - confidence: float
         """
+        _query_id = query_id or str(uuid.uuid4())
+        _session_id = session_id or "unknown"
+        _start_time = time.time()
+        
         logger.info(f"SearchAgent: поиск для '{user_query[:50]}...'")
         if user_hints:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
@@ -68,13 +79,15 @@ class SearchAgent:
                 user_query=user_query,
                 history=history,
                 category=category,
-                user_hints=user_hints  # Передаём рекомендации
+                user_hints=user_hints,  # Передаём рекомендации
+                query_id=_query_id,
+                session_id=_session_id
             )
 
         # 2. Проверка необходимости уточнения
         if self.query_generator.needs_clarification(gen_result):
             logger.info("Требуется уточнение")
-            return {
+            result = {
                 "clarification_needed": True,
                 "clarification_questions": gen_result.clarification_questions,
                 "results": [],
@@ -83,6 +96,24 @@ class SearchAgent:
                 "confidence": gen_result.confidence,
                 "reasoning": gen_result.reasoning
             }
+            # Логирование результата
+            log_agent_response(
+                query_id=_query_id,
+                session_id=_session_id,
+                user_query=user_query,
+                response_data={
+                    "answer": "",
+                    "sources": [],
+                    "queries_used": [],
+                    "search_params": gen_result.search_params,
+                    "confidence": gen_result.confidence,
+                    "reasoning": gen_result.reasoning,
+                    "clarification_needed": True,
+                    "clarification_questions": gen_result.clarification_questions
+                },
+                timing_info={"total_time": time.time() - _start_time}
+            )
+            return result
 
         # 3. Выполнение поиска
         queries = self.query_generator.get_queries_text(gen_result)
@@ -97,13 +128,13 @@ class SearchAgent:
                 k_per_query=k_per_query // len(queries) if strategy == "separate" else k_per_query,
                 strategy=strategy
             )
-        
+
         # 4. Оценка качества результатов
         confidence = gen_result.confidence
         if len(results) < 3:
             logger.warning(f"Мало результатов: {len(results)}")
             confidence *= 0.7
-        
+
         # 5. Автоматическая повторная попытка если нужно
         if auto_retry and len(results) < 3 and max_retries > 0:
             logger.info(f"Попытка {max_retries}: повторный поиск с другими параметрами")
@@ -115,10 +146,10 @@ class SearchAgent:
             if len(retry_result["results"]) > len(results):
                 results = retry_result["results"]
                 queries = retry_result["queries_used"]
-        
+
         logger.info(f"Поиск завершён: найдено {len(results)} результатов")
-        
-        return {
+
+        result = {
             "clarification_needed": False,
             "clarification_questions": [],
             "results": results,
@@ -127,7 +158,35 @@ class SearchAgent:
             "confidence": confidence,
             "reasoning": gen_result.reasoning
         }
-    
+        
+        # Логирование результата поиска
+        log_agent_response(
+            query_id=_query_id,
+            session_id=_session_id,
+            user_query=user_query,
+            response_data={
+                "answer": "",
+                "sources": [
+                    {
+                        "id": r.id,
+                        "filename": r.filename,
+                        "breadcrumbs": r.breadcrumbs,
+                        "score_hybrid": r.score_hybrid,
+                        "score_semantic": r.score_semantic,
+                        "score_lexical": r.score_lexical,
+                    }
+                    for r in results[:10]
+                ],
+                "queries_used": queries,
+                "search_params": gen_result.search_params,
+                "confidence": confidence,
+                "reasoning": gen_result.reasoning
+            },
+            timing_info={"total_time": time.time() - _start_time}
+        )
+
+        return result
+
     def _retry_search(
         self,
         user_query: str,

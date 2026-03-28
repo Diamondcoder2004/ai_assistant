@@ -308,7 +308,8 @@ function openSourceModal(source) {
 // Загрузка истории при монтировании
 onMounted(async () => {
   console.log('Home mounted, checking for resumeSessionId...')
-  // Восстановление сессии из History.vue
+  
+  // 1. Сначала пробуем восстановить сессию из History.vue
   const resumeSessionId = localStorage.getItem('resumeSessionId')
   console.log('resumeSessionId:', resumeSessionId)
   console.log('authStore.user:', authStore.user)
@@ -323,7 +324,6 @@ onMounted(async () => {
       console.log('chatStore.history after load:', chatStore.history?.length || 0)
 
       // Находим записи для этой сессии
-      // resumeSessionId может быть session_id или id записи
       const sessionChats = (chatStore.history || [])
         .filter(c => c.session_id === resumeSessionId || c.id == resumeSessionId)
         .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
@@ -331,7 +331,6 @@ onMounted(async () => {
       console.log('sessionChats found:', sessionChats.length)
 
       if (sessionChats.length > 0) {
-        // Устанавливаем session_id (используем session_id из первой записи, если есть)
         const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
         chatStore.sessionId = actualSessionId
         chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
@@ -356,17 +355,27 @@ onMounted(async () => {
             timestamp: new Date(chat.created_at)
           })
         }
-        console.log('Session restored:', chatStore.messages.length, 'messages')
+        console.log('Session restored from History.vue:', chatStore.messages.length, 'messages')
+        // Сохраняем в sessionStorage для последующего восстановления
+        chatStore.saveToStorage()
       } else {
         console.warn('No chats found for session:', resumeSessionId)
       }
     }
-  } else if (authStore.user) {
-    // Просто загружаем историю для сессий, но не показываем сообщения
-    // История будет загружена в chatStore и доступна через chatStore.chatSessions
-    console.log('No resumeSessionId, initializing chat sessions')
-    if ((chatStore.history?.length || 0) === 0) {
-      await chatStore.loadHistory(50)
+  } 
+  // 2. Если resumeSessionId нет, пробуем восстановить из sessionStorage (после F5)
+  else if (authStore.user) {
+    console.log('No resumeSessionId, trying to restore from sessionStorage...')
+    const restored = chatStore.restoreFromStorage()
+    
+    if (restored) {
+      console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
+    } else {
+      // Если нет сохранённой сессии, просто загружаем историю
+      console.log('No saved session in sessionStorage, loading history...')
+      if ((chatStore.history?.length || 0) === 0) {
+        await chatStore.loadHistory(50)
+      }
     }
   }
 })

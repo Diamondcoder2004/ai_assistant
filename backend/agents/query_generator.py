@@ -3,6 +3,7 @@ Query Generator Agent — генерация поисковых запросов
 """
 import logging
 import json
+import time
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
@@ -10,6 +11,7 @@ from openai import OpenAI
 import config
 from prompts.query_generation import get_query_generation_prompt
 from utils.timing import timing
+from utils.agent_logger import log_agent_response
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +66,9 @@ class QueryGeneratorAgent:
         category: str = "не известна",
         temperature: float = 0.7,
         max_attempts: int = 3,
-        user_hints: Optional[Dict[str, Any]] = None
+        user_hints: Optional[Dict[str, Any]] = None,
+        query_id: Optional[str] = None,
+        session_id: Optional[str] = None
     ) -> QueryGenerationResult:
         """
         Генерация поисковых запросов.
@@ -76,10 +80,18 @@ class QueryGeneratorAgent:
             temperature: Температура генерации
             max_attempts: Максимальное количество попыток
             user_hints: Рекомендации от пользователя (k, temperature, и т.д.)
+            query_id: Уникальный ID запроса (для логирования)
+            session_id: ID сессии (для логирования)
 
         Returns:
             Результат генерации запросов
         """
+        import uuid
+        
+        _query_id = query_id or str(uuid.uuid4())
+        _session_id = session_id or "unknown"
+        _start_time = time.time()
+        
         prompt = get_query_generation_prompt(
             user_query=user_query,
             history=history,
@@ -90,7 +102,7 @@ class QueryGeneratorAgent:
         logger.info(f"Генерация запросов для: '{user_query[:50]}...'")
         if user_hints:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
-        
+
         for attempt in range(max_attempts):
             try:
                 response = self.client.chat.completions.create(
@@ -103,17 +115,17 @@ class QueryGeneratorAgent:
                     max_tokens=1500,
                     response_format={"type": "json_object"}
                 )
-                
+
                 result_text = response.choices[0].message.content
-                
+
                 # Парсинг JSON
                 result_data = json.loads(result_text)
-                
+
                 # Валидация
                 if "queries" not in result_data and not result_data.get("clarification_needed"):
                     logger.warning(f"Попытка {attempt + 1}: Неверный формат ответа")
                     continue
-                
+
                 # Если queries пустой — создаем дефолтный запрос
                 if not result_data.get("queries") and not result_data.get("clarification_needed"):
                     result_data["queries"] = [{"text": user_query, "reason": "дефолтный запрос"}]
@@ -129,20 +141,93 @@ class QueryGeneratorAgent:
                     result_data["reasoning"] = "Использован дефолтный запрос"
 
                 logger.info(f"Генерация успешна с попытки {attempt + 1}")
-                return QueryGenerationResult.from_dict(result_data)
                 
+                # Логирование результата
+                result = QueryGenerationResult.from_dict(result_data)
+                log_agent_response(
+                    query_id=_query_id,
+                    session_id=_session_id,
+                    user_query=user_query,
+                    response_data={
+                        "answer": "",
+                        "sources": [],
+                        "queries_used": [q["text"] for q in result.queries],
+                        "search_params": result.search_params,
+                        "confidence": result.confidence,
+                        "reasoning": result.reasoning,
+                        "clarification_needed": result.clarification_needed,
+                        "clarification_questions": result.clarification_questions
+                    },
+                    timing_info={"total_time": time.time() - _start_time}
+                )
+                return result
+
             except json.JSONDecodeError as e:
                 logger.warning(f"Попытка {attempt + 1}: Ошибка парсинга JSON: {e}")
                 if attempt == max_attempts - 1:
                     # Возврат дефолтного результата
-                    return self._default_result(user_query)
+                    result = self._default_result(user_query)
+                    # Логирование ошибки
+                    log_agent_response(
+                        query_id=_query_id,
+                        session_id=_session_id,
+                        user_query=user_query,
+                        response_data={
+                            "answer": "",
+                            "sources": [],
+                            "queries_used": [q["text"] for q in result.queries],
+                            "search_params": result.search_params,
+                            "confidence": result.confidence,
+                            "reasoning": f"Ошибка парсинга JSON: {e}",
+                            "clarification_needed": False,
+                            "clarification_questions": []
+                        },
+                        timing_info={"total_time": time.time() - _start_time}
+                    )
+                    return result
             except Exception as e:
                 logger.error(f"Попытка {attempt + 1}: Ошибка генерации: {e}")
                 if attempt == max_attempts - 1:
-                    return self._default_result(user_query)
+                    result = self._default_result(user_query)
+                    # Логирование ошибки
+                    log_agent_response(
+                        query_id=_query_id,
+                        session_id=_session_id,
+                        user_query=user_query,
+                        response_data={
+                            "answer": "",
+                            "sources": [],
+                            "queries_used": [q["text"] for q in result.queries],
+                            "search_params": result.search_params,
+                            "confidence": result.confidence,
+                            "reasoning": f"Ошибка генерации: {e}",
+                            "clarification_needed": False,
+                            "clarification_questions": []
+                        },
+                        timing_info={"total_time": time.time() - _start_time}
+                    )
+                    return result
         
-        return self._default_result(user_query)
-    
+        # Достижение конца цикла (не должно произойти)
+        result = self._default_result(user_query)
+        log_agent_response(
+            query_id=_query_id,
+            session_id=_session_id,
+            user_query=user_query,
+            response_data={
+                "answer": "",
+                "sources": [],
+                "queries_used": [q["text"] for q in result.queries],
+                "search_params": result.search_params,
+                "confidence": result.confidence,
+                "reasoning": "Достигнут конец цикла генерации",
+                "clarification_needed": False,
+                "clarification_questions": []
+            },
+            timing_info={"total_time": time.time() - _start_time}
+        )
+        return result
+
     def _default_result(self, user_query: str) -> QueryGenerationResult:
         """Возвращает дефолтный результат при ошибке."""
         return QueryGenerationResult(

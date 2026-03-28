@@ -3,6 +3,8 @@ Agentic RAG — точка входа
 """
 import logging
 import argparse
+import uuid
+import time
 from typing import Optional, List, Dict, Any
 
 import config
@@ -70,6 +72,10 @@ class AgenticRAG:
             - queries_used: использованные запросы
             - confidence: уверенность
         """
+        query_id = str(uuid.uuid4())
+        session_id = history[0].get("session_id", "unknown") if history else "unknown"
+        start_time = time.time()
+        
         logger.info(f"Запрос: '{user_query[:50]}...'")
         if user_hints:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
@@ -89,7 +95,9 @@ class AgenticRAG:
             history=dialog_history,
             category=self.category,
             auto_retry=auto_retry,
-            user_hints=user_hints  # Передаём рекомендации
+            user_hints=user_hints,  # Передаём рекомендации
+            query_id=query_id,
+            session_id=session_id
         )
         
         # 2. Проверка необходимости уточнения
@@ -113,7 +121,9 @@ class AgenticRAG:
         response_result = self.response_agent.generate_response(
             user_query=user_query,
             search_results=search_result["results"],
-            history=dialog_history  # ✅ Используем историю из БД
+            history=dialog_history,  # ✅ Используем историю из БД
+            query_id=query_id,
+            session_id=session_id
         )
 
         # 4. Обновление истории

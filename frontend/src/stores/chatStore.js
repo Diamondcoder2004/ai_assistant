@@ -14,7 +14,76 @@ export const useChatStore = defineStore('chat', () => {
   const currentSessionTitle = ref('')        // заголовок текущей сессии
   const isLoadingHistory = ref(false)        // флаг загрузки истории
 
+  const STORAGE_KEY_MESSAGES = 'chat_messages'
+  const STORAGE_KEY_SESSION_ID = 'chat_session_id'
+  const STORAGE_KEY_SESSION_TITLE = 'chat_session_title'
+
   const authStore = useAuthStore()
+
+  // Сохранение состояния в sessionStorage
+  function saveToStorage() {
+    try {
+      if (messages.value.length > 0) {
+        sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages.value))
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_MESSAGES)
+      }
+
+      if (sessionId.value) {
+        sessionStorage.setItem(STORAGE_KEY_SESSION_ID, String(sessionId.value))
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_SESSION_ID)
+      }
+
+      if (currentSessionTitle.value) {
+        sessionStorage.setItem(STORAGE_KEY_SESSION_TITLE, currentSessionTitle.value)
+      } else {
+        sessionStorage.removeItem(STORAGE_KEY_SESSION_TITLE)
+      }
+    } catch (err) {
+      console.error('Error saving chat state to storage:', err)
+    }
+  }
+
+  // Восстановление состояния из sessionStorage
+  function restoreFromStorage() {
+    try {
+      const savedMessages = sessionStorage.getItem(STORAGE_KEY_MESSAGES)
+      const savedSessionId = sessionStorage.getItem(STORAGE_KEY_SESSION_ID)
+      const savedTitle = sessionStorage.getItem(STORAGE_KEY_SESSION_TITLE)
+
+      if (savedMessages) {
+        messages.value = JSON.parse(savedMessages)
+        console.log('Restored messages from storage:', messages.value.length, 'messages')
+      }
+
+      if (savedSessionId) {
+        sessionId.value = savedSessionId
+        console.log('Restored session_id:', sessionId.value)
+      }
+
+      if (savedTitle) {
+        currentSessionTitle.value = savedTitle
+        console.log('Restored session title:', currentSessionTitle.value)
+      }
+
+      return !!(savedMessages || savedSessionId)
+    } catch (err) {
+      console.error('Error restoring chat state from storage:', err)
+      return false
+    }
+  }
+
+  // Очистка sessionStorage
+  function clearStorage() {
+    try {
+      sessionStorage.removeItem(STORAGE_KEY_MESSAGES)
+      sessionStorage.removeItem(STORAGE_KEY_SESSION_ID)
+      sessionStorage.removeItem(STORAGE_KEY_SESSION_TITLE)
+    } catch (err) {
+      console.error('Error clearing chat storage:', err)
+    }
+  }
 
   // Добавить сообщение в локальный список
   function addMessage(role, content, sources = [], msgSessionId = null, queryId = null) {
@@ -27,6 +96,8 @@ export const useChatStore = defineStore('chat', () => {
       queryId, // ID конкретного ответа для фидбека
       timestamp: new Date()
     })
+    // Сохраняем после добавления сообщения
+    saveToStorage()
   }
 
   // Начать новый чат (очистить всё и сбросить sessionId)
@@ -35,6 +106,7 @@ export const useChatStore = defineStore('chat', () => {
     sessionId.value = null
     error.value = null
     currentSessionTitle.value = ''
+    clearStorage()
   }
 
   // Загрузить сессию чата
@@ -59,6 +131,7 @@ export const useChatStore = defineStore('chat', () => {
         timestamp: new Date(session.created_at)
       }
     ]
+    saveToStorage()
   }
 
   // Обновить список сессий из истории
@@ -265,6 +338,8 @@ export const useChatStore = defineStore('chat', () => {
     loadMoreHistory,
     submitFeedback,
     removeFeedback,
-    loadFeedback
+    loadFeedback,
+    restoreFromStorage,
+    clearStorage
   }
 })

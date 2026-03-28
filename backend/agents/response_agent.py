@@ -10,6 +10,7 @@ from prompts.system_prompt import get_system_prompt
 from tools.search_tool import SearchResult
 from agents.search_agent import SearchAgent
 from utils.timing import timing, timing_context
+from utils.agent_logger import log_agent_response
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,9 @@ class ResponseAgent:
         search_results: List[SearchResult],
         history: str = "",
         temperature: float = 0.7,
-        max_tokens: int = 2000
+        max_tokens: int = 2000,
+        query_id: Optional[str] = None,
+        session_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Генерация ответа.
@@ -51,6 +54,8 @@ class ResponseAgent:
             history: История диалога
             temperature: Температура генерации
             max_tokens: Максимум токенов
+            query_id: Уникальный ID запроса (для логирования)
+            session_id: ID сессии (для логирования)
 
         Returns:
             Словарь с ответом:
@@ -58,6 +63,13 @@ class ResponseAgent:
             - sources: список источников
             - confidence: уверенность
         """
+        import uuid
+        import time
+        
+        _query_id = query_id or str(uuid.uuid4())
+        _session_id = session_id or "unknown"
+        _start_time = time.time()
+        
         # Формирование контекста из результатов поиска
         with timing_context("ResponseAgent.format_context"):
             context = self._format_context(search_results)
@@ -98,12 +110,24 @@ class ResponseAgent:
 
             logger.info(f"Ответ сгенерирован: {len(updated_answer)} символов, источников: {len(sources)}")
 
-            return {
+            response_data = {
                 "answer": updated_answer,
                 "sources": sources,
                 "confidence": 0.8 if search_results else 0.3,
                 "context_used": context
             }
+            
+            # Логирование ответа
+            timing_info = {"total_time": time.time() - _start_time}
+            log_agent_response(
+                query_id=_query_id,
+                session_id=_session_id,
+                user_query=user_query,
+                response_data=response_data,
+                timing_info=timing_info
+            )
+
+            return response_data
 
         except Exception as e:
             logger.error(f"Ошибка генерации ответа: {e}")

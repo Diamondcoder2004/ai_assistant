@@ -313,68 +313,90 @@ onMounted(async () => {
   const resumeSessionId = localStorage.getItem('resumeSessionId')
   console.log('resumeSessionId:', resumeSessionId)
   console.log('authStore.user:', authStore.user)
-  console.log('chatStore.history before load:', chatStore.history?.length || 0)
 
-  if (resumeSessionId) {
-    localStorage.removeItem('resumeSessionId')
+  if (authStore.user) {
+    if (resumeSessionId) {
+      localStorage.removeItem('resumeSessionId')
 
-    // Загружаем историю для этой сессии
-    if (authStore.user) {
-      await chatStore.loadHistory(50)
-      console.log('chatStore.history after load:', chatStore.history?.length || 0)
+      // 1. Включаем лоадер, чтобы UI сразу отреагировал на переход
+      chatStore.isLoading = true
 
-      // Находим записи для этой сессии
-      const sessionChats = (chatStore.history || [])
-        .filter(c => c.session_id === resumeSessionId || c.id == resumeSessionId)
-        .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-
-      console.log('sessionChats found:', sessionChats.length)
-
-      if (sessionChats.length > 0) {
-        const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
-        chatStore.sessionId = actualSessionId
-        chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
-
-        // Очищаем и добавляем все сообщения из сессии
-        chatStore.messages = []
-        for (const chat of sessionChats) {
-          chatStore.messages.push({
-            id: Date.now() + chat.id,
-            role: 'user',
-            content: chat.question,
-            sessionId: actualSessionId,
-            timestamp: new Date(chat.created_at)
-          })
-          chatStore.messages.push({
-            id: Date.now() + chat.id + 1,
-            role: 'assistant',
-            content: chat.answer,
-            sources: chat.sources || [],
-            sessionId: actualSessionId,
-            queryId: chat.id,
-            timestamp: new Date(chat.created_at)
-          })
-        }
-        console.log('Session restored from History.vue:', chatStore.messages.length, 'messages')
-        // Сохраняем в sessionStorage для последующего восстановления
-        chatStore.saveToStorage()
-      } else {
-        console.warn('No chats found for session:', resumeSessionId)
-      }
-    }
-  } 
-  // 2. Если resumeSessionId нет, пробуем восстановить из sessionStorage (после F5)
-  else if (authStore.user) {
-    console.log('No resumeSessionId, trying to restore from sessionStorage...')
-    const restored = chatStore.restoreFromStorage()
-    
-    if (restored) {
-      console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
-    } else {
-      // Если нет сохранённой сессии, просто загружаем историю
-      console.log('No saved session in sessionStorage, loading history...')
-      if ((chatStore.history?.length || 0) === 0) {
+      try {
+        // 2. Делаем тяжелый запрос к истории
+        console.log('Loading history for session:', resumeSessionId)
         await chatStore.loadHistory(50)
+        console.log('chatStore.history loaded:', chatStore.history?.length || 0)
+
+        // Находим записи для этой сессии
+        const sessionChats = (chatStore.history || [])
+          .filter(c => c.session_id === resumeSessionId || c.id == resumeSessionId)
+          .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+
+        console.log('sessionChats found:', sessionChats.length)
+
+        if (sessionChats.length > 0) {
+          const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
+          chatStore.sessionId = actualSessionId
+          chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
+
+          // Очищаем и добавляем все сообщения из сессии
+          chatStore.messages = []
+          for (const chat of sessionChats) {
+            chatStore.messages.push({
+              id: Date.now() + chat.id,
+              role: 'user',
+              content: chat.question,
+              sessionId: actualSessionId,
+              timestamp: new Date(chat.created_at)
+            })
+            chatStore.messages.push({
+              id: Date.now() + chat.id + 1,
+              role: 'assistant',
+              content: chat.answer,
+              sources: chat.sources || [],
+              sessionId: actualSessionId,
+              queryId: chat.id,
+              timestamp: new Date(chat.created_at)
+            })
+          }
+          console.log('Session restored from History.vue:', chatStore.messages.length, 'messages')
+          
+          // Сохраняем в sessionStorage для последующего восстановления после F5
+          chatStore.saveToStorage()
+          
+          // Сохраняем текущую сессию для быстрого доступа
+          localStorage.setItem('currentSession', JSON.stringify({
+            sessionId: actualSessionId,
+            title: chatStore.currentSessionTitle
+          }))
+        } else {
+          console.warn('No chats found for session:', resumeSessionId)
+        }
+      } catch (err) {
+        console.error('Error loading history:', err)
+      } finally {
+        // 3. Гарантированно выключаем лоадер
+        chatStore.isLoading = false
+      }
+    } 
+    // 2. Если resumeSessionId нет, пробуем восстановить из sessionStorage (после F5)
+    else {
+      console.log('No resumeSessionId, trying to restore from sessionStorage...')
+      const restored = chatStore.restoreFromStorage()
+      
+      if (restored) {
+        console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
+      } else {
+        // Если нет сохранённой сессии, просто загружаем историю
+        console.log('No saved session in sessionStorage, loading history...')
+        chatStore.isLoading = true
+        try {
+          if ((chatStore.history?.length || 0) === 0) {
+            await chatStore.loadHistory(50)
+          }
+        } finally {
+          chatStore.isLoading = false
+        }
       }
     }
   }

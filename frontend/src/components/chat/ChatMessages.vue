@@ -105,6 +105,12 @@
       <span class="pulse-dot"></span>
       <span>Генерация ответа...</span>
     </div>
+    
+    <!-- Индикатор загрузки истории/сессии -->
+    <div v-if="isLoading && messages.length === 0" class="loading-history-indicator">
+      <div class="loading-spinner"></div>
+      <span>Загрузка диалога...</span>
+    </div>
   </div>
 </template>
 
@@ -668,6 +674,31 @@ watch(() => props.messages.length, () => {
     opacity: 0.5;
     transform: scale(1.2);
   }
+}
+
+/* Индикатор загрузки истории/сессии */
+.loading-history-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 20px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #0066cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Индикатор набора текста */

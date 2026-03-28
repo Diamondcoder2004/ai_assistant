@@ -7,6 +7,7 @@ import time
 import uuid
 import json
 import asyncio
+import re
 from pathlib import Path
 from typing import Optional, List
 from datetime import datetime
@@ -28,10 +29,53 @@ from .database import (
 )
 from main import AgenticRAG
 import config
+
+
+def strip_markdown(text: str) -> str:
+    """Удаление markdown разметки из текста."""
+    if not text:
+        return ""
+    
+    # Удаляем ссылки [text](url) -> text
+    text = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text)
+    
+    # Удаляем жирный текст **text** -> text
+    text = re.sub(r'\*\*([^*]+)\*\*', r'\1', text)
+    text = re.sub(r'__([^_]+)__', r'\1', text)
+    
+    # Удаляем курсив *text* -> text
+    text = re.sub(r'\*([^*]+)\*', r'\1', text)
+    text = re.sub(r'_([^_]+)_', r'\1', text)
+    
+    # Удаляем заголовки # text -> text
+    text = re.sub(r'^#+\s+', '', text, flags=re.MULTILINE)
+    
+    # Удаляем блоки кода ```code``` -> code
+    text = re.sub(r'```[\s\S]*?```', '', text)
+    
+    # Удаляем inline код `code` -> code
+    text = re.sub(r'`([^`]+)`', r'\1', text)
+    
+    # Удаляем списки - item -> item
+    text = re.sub(r'^\s*[-*]\s+', '', text, flags=re.MULTILINE)
+    
+    # Удаляем нумерованные списки 1. item -> item
+    text = re.sub(r'^\s*\d+\.\s+', '', text, flags=re.MULTILINE)
+    
+    # Удаляем LaTeX формулы $$...$$ и $...$
+    text = re.sub(r'\$\$[\s\S]*?\$\$', '', text)
+    text = re.sub(r'\$([^$]+)\$', r'\1', text)
+    
+    # Очищаем лишние пробелы и переносы
+    text = re.sub(r'\n\s*\n', '\n', text)
+    text = text.strip()
+
+    return text
+
+
 from .auth import get_current_user
 from utils.timing import get_timing_stats, print_timing_stats, save_timing_stats, reset_timing_stats
 from datetime import datetime, timedelta
-import re
 from utils.bg_cache_loader import get_bm25_status, is_bm25_loaded
 
 logger = logging.getLogger(__name__)
@@ -484,31 +528,41 @@ async def get_history_sessions(
             
             db_logger.info(f"Сессия {session_id[:8]}: updated_at={session['updated_at']}, date={session_date}")
             
-            # Формируем превью сообщений
+            # Формируем превью сообщений (максимум 3: первое + последние два)
             messages_preview = []
             messages = session["messages"]
-            
+
             if len(messages) > 0:
-                # Первый вопрос
+                # Первое сообщение (вопрос)
+                first_msg = messages[0]
                 messages_preview.append({
                     "type": "question",
-                    "text": messages[0]["question"][:150] if len(messages[0]["question"]) > 150 else messages[0]["question"]
+                    "text": strip_markdown(first_msg["question"])[:150]
                 })
                 
                 # Первый ответ (если есть)
                 if len(messages) > 1:
                     messages_preview.append({
                         "type": "answer",
-                        "text": messages[0]["answer"][:200] if len(messages[0]["answer"]) > 200 else messages[0]["answer"]
+                        "text": strip_markdown(first_msg["answer"])[:200]
                     })
-                
-                # Последнее сообщение (если это не первое сообщение)
+
+                # Последние два сообщения (если их больше 2)
                 if len(messages) > 2:
+                    # Предпоследнее сообщение
+                    second_last = messages[-2]
+                    preview_text = second_last["question"] if second_last["id"] % 2 == 1 else second_last["answer"]
+                    messages_preview.append({
+                        "type": "last",
+                        "text": strip_markdown(preview_text)[:150]
+                    })
+                    
+                    # Последнее сообщение
                     last_msg = messages[-1]
                     preview_text = last_msg["question"] if last_msg["id"] % 2 == 1 else last_msg["answer"]
                     messages_preview.append({
                         "type": "last",
-                        "text": preview_text[:150] if len(preview_text) > 150 else preview_text
+                        "text": strip_markdown(preview_text)[:150]
                     })
             
             session_data = {

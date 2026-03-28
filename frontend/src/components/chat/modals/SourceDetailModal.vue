@@ -110,6 +110,7 @@
 
 <script setup>
 import { computed, ref } from 'vue'
+import { renderMarkdown } from '../../../utils/markdownRenderer'
 
 const props = defineProps({
   source: {
@@ -123,60 +124,10 @@ const emit = defineEmits(['close'])
 
 const showScoreInfo = ref(false)
 
-// Рендерим контент (поддержка HTML и Markdown)
+// Рендерим контент через markdownRenderer (поддержка таблиц, LaTeX, markdown)
 const renderedContent = computed(() => {
   if (!props.source?.content) return ''
-  
-  let content = props.source.content
-  
-  // Если контент уже содержит HTML-теги, используем его как есть
-  if (content.includes('<br>') || content.includes('<table') || content.includes('<tr>') || content.includes('<td>')) {
-    return content
-  }
-  
-  // Иначе применяем базовый Markdown-парсинг
-  // Экранируем HTML для безопасности
-  content = content
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-  
-  // Заголовки (#, ##, ### и т.д.)
-  content = content.replace(/^###### (.*$)/gim, '<h6>$1</h6>')
-  content = content.replace(/^##### (.*$)/gim, '<h5>$1</h5>')
-  content = content.replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-  content = content.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-  content = content.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-  content = content.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-  
-  // Жирный текст (**text** или __text__)
-  content = content.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-  content = content.replace(/__(.*?)__/gim, '<strong>$1</strong>')
-  
-  // Курсив (*text* или _text_)
-  content = content.replace(/\*(.*?)\*/gim, '<em>$1</em>')
-  content = content.replace(/_(.*?)_/gim, '<em>$1</em>')
-  
-  // Списки (- item или * item)
-  content = content.replace(/^\s*[-*]\s+(.*$)/gim, '<li>$1</li>')
-  content = content.replace(/(<li>.*<\/li>\n?)+/gim, '<ul>$&</ul>')
-  
-  // Нумерованные списки (1. item)
-  content = content.replace(/^\s*\d+\.\s+(.*$)/gim, '<li>$1</li>')
-  
-  // Ссылки [text](url)
-  content = content.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
-  
-  // Код в строке (`code`)
-  content = content.replace(/`(.*?)`/gim, '<code>$1</code>')
-  
-  // Блоки кода (```code```)
-  content = content.replace(/```([\s\S]*?)```/gim, '<pre><code>$1</code></pre>')
-  
-  // Переносы строк (заменяем на <br> или оборачиваем в <p>)
-  content = content.split('\n\n').map(p => `<p>${p.trim()}</p>`).join('')
-  
-  return content
+  return renderMarkdown(props.source.content)
 })
 
 function formatScore(score) {

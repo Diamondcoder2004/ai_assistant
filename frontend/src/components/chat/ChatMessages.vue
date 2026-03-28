@@ -15,7 +15,7 @@
       :class="{ 'user-message': msg.role === 'user', 'assistant-message': msg.role === 'assistant' }"
     >
       <div class="message-bubble">
-        <div class="message-content" :class="msg.role === 'assistant' ? 'markdown-body' : 'user-content'" @click="(e) => handleSourceClick(e, msg)">
+        <div class="message-content" :class="msg.role === 'assistant' ? 'markdown-body' : 'user-content'" @click="(e) => handleSourceClick(e, msg, emit)">
           <!-- Индикатор печати для пустого сообщения во время streaming -->
           <div v-if="msg.content === '' && isLoading" class="typing-indicator">
             <span class="dot"></span>
@@ -116,10 +116,8 @@
 
 <script setup>
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { marked } from 'marked'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import { useHotkeysStore } from '../../stores/hotkeysStore'
+import { renderMarkdown, handleSourceClick } from '../../utils/markdownRenderer'
 
 const props = defineProps({
   messages: {
@@ -145,56 +143,8 @@ const emit = defineEmits(['toggleSources', 'feedback', 'openStarRating', 'scroll
 
 const messagesContainer = ref(null)
 
-// Рендеринг markdown с кликабельными источниками и LaTeX формулами
-function renderMarkdown(text) {
-  if (!text) return ''
-  
-  // Преобразуем [1], [2] и т.д. в кликабельные ссылки
-  const textWithLinks = text.replace(/\[(\d+)\]/g, (match, num) => {
-    return `<a href="#source-${num}" class="source-link" data-source="${num}">${match}</a>`
-  })
-  
-  // Обработка LaTeX формул между $$
-  const textWithMath = textWithLinks.replace(/\$\$([\s\S]+?)\$\$/g, (match, formula) => {
-    try {
-      const html = katex.renderToString(formula.trim(), {
-        throwOnError: false,
-        displayMode: true
-      })
-      return html
-    } catch (err) {
-      console.error('LaTeX render error:', err)
-      return match // Возвращаем как есть при ошибке
-    }
-  })
-  
-  // Обработка inline формул между $ (но не внутри ссылок)
-  const finalText = textWithMath.replace(/\$([^\n$]+?)\$/g, (match, formula) => {
-    // Пропускаем, если это уже обработанная формула или ссылка
-    if (match.includes('<a') || match.includes('href')) return match
-    try {
-      const html = katex.renderToString(formula.trim(), {
-        throwOnError: false,
-        displayMode: false
-      })
-      return html
-    } catch (err) {
-      return match
-    }
-  })
-  
-  return marked.parse(finalText)
-}
-
-// Обработка клика на источник
-function handleSourceClick(event, msg) {
-  const sourceLink = event.target.closest('.source-link')
-  if (sourceLink) {
-    event.preventDefault()
-    const sourceNum = parseInt(sourceLink.dataset.source)
-    emit('scrollToSource', { sourceNum, messageId: msg.id })
-  }
-}
+// Обработка клика на источник (импортируется из markdownRenderer)
+// handleSourceClick доступна из импорта
 
 // Копирование в буфер обмена
 const copiedMessages = ref({})

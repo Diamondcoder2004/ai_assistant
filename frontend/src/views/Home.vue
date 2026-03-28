@@ -408,12 +408,54 @@ onMounted(async () => {
       if (restored) {
         console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
       } else {
-        // Если нет сохранённой сессии, просто загружаем историю
+        // Если нет сохранённой сессии, загружаем последнюю активную сессию из истории
         console.log('No saved session in sessionStorage, loading history...')
         chatStore.isLoading = true
         try {
-          if ((chatStore.history?.length || 0) === 0) {
-            await chatStore.loadHistory(50)
+          await chatStore.loadHistory(50)
+          
+          // Находим последнюю сессию (первую в списке)
+          if (chatStore.history && chatStore.history.length > 0) {
+            const lastSession = chatStore.history[0]
+            const actualSessionId = String(lastSession.session_id || lastSession.id)
+            
+            console.log('Loading last session:', actualSessionId)
+            
+            // Загружаем все сообщения этой сессии
+            const sessionChats = (chatStore.history || [])
+              .filter(c => c.session_id === actualSessionId || c.id == actualSessionId)
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+            
+            if (sessionChats.length > 0) {
+              chatStore.sessionId = actualSessionId
+              chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
+              
+              chatStore.messages = []
+              for (const chat of sessionChats) {
+                chatStore.messages.push({
+                  id: Date.now() + chat.id,
+                  role: 'user',
+                  content: chat.question,
+                  sessionId: actualSessionId,
+                  timestamp: new Date(chat.created_at)
+                })
+                chatStore.messages.push({
+                  id: Date.now() + chat.id + 1,
+                  role: 'assistant',
+                  content: chat.answer,
+                  sources: chat.sources || [],
+                  sessionId: actualSessionId,
+                  queryId: chat.id,
+                  timestamp: new Date(chat.created_at)
+                })
+              }
+              
+              console.log('Last session restored:', chatStore.messages.length, 'messages')
+              
+              // Сохраняем в sessionStorage для последующего восстановления после F5
+              chatStore.saveToStorage()
+              console.log('Saved to sessionStorage')
+            }
           }
         } finally {
           chatStore.isLoading = false

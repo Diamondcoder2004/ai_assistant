@@ -209,10 +209,12 @@ import { useRouter } from 'vue-router'
 import Header from '../components/Header.vue'
 import Footer from '../components/Footer.vue'
 import { useAuthStore } from '../stores/authStore'
+import { useChatStore } from '../stores/chatStore'
 import { chatService } from '../services/supabase'
 
 const router = useRouter()
 const authStore = useAuthStore()
+const chatStore = useChatStore()
 
 const sessions = ref({
   today: [],
@@ -229,6 +231,36 @@ const currentPage = ref(1)
 const pageSize = 20
 const hasMore = ref(true)
 
+// Восстановление истории из sessionStorage
+function restoreHistoryFromStorage() {
+  if (chatStore.chatSessions && chatStore.chatSessions.length > 0) {
+    // Распределяем сессии по группам
+    const today = []
+    const yesterday = []
+    const earlier = []
+    
+    const now = new Date()
+    const todayStr = now.toISOString().split('T')[0]
+    const yesterdayStr = new Date(now.getTime() - 86400000).toISOString().split('T')[0]
+    
+    for (const session of chatStore.chatSessions) {
+      const sessionDate = session.updated_at.split('T')[0]
+      if (sessionDate === todayStr) {
+        today.push(session)
+      } else if (sessionDate === yesterdayStr) {
+        yesterday.push(session)
+      } else {
+        earlier.push(session)
+      }
+    }
+    
+    sessions.value = { today, yesterday, earlier }
+    console.log('History restored from chatStore:', { today: today.length, yesterday: yesterday.length, earlier: earlier.length })
+    return true
+  }
+  return false
+}
+
 // Установка дат по умолчанию (без фильтрации - показываем все чаты)
 function setDefaultDates() {
   // Оставляем даты пустыми - показываем все чаты
@@ -238,16 +270,17 @@ function setDefaultDates() {
 }
 
 // Загрузка истории сессий
-async function loadHistory(append = false) {
+async function loadHistory(append = false, background = false) {
   if (!authStore.user) {
     console.log('User not authenticated, cannot load history')
     loading.value = false
     return
   }
 
+  // Если фоновая загрузка и уже есть данные, не показываем лоадер
   if (append) {
     loadingMore.value = true
-  } else {
+  } else if (!background) {
     loading.value = true
     currentPage.value = 1
     hasMore.value = true
@@ -265,33 +298,36 @@ async function loadHistory(append = false) {
     console.log('loadHistory: startDate=', startDate.value, 'endDate=', endDate.value)
 
     const data = await chatService.getHistorySessions(
-      params.search || null, 
-      params.start_date || null, 
+      params.search || null,
+      params.start_date || null,
       params.end_date || null,
       params.limit,
       params.offset
     )
 
     const newSessions = data || { today: [], yesterday: [], earlier: [] }
-    
+
     if (append) {
       // Объединяем с существующими
       sessions.value.today = [...sessions.value.today, ...newSessions.today]
       sessions.value.yesterday = [...sessions.value.yesterday, ...newSessions.yesterday]
       sessions.value.earlier = [...sessions.value.earlier, ...newSessions.earlier]
-      
+
       // Проверяем, есть ли ещё данные
       const totalNew = newSessions.today.length + newSessions.yesterday.length + newSessions.earlier.length
       hasMore.value = totalNew >= pageSize
       currentPage.value++
     } else {
       sessions.value = newSessions
-      
+
       // Проверяем, есть ли ещё данные
       const total = sessions.value.today.length + sessions.value.yesterday.length + sessions.value.earlier.length
       hasMore.value = total >= pageSize
+      
+      // Сохраняем в chatStore для быстрого восстановления
+      saveSessionsToChatStore(newSessions)
     }
-    
+
     console.log('History loaded:', {
       today: sessions.value.today.length,
       yesterday: sessions.value.yesterday.length,
@@ -300,13 +336,27 @@ async function loadHistory(append = false) {
     })
   } catch (error) {
     console.error('Ошибка загрузки истории:', error)
-    if (!append) {
+    if (!append && !background) {
       sessions.value = { today: [], yesterday: [], earlier: [] }
     }
   } finally {
-    loading.value = false
+    if (!background) {
+      loading.value = false
+    }
     loadingMore.value = false
   }
+}
+
+// Сохранение сессий в chatStore
+function saveSessionsToChatStore(sessionsData) {
+  const allSessions = [
+    ...sessionsData.today,
+    ...sessionsData.yesterday,
+    ...sessionsData.earlier
+  ]
+  chatStore.chatSessions = allSessions
+  chatStore.saveToStorage()
+  console.log('Sessions saved to chatStore:', allSessions.length)
 }
 
 // Загрузка ещё (при скролле)
@@ -391,10 +441,21 @@ onMounted(async () => {
     return
   }
 
-  console.log('History.vue: загружаем историю...')
-  setDefaultDates()
-  loadHistory()
+  // 1. Сначала пробуем восстановить из sessionStorage (мгновенно)
+  console.log('History.vue: восстанавливаем историю из sessionStorage...')
+  const restored = restoreHistoryFromStorage()
   
+  if (restored) {
+    console.log('History.vue: история восстановлена, показываем сразу')
+    loading.value = false
+  } else {
+    console.log('History.vue: нет сохранённой истории, загружаем...')
+  }
+
+  // 2. Загружаем свежую историю в фоне (не блокируя UI)
+  setDefaultDates()
+  loadHistory(false, true) // background = true
+
   // Добавляем обработчик скролла для infinite scroll
   window.addEventListener('scroll', handleScroll)
 })

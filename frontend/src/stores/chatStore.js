@@ -17,6 +17,8 @@ export const useChatStore = defineStore('chat', () => {
   const STORAGE_KEY_MESSAGES = 'chat_messages'
   const STORAGE_KEY_SESSION_ID = 'chat_session_id'
   const STORAGE_KEY_SESSION_TITLE = 'chat_session_title'
+  const STORAGE_KEY_HISTORY_SESSIONS = 'chat_history_sessions'
+  const STORAGE_KEY_HISTORY_LOADED_AT = 'chat_history_loaded_at'
 
   const authStore = useAuthStore()
 
@@ -24,7 +26,7 @@ export const useChatStore = defineStore('chat', () => {
   function saveToStorage() {
     try {
       console.log('[chatStore.saveToStorage] Called, messages:', messages.value?.length || 0, 'sessionId:', sessionId.value)
-      
+
       if (messages.value.length > 0) {
         sessionStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(messages.value))
         console.log('[chatStore.saveToStorage] Saved messages:', messages.value.length)
@@ -49,6 +51,13 @@ export const useChatStore = defineStore('chat', () => {
         console.log('[chatStore.saveToStorage] Removed title (empty)')
       }
       
+      // Сохраняем историю сессий для History.vue
+      if (chatSessions.value.length > 0) {
+        sessionStorage.setItem(STORAGE_KEY_HISTORY_SESSIONS, JSON.stringify(chatSessions.value))
+        sessionStorage.setItem(STORAGE_KEY_HISTORY_LOADED_AT, Date.now().toString())
+        console.log('[chatStore.saveToStorage] Saved history sessions:', chatSessions.value.length)
+      }
+      
       console.log('[chatStore.saveToStorage] Complete')
     } catch (err) {
       console.error('[chatStore.saveToStorage] Error:', err)
@@ -63,8 +72,10 @@ export const useChatStore = defineStore('chat', () => {
       const savedMessages = sessionStorage.getItem(STORAGE_KEY_MESSAGES)
       const savedSessionId = sessionStorage.getItem(STORAGE_KEY_SESSION_ID)
       const savedTitle = sessionStorage.getItem(STORAGE_KEY_SESSION_TITLE)
+      const savedHistorySessions = sessionStorage.getItem(STORAGE_KEY_HISTORY_SESSIONS)
+      const historyLoadedAt = sessionStorage.getItem(STORAGE_KEY_HISTORY_LOADED_AT)
       
-      console.log('[chatStore.restoreFromStorage] Found messages:', !!savedMessages, 'sessionId:', !!savedSessionId, 'title:', !!savedTitle)
+      console.log('[chatStore.restoreFromStorage] Found messages:', !!savedMessages, 'sessionId:', !!savedSessionId, 'title:', !!savedTitle, 'historySessions:', !!savedHistorySessions)
 
       if (savedMessages) {
         messages.value = JSON.parse(savedMessages)
@@ -86,8 +97,26 @@ export const useChatStore = defineStore('chat', () => {
       } else {
         console.log('[chatStore.restoreFromStorage] No saved title')
       }
+      
+      // Восстанавливаем историю сессий если она загружена недавно (< 5 минут)
+      if (savedHistorySessions && historyLoadedAt) {
+        const loadedTime = parseInt(historyLoadedAt)
+        const now = Date.now()
+        const ageMinutes = (now - loadedTime) / 1000 / 60
+        
+        if (ageMinutes < 5) {
+          chatSessions.value = JSON.parse(savedHistorySessions)
+          console.log('[chatStore.restoreFromStorage] Restored history sessions:', chatSessions.value.length, '(age:', Math.round(ageMinutes * 10) / 10, 'min)')
+        } else {
+          console.log('[chatStore.restoreFromStorage] History too old, clearing:', ageMinutes.toFixed(1), 'min')
+          sessionStorage.removeItem(STORAGE_KEY_HISTORY_SESSIONS)
+          sessionStorage.removeItem(STORAGE_KEY_HISTORY_LOADED_AT)
+        }
+      } else {
+        console.log('[chatStore.restoreFromStorage] No saved history sessions')
+      }
 
-      const result = !!(savedMessages || savedSessionId)
+      const result = !!(savedMessages || savedSessionId || savedHistorySessions)
       console.log('[chatStore.restoreFromStorage] Result:', result)
       return result
     } catch (err) {

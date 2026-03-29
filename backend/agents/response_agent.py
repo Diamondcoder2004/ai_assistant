@@ -2,6 +2,7 @@
 Response Agent — агент формирования ответов
 """
 import logging
+import json
 from typing import List, Optional, Dict, Any
 
 from openai import OpenAI
@@ -102,8 +103,39 @@ class ResponseAgent:
                     temperature=temperature,
                     max_tokens=max_tokens
                 )
+                
+                # Логирование полного ответа от провайдера
+                logger.info(f"LLM raw response: id={getattr(response, 'id', 'N/A')}, "
+                           f"choices={getattr(response, 'choices', None)}, "
+                           f"model={getattr(response, 'model', 'N/A')}")
+                
+                # Проверка на валидность ответа
+                if not response.choices:
+                    # Логируем всю структуру ответа для отладки
+                    try:
+                        response_dict = {
+                            "id": getattr(response, "id", None),
+                            "choices": getattr(response, "choices", None),
+                            "created": getattr(response, "created", None),
+                            "model": getattr(response, "model", None),
+                            "system_fingerprint": getattr(response, "system_fingerprint", None),
+                            "object": getattr(response, "object", None),
+                            "usage": {
+                                "prompt_tokens": getattr(getattr(response, "usage", None), "prompt_tokens", None),
+                                "completion_tokens": getattr(getattr(response, "usage", None), "completion_tokens", None),
+                                "total_tokens": getattr(getattr(response, "usage", None), "total_tokens", None),
+                            } if getattr(response, "usage", None) else None
+                        }
+                        logger.error(f"LLM empty choices structure: {json.dumps(response_dict, indent=2, default=str)}")
+                    except Exception as e:
+                        logger.error(f"Failed to serialize response: {e}")
+                    
+                    raise ValueError(f"LLM returned empty choices: {response}")
 
             answer = response.choices[0].message.content
+            
+            # Логирование частичного ответа (первые 200 символов)
+            logger.info(f"LLM answer preview: {answer[:200]}...")
 
             # Извлечение источников с перемаппингом индексов
             with timing_context("ResponseAgent.extract_sources"):

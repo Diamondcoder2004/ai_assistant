@@ -115,8 +115,20 @@ class QueryGeneratorAgent:
                     max_tokens=1500,
                     response_format={"type": "json_object"}
                 )
+                
+                # Логирование ответа от провайдера
+                logger.info(f"QueryGenerator LLM response: id={getattr(response, 'id', 'N/A')}, "
+                           f"choices={getattr(response, 'choices', None)}")
+
+                # Проверка на валидность ответа
+                if not response.choices:
+                    logger.error(f"QueryGenerator: LLM returned empty choices. Full response: {response}")
+                    raise ValueError(f"LLM returned empty choices: {response}")
 
                 result_text = response.choices[0].message.content
+                
+                # Логирование preview ответа
+                logger.info(f"QueryGenerator LLM answer preview: {result_text[:200]}...")
 
                 # Парсинг JSON
                 result_data = json.loads(result_text)

@@ -23,10 +23,12 @@ marked.setOptions({
  */
 export function renderMarkdown(text) {
   if (!text) return ''
-  
+
   try {
-    // Сначала обрабатываем блочные LaTeX формулы $$...$$
-    let processedText = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
+    let processedText = text
+
+    // 1. Сначала обрабатываем блочные LaTeX формулы $$...$$
+    processedText = processedText.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
       try {
         const rendered = katex.renderToString(latex.trim(), {
           throwOnError: false,
@@ -37,13 +39,39 @@ export function renderMarkdown(text) {
         return match
       }
     })
-    
-    // Преобразуем [1], [2] и т.д. в кликабельные ссылки
-    processedText = processedText.replace(/\[(\d+)\]/g, (match, num) => {
+
+    // 2. Обрабатываем блочные LaTeX формулы \[...\] (альтернативный синтаксис)
+    processedText = processedText.replace(/\\\[([\s\S]*?)\\\]/g, (match, latex) => {
+      try {
+        const rendered = katex.renderToString(latex.trim(), {
+          throwOnError: false,
+          displayMode: true
+        })
+        return `<div class="katex-display">${rendered}</div>`
+      } catch (e) {
+        return match
+      }
+    })
+
+    // 3. Обрабатываем inline LaTeX формулы \(...\) (альтернативный синтаксис)
+    processedText = processedText.replace(/\\\(.*?\\\)/g, (match, latex) => {
+      try {
+        const rendered = katex.renderToString(latex.trim(), {
+          throwOnError: false,
+          displayMode: false
+        })
+        return `<span class="katex-inline">${rendered}</span>`
+      } catch (e) {
+        return match
+      }
+    })
+
+    // 4. Преобразуем [1], [2] и т.д. в кликабельные ссылки (НО НЕ \[1\]!)
+    processedText = processedText.replace(/(?<!\\)\[(\d+)\](?!\\)/g, (match, num) => {
       return `<a href="#source-${num}" class="source-link" data-source="${num}">${match}</a>`
     })
-    
-    // Затем обрабатываем inline LaTeX $...$
+
+    // 5. Затем обрабатываем inline LaTeX $...$ (но не внутри ссылок)
     processedText = processedText.replace(/\$([^\n$]+?)\$/g, (match, latex) => {
       // Пропускаем, если это уже обработанная ссылка
       if (match.includes('<a') || match.includes('href')) return match
@@ -57,7 +85,10 @@ export function renderMarkdown(text) {
         return match
       }
     })
-    
+
+    // 6. Удаляем экранирование для \[ и \] которые остались
+    processedText = processedText.replace(/\\\[/g, '[').replace(/\\\]/g, ']')
+
     return marked(processedText)
   } catch (e) {
     console.error('Markdown render error:', e)

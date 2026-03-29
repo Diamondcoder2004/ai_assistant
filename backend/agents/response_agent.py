@@ -3,6 +3,7 @@ Response Agent — агент формирования ответов
 """
 import logging
 import json
+import re
 from typing import List, Optional, Dict, Any
 
 from openai import OpenAI
@@ -14,6 +15,27 @@ from utils.timing import timing, timing_context
 from utils.agent_logger import log_agent_response
 
 logger = logging.getLogger(__name__)
+
+
+def fix_latex_in_text(text: str) -> str:
+    """
+    Конвертирует формулы из (C_1) в \(C_1\) для правильного рендеринга.
+    
+    Обрабатывает:
+    - (C_{1.1}) → \(C_{1.1}\)
+    - (C_1) → \(C_1\)
+    - (P_{\text{...}}) → \(P_{\text{...}}\)
+    """
+    if not text:
+        return text
+    
+    # Паттерн для сложных формул с индексами: (C_{1.1}), (P_{\text{...}})
+    result = re.sub(r'\(([A-Za-z]_\{[^}]+\})\)', r'\\(\1\\)', text)
+    
+    # Паттерн для простых индексов: (C_1), (P_max)
+    result = re.sub(r'\(([A-Za-z]_[A-Za-z0-9]+)\)', r'\\(\1\\)', result)
+    
+    return result
 
 
 class ResponseAgent:
@@ -215,12 +237,15 @@ class ResponseAgent:
 
         parts = []
         for i, result in enumerate(results[:10], 1):
+            # Исправляем LaTeX формулы в контенте источника
+            fixed_content = fix_latex_in_text(result.content)
+            
             part = (
                 f"[src_{i}]\n"
                 f"Файл: {result.filename}\n"
                 f"Раздел: {result.breadcrumbs}\n"
                 f"Категория: {result.category if result.category else 'не указана'}\n"
-                f"Текст:\n{result.content}\n"
+                f"Текст:\n{fixed_content}\n"
             )
             parts.append(part)
 

@@ -443,6 +443,8 @@ async def get_history_sessions(
     search: Optional[str] = Query(None, description="Поиск по вопросам и ответам"),
     start_date: Optional[str] = Query(None, description="Начальная дата (YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="Конечная дата (YYYY-MM-DD)"),
+    limit: int = Query(20, ge=1, le=100, description="Количество сессий"),
+    offset: int = Query(0, ge=0, description="Смещение"),
     user_id: str = Depends(get_current_user)
 ):
     """
@@ -451,12 +453,14 @@ async def get_history_sessions(
     - search: поиск по тексту вопросов и ответов
     - start_date: фильтр по начальной дате
     - end_date: фильтр по конечной дате
+    - limit: количество сессий (1-100)
+    - offset: смещение для пагинации
     """
     db_logger.info(f"Запрос сгруппированной истории для пользователя {str(user_id)[:8]}")
-    db_logger.info(f"Параметры: search={search}, start_date={start_date}, end_date={end_date}")
+    db_logger.info(f"Параметры: search={search}, start_date={start_date}, end_date={end_date}, limit={limit}, offset={offset}")
 
     try:
-        # Получаем все чаты пользователя
+        # Получаем все чаты пользователя с учётом limit и offset
         all_chats = await get_user_chats(user_id, limit=1000, offset=0)
         db_logger.info(f"Получено чатов: {len(all_chats)}")
 
@@ -583,8 +587,28 @@ async def get_history_sessions(
         # Сортировка сессий внутри групп по дате (новые первые)
         for key in grouped:
             grouped[key].sort(key=lambda x: x["updated_at"], reverse=True)
+
+        # Применяем пагинацию к результату
+        # Сначала собираем все сессии в один список
+        all_sessions = []
+        for key in ["today", "yesterday", "earlier"]:
+            all_sessions.extend(grouped[key])
         
-        return grouped
+        # Применяем limit и offset
+        paginated_sessions = all_sessions[offset:offset + limit]
+        
+        # Распределяем обратно по группам
+        result = {"today": [], "yesterday": [], "earlier": []}
+        for session in paginated_sessions:
+            # Находим, в какой группе была сессия
+            for key in ["today", "yesterday", "earlier"]:
+                if session in grouped[key]:
+                    result[key].append(session)
+                    break
+        
+        db_logger.info(f"Возвращено сессий: today={len(result['today'])}, yesterday={len(result['yesterday'])}, earlier={len(result['earlier'])}")
+        
+        return result
 
     except Exception as e:
         db_logger.error(f"Ошибка получения сгруппированной истории: {e}", exc_info=True)

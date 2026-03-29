@@ -186,6 +186,24 @@
           </div>
         </div>
       </div>
+      
+      <!-- Кнопка "Загрузить ещё" -->
+      <div v-if="hasMore && !loadingMore" class="load-more-container">
+        <button @click="loadMoreHistory" class="load-more-btn">
+          Загрузить ещё
+        </button>
+      </div>
+      
+      <!-- Индикатор загрузки ещё -->
+      <div v-if="loadingMore" class="loading-more">
+        <div class="spinner"></div>
+        <p>Загрузка...</p>
+      </div>
+      
+      <!-- Конец списка -->
+      <div v-if="!hasMore && sessions.today.length + sessions.yesterday.length + sessions.earlier.length > 0" class="end-of-list">
+        <p>Это все чаты</p>
+      </div>
     </div>
 
     <Footer />
@@ -213,6 +231,10 @@ const searchQuery = ref('')
 const startDate = ref('')
 const endDate = ref('')
 const loading = ref(true)
+const loadingMore = ref(false)
+const currentPage = ref(1)
+const pageSize = 20
+const hasMore = ref(true)
 
 // Установка дат по умолчанию (без фильтрации - показываем все чаты)
 function setDefaultDates() {
@@ -223,38 +245,81 @@ function setDefaultDates() {
 }
 
 // Загрузка истории сессий
-async function loadHistory() {
+async function loadHistory(append = false) {
   if (!authStore.user) {
     console.log('User not authenticated, cannot load history')
     loading.value = false
     return
   }
 
-  loading.value = true
+  if (append) {
+    loadingMore.value = true
+  } else {
+    loading.value = true
+    currentPage.value = 1
+    hasMore.value = true
+  }
 
   try {
     const params = {}
     if (searchQuery.value) params.search = searchQuery.value
     if (startDate.value) params.start_date = startDate.value
     if (endDate.value) params.end_date = endDate.value
+    params.limit = pageSize
+    params.offset = append ? currentPage.value * pageSize : 0
 
     console.log('loadHistory: отправка параметров:', params)
     console.log('loadHistory: startDate=', startDate.value, 'endDate=', endDate.value)
 
-    const data = await chatService.getHistorySessions(params.search || null, params.start_date || null, params.end_date || null)
+    const data = await chatService.getHistorySessions(
+      params.search || null, 
+      params.start_date || null, 
+      params.end_date || null,
+      params.limit,
+      params.offset
+    )
+
+    const newSessions = data || { today: [], yesterday: [], earlier: [] }
     
-    sessions.value = data || { today: [], yesterday: [], earlier: [] }
+    if (append) {
+      // Объединяем с существующими
+      sessions.value.today = [...sessions.value.today, ...newSessions.today]
+      sessions.value.yesterday = [...sessions.value.yesterday, ...newSessions.yesterday]
+      sessions.value.earlier = [...sessions.value.earlier, ...newSessions.earlier]
+      
+      // Проверяем, есть ли ещё данные
+      const totalNew = newSessions.today.length + newSessions.yesterday.length + newSessions.earlier.length
+      hasMore.value = totalNew >= pageSize
+      currentPage.value++
+    } else {
+      sessions.value = newSessions
+      
+      // Проверяем, есть ли ещё данные
+      const total = sessions.value.today.length + sessions.value.yesterday.length + sessions.value.earlier.length
+      hasMore.value = total >= pageSize
+    }
+    
     console.log('History loaded:', {
       today: sessions.value.today.length,
       yesterday: sessions.value.yesterday.length,
-      earlier: sessions.value.earlier.length
+      earlier: sessions.value.earlier.length,
+      hasMore: hasMore.value
     })
   } catch (error) {
     console.error('Ошибка загрузки истории:', error)
-    sessions.value = { today: [], yesterday: [], earlier: [] }
+    if (!append) {
+      sessions.value = { today: [], yesterday: [], earlier: [] }
+    }
   } finally {
     loading.value = false
+    loadingMore.value = false
   }
+}
+
+// Загрузка ещё (при скролле)
+async function loadMoreHistory() {
+  if (loadingMore.value || !hasMore.value) return
+  await loadHistory(true)
 }
 
 // Применение фильтров
@@ -318,25 +383,40 @@ function formatDate(dateString) {
 
 onMounted(async () => {
   console.log('History.vue: onMounted, начинаем инициализацию...')
-  
+
   // Ждём инициализации authStore
   if (!authStore.user && authStore.init) {
     console.log('History.vue: вызываем authStore.init()...')
     await authStore.init()
     console.log('History.vue: authStore.init() завершён, user =', authStore.user?.email)
   }
-  
+
   // Проверяем аутентификацию
   if (!authStore.user) {
     console.log('History.vue: пользователь не аутентифицирован, редирект на /login')
     router.push('/login')
     return
   }
-  
+
   console.log('History.vue: загружаем историю...')
   setDefaultDates()
   loadHistory()
+  
+  // Добавляем обработчик скролла для infinite scroll
+  window.addEventListener('scroll', handleScroll)
 })
+
+// Обработчик скролла для загрузки ещё
+function handleScroll() {
+  const scrollTop = window.scrollY
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+  
+  // Если доскроллили до конца (за 100px до конца)
+  if (scrollTop + windowHeight >= documentHeight - 100) {
+    loadMoreHistory()
+  }
+}
 </script>
 
 <style scoped>
@@ -668,6 +748,59 @@ onMounted(async () => {
 
 .session-card:hover .session-arrow {
   color: #0066cc;
+}
+
+/* Кнопка "Загрузить ещё" */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin: 32px 0;
+}
+
+.load-more-btn {
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #0066cc;
+  border-radius: 8px;
+  color: #0066cc;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.load-more-btn:hover {
+  background: #0066cc;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+/* Индикатор загрузки ещё */
+.loading-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0;
+  color: #6b7280;
+}
+
+.loading-more .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #0066cc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Конец списка */
+.end-of-list {
+  text-align: center;
+  padding: 32px 0;
+  color: #9ca3af;
+  font-size: 14px;
 }
 
 /* Адаптивность */

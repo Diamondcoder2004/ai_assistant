@@ -152,6 +152,7 @@ export const authService = {
     }
 
     try {
+      await supabase.auth.getUser()
       const { data: { session } } = await supabase.auth.getSession()
       console.log('Session from Supabase:', session ? '✅ exists' : '❌ null')
       if (session) {
@@ -425,11 +426,11 @@ export const chatService = {
     return response.json();
   },
 
-  async getHistorySessions(search = null, startDate = null, endDate = null) {
+  async getHistorySessions(search = null, startDate = null, endDate = null, limit = 20, offset = 0) {
     console.log('getHistorySessions: получение сессии...')
     const session = await authService.getSession();
     console.log('getHistorySessions: session =', session ? '✅ exists' : '❌ null')
-    
+
     if (!session) {
       console.error('getHistorySessions: Not authenticated')
       throw new Error('Not authenticated')
@@ -439,6 +440,8 @@ export const chatService = {
     if (search) params.append('search', search);
     if (startDate) params.append('start_date', startDate);
     if (endDate) params.append('end_date', endDate);
+    params.append('limit', limit.toString());
+    params.append('offset', offset.toString());
 
     const url = `${import.meta.env.VITE_API_BASE_URL}/history/sessions?${params}`
     console.log('getHistorySessions: URL =', url)

@@ -5,6 +5,7 @@ import logging
 import argparse
 import uuid
 import time
+from datetime import datetime
 from typing import Optional, List, Dict, Any
 
 import config
@@ -12,6 +13,7 @@ from agents.search_agent import SearchAgent
 from agents.response_agent import ResponseAgent
 from prompts.system_prompt import get_system_prompt
 from utils.bg_cache_loader import schedule_bm25_warmup
+from utils.agent_debug_logger import get_debug_logger
 
 # Настройка логирования
 logging.basicConfig(
@@ -25,6 +27,7 @@ logging.basicConfig(
 )
 
 logger = logging.getLogger(__name__)
+debug_logger = get_debug_logger()
 
 
 class AgenticRAG:
@@ -76,9 +79,15 @@ class AgenticRAG:
         session_id = history[0].get("session_id", "unknown") if history else "unknown"
         start_time = time.time()
         
+        # Формируем session_id для логирования
+        log_session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+
         logger.info(f"Запрос: '{user_query[:50]}...'")
         if user_hints:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
+
+        # Создаём логгер сессии
+        session_logger = debug_logger.create_session_log(log_session_id, user_query)
 
         # Используем переданную историю или внутреннюю
         dialog_history = ""
@@ -89,62 +98,111 @@ class AgenticRAG:
         else:
             dialog_history = self.history
 
-        # 1. Поиск с использованием Search Agent
-        search_result = self.search_agent.search(
-            user_query=user_query,
-            history=dialog_history,
-            category=self.category,
-            auto_retry=auto_retry,
-            user_hints=user_hints,  # Передаём рекомендации
-            query_id=query_id,
-            session_id=session_id
-        )
-        
-        # 2. Проверка необходимости уточнения
-        if search_result["clarification_needed"]:
-            clarification_response = self.response_agent.generate_clarification_response(
-                user_query=user_query,
-                clarification_questions=search_result["clarification_questions"]
-            )
-            
+        try:
+            # 1. Поиск с использованием Search Agent
+            with session_logger.step(
+                "SearchAgent", 
+                "search",
+                {
+                    "query": user_query,
+                    "history_length": len(dialog_history),
+                    "category": self.category,
+                    "user_hints": user_hints or {}
+                }
+            ) as search_step:
+                search_result = self.search_agent.search(
+                    user_query=user_query,
+                    history=dialog_history,
+                    category=self.category,
+                    auto_retry=auto_retry,
+                    user_hints=user_hints,
+                    query_id=query_id,
+                    session_id=session_id
+                )
+                
+                search_step.set_output({
+                    "clarification_needed": search_result["clarification_needed"],
+                    "queries_used": search_result.get("queries_used", []),
+                    "search_params": search_result.get("search_params", {}),
+                    "results_count": len(search_result.get("results", [])),
+                    "confidence": search_result.get("confidence", 0)
+                }, {
+                    "all_results_count": len(search_result.get("results", []))
+                })
+
+            # 2. Проверка необходимости уточнения
+            if search_result["clarification_needed"]:
+                clarification_response = self.response_agent.generate_clarification_response(
+                    user_query=user_query,
+                    clarification_questions=search_result["clarification_questions"]
+                )
+
+                session_logger.set_final_answer(clarification_response, 0)
+                session_logger.save()
+
+                return {
+                    "answer": clarification_response,
+                    "clarification_needed": True,
+                    "clarification_questions": search_result["clarification_questions"],
+                    "sources": [],
+                    "queries_used": [],
+                    "confidence": search_result["confidence"]
+                }
+
+            # 3. Генерация ответа с использованием Response Agent
+            with session_logger.step(
+                "ResponseAgent",
+                "generate",
+                {
+                    "query": user_query,
+                    "sources_count": len(search_result["results"]),
+                    "history_length": len(dialog_history)
+                }
+            ) as response_step:
+                response_result = self.response_agent.generate_response(
+                    user_query=user_query,
+                    search_results=search_result["results"],
+                    history=dialog_history,
+                    query_id=query_id,
+                    session_id=session_id
+                )
+                
+                response_step.set_output({
+                    "answer_length": len(response_result["answer"]),
+                    "answer_preview": response_result["answer"][:500] + "..." if len(response_result["answer"]) > 500 else response_result["answer"],
+                    "sources_used": len(response_result["sources"]),
+                    "confidence": response_result["confidence"]
+                })
+
+            # 4. Обновление истории
+            self._update_history(user_query, response_result["answer"])
+
+            # Логирование ответа
+            logger.info(f"✅ LLM ответ (длина: {len(response_result['answer'])}): {response_result['answer'][:200]}...")
+            logger.info(f"   Источники: {len(response_result['sources'])} шт.")
+            logger.info(f"   Уверенность: {response_result['confidence']:.2f}")
+
+            # Сохраняем финальный ответ
+            session_logger.set_final_answer(response_result["answer"], len(response_result["sources"]))
+            session_logger.save()
+
+            # 5. Формирование результата
             return {
-                "answer": clarification_response,
-                "clarification_needed": True,
-                "clarification_questions": search_result["clarification_questions"],
-                "sources": [],
-                "queries_used": [],
-                "confidence": search_result["confidence"]
+                "answer": response_result["answer"],
+                "clarification_needed": False,
+                "clarification_questions": [],
+                "sources": response_result["sources"],
+                "queries_used": search_result["queries_used"],
+                "search_params": search_result["search_params"],
+                "confidence": response_result["confidence"],
+                "reasoning": search_result.get("reasoning", "")
             }
-        
-        # 3. Генерация ответа с использованием Response Agent
-        # Передаём историю диалога в ResponseAgent
-        response_result = self.response_agent.generate_response(
-            user_query=user_query,
-            search_results=search_result["results"],
-            history=dialog_history,  # ✅ Используем историю из БД
-            query_id=query_id,
-            session_id=session_id
-        )
-
-        # 4. Обновление истории
-        self._update_history(user_query, response_result["answer"])
-
-        # Логирование ответа
-        logger.info(f"✅ LLM ответ (длина: {len(response_result['answer'])}): {response_result['answer'][:200]}...")
-        logger.info(f"   Источники: {len(response_result['sources'])} шт.")
-        logger.info(f"   Уверенность: {response_result['confidence']:.2f}")
-
-        # 5. Формирование результата
-        return {
-            "answer": response_result["answer"],
-            "clarification_needed": False,
-            "clarification_questions": [],
-            "sources": response_result["sources"],
-            "queries_used": search_result["queries_used"],
-            "search_params": search_result["search_params"],
-            "confidence": response_result["confidence"],
-            "reasoning": search_result.get("reasoning", "")
-        }
+            
+        except Exception as e:
+            logger.error(f"Error in query: {e}", exc_info=True)
+            session_logger.add_error(str(e))
+            session_logger.save()
+            raise
     
     def _update_history(self, question: str, answer: str):
         """Обновление истории диалога."""

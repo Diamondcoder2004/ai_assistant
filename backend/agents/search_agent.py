@@ -212,6 +212,109 @@ class SearchAgent:
             },
             timing_info={"total_time": time.time() - _start_time}
         )
+        
+        return result
+
+        # 2. Проверка необходимости уточнения
+        if self.query_generator.needs_clarification(gen_result):
+            logger.info("Требуется уточнение")
+            result = {
+                "clarification_needed": True,
+                "clarification_questions": gen_result.clarification_questions,
+                "results": [],
+                "queries_used": [],
+                "search_params": gen_result.search_params,
+                "confidence": gen_result.confidence,
+                "reasoning": gen_result.reasoning
+            }
+            # Логирование результата
+            log_agent_response(
+                query_id=_query_id,
+                session_id=_session_id,
+                user_query=user_query,
+                response_data={
+                    "answer": "",
+                    "sources": [],
+                    "queries_used": [],
+                    "search_params": gen_result.search_params,
+                    "confidence": gen_result.confidence,
+                    "reasoning": gen_result.reasoning,
+                    "clarification_needed": True,
+                    "clarification_questions": gen_result.clarification_questions
+                },
+                timing_info={"total_time": time.time() - _start_time}
+            )
+            return result
+
+        # 3. Выполнение поиска
+        queries = self.query_generator.get_queries_text(gen_result)
+        strategy = gen_result.search_params.get("strategy", "concat")
+        k_per_query = gen_result.search_params.get("k", 10)
+
+        logger.info(f"Поиск по запросам: {queries}, стратегия: {strategy}")
+
+        with timing_context("SearchAgent.tool_search"):
+            results = self.search_tool.search_multiple(
+                queries=queries,
+                k_per_query=k_per_query // len(queries) if strategy == "separate" else k_per_query,
+                strategy=strategy
+            )
+
+        # 4. Оценка качества результатов
+        confidence = gen_result.confidence
+        if len(results) < 3:
+            logger.warning(f"Мало результатов: {len(results)}")
+            confidence *= 0.7
+
+        # 5. Автоматическая повторная попытка если нужно
+        if auto_retry and len(results) < 3 and max_retries > 0:
+            logger.info(f"Попытка {max_retries}: повторный поиск с другими параметрами")
+            retry_result = self._retry_search(
+                user_query=user_query,
+                original_queries=queries,
+                max_retries=max_retries - 1
+            )
+            if len(retry_result["results"]) > len(results):
+                results = retry_result["results"]
+                queries = retry_result["queries_used"]
+
+        logger.info(f"Поиск завершён: найдено {len(results)} результатов")
+
+        result = {
+            "clarification_needed": False,
+            "clarification_questions": [],
+            "results": results,
+            "queries_used": queries,
+            "search_params": gen_result.search_params,
+            "confidence": confidence,
+            "reasoning": gen_result.reasoning
+        }
+        
+        # Логирование результата поиска
+        log_agent_response(
+            query_id=_query_id,
+            session_id=_session_id,
+            user_query=user_query,
+            response_data={
+                "answer": "",
+                "sources": [
+                    {
+                        "id": r.id,
+                        "filename": r.filename,
+                        "breadcrumbs": r.breadcrumbs,
+                        "score_hybrid": r.score_hybrid,
+                        "score_semantic": r.score_semantic,
+                        "score_lexical": r.score_lexical,
+                    }
+                    for r in results[:10]
+                ],
+                "queries_used": queries,
+                "search_params": gen_result.search_params,
+                "confidence": confidence,
+                "reasoning": gen_result.reasoning
+            },
+            timing_info={"total_time": time.time() - _start_time}
+        )
 
         return result
 

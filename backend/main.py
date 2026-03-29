@@ -126,7 +126,17 @@ class AgenticRAG:
                     "queries_used": search_result.get("queries_used", []),
                     "search_params": search_result.get("search_params", {}),
                     "results_count": len(search_result.get("results", [])),
-                    "confidence": search_result.get("confidence", 0)
+                    "confidence": search_result.get("confidence", 0),
+                    "top_sources": [
+                        {
+                            "filename": r.filename,
+                            "breadcrumbs": r.breadcrumbs,
+                            "score_hybrid": r.score_hybrid,
+                            "score_semantic": r.score_semantic,
+                            "score_lexical": r.score_lexical
+                        }
+                        for r in search_result.get("results", [])[:10]
+                    ]
                 }, {
                     "all_results_count": len(search_result.get("results", []))
                 })

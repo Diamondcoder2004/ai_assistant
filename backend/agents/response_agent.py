@@ -43,7 +43,8 @@ class ResponseAgent:
         temperature: float = 0.7,
         max_tokens: int = 2000,
         query_id: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        session_logger: Optional[Any] = None
     ) -> Dict[str, Any]:
         """
         Генерация ответа.
@@ -117,6 +118,10 @@ class ResponseAgent:
                 "context_used": context
             }
             
+            # Логирование в session_logger если есть
+            if session_logger:
+                session_logger.set_final_answer(updated_answer, len(sources))
+
             # Логирование ответа
             timing_info = {"total_time": time.time() - _start_time}
             log_agent_response(

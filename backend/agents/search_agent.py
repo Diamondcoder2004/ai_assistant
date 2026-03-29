@@ -41,7 +41,8 @@ class SearchAgent:
         max_retries: int = 2,
         user_hints: Optional[Dict[str, Any]] = None,
         query_id: Optional[str] = None,
-        session_id: Optional[str] = None
+        session_id: Optional[str] = None,
+        session_logger: Optional[Any] = None
     ) -> Dict[str, Any]:
         """
         Поиск с использованием агента.
@@ -74,12 +75,39 @@ class SearchAgent:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
 
         # 1. Генерация поисковых запросов с учётом рекомендаций
-        with timing_context("SearchAgent.query_generation"):
+        if session_logger:
+            with session_logger.step(
+                "QueryGenerator",
+                "generate",
+                {
+                    "query": user_query,
+                    "history_length": len(history),
+                    "category": category,
+                    "user_hints": user_hints or {}
+                }
+            ) as query_step:
+                gen_result = self.query_generator.generate(
+                    user_query=user_query,
+                    history=history,
+                    category=category,
+                    user_hints=user_hints,
+                    query_id=_query_id,
+                    session_id=_session_id
+                )
+                
+                query_step.set_output({
+                    "queries": [q["text"] for q in gen_result.queries],
+                    "search_params": gen_result.search_params,
+                    "clarification_needed": gen_result.clarification_needed,
+                    "clarification_questions": gen_result.clarification_questions,
+                    "confidence": gen_result.confidence
+                })
+        else:
             gen_result = self.query_generator.generate(
                 user_query=user_query,
                 history=history,
                 category=category,
-                user_hints=user_hints,  # Передаём рекомендации
+                user_hints=user_hints,
                 query_id=_query_id,
                 session_id=_session_id
             )

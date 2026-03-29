@@ -117,7 +117,8 @@ class AgenticRAG:
                     auto_retry=auto_retry,
                     user_hints=user_hints,
                     query_id=query_id,
-                    session_id=session_id
+                    session_id=session_id,
+                    session_logger=session_logger
                 )
                 
                 search_step.set_output({
@@ -164,7 +165,8 @@ class AgenticRAG:
                     search_results=search_result["results"],
                     history=dialog_history,
                     query_id=query_id,
-                    session_id=session_id
+                    session_id=session_id,
+                    session_logger=session_logger
                 )
                 
                 response_step.set_output({

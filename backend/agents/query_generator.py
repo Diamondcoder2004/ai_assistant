@@ -103,27 +103,53 @@ class QueryGeneratorAgent:
         if user_hints:
             logger.info(f"Рекомендации от пользователя: {user_hints}")
 
+        # Retry-логика для обработки 502 ошибок провайдера
+        max_retries = 3
+        base_delay = 2  # секунды
+
         for attempt in range(max_attempts):
             try:
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": "Ты эксперт по генерации поисковых запросов. Отвечай ТОЛЬКО в формате JSON."},
-                        {"role": "user", "content": prompt}
-                    ],
-                    temperature=temperature,
-                    max_tokens=1500,
-                    response_format={"type": "json_object"}
-                )
-                
-                # Логирование ответа от провайдера
-                logger.info(f"QueryGenerator LLM response: id={getattr(response, 'id', 'N/A')}, "
-                           f"choices={getattr(response, 'choices', None)}")
+                # Внутренний retry для LLM вызова
+                for retry in range(max_retries):
+                    try:
+                        response = self.client.chat.completions.create(
+                            model=self.model,
+                            messages=[
+                                {"role": "system", "content": "Ты эксперт по генерации поисковых запросов. Отвечай ТОЛЬКО в формате JSON."},
+                                {"role": "user", "content": prompt}
+                            ],
+                            temperature=temperature,
+                            max_tokens=1500,
+                            response_format={"type": "json_object"}
+                        )
+                        
+                        # Логирование ответа от провайдера
+                        logger.info(f"QueryGenerator LLM response: id={getattr(response, 'id', 'N/A')}, "
+                                   f"choices={getattr(response, 'choices', None)}")
 
-                # Проверка на валидность ответа
-                if not response.choices:
-                    logger.error(f"QueryGenerator: LLM returned empty choices. Full response: {response}")
-                    raise ValueError(f"LLM returned empty choices: {response}")
+                        # Проверка на валидность ответа
+                        if not response.choices:
+                            error_info = getattr(response, 'error', {})
+                            if error_info and retry < max_retries - 1:
+                                logger.warning(f"Attempt {retry + 1}/{max_retries}: Provider error - {error_info}")
+                                delay = base_delay * (2 ** retry)
+                                logger.info(f"Retrying in {delay}s... (attempt {retry + 2}/{max_retries})")
+                                time.sleep(delay)
+                                continue
+                            
+                            logger.error(f"QueryGenerator: LLM returned empty choices. Full response: {response}")
+                            raise ValueError(f"LLM returned empty choices: {response}")
+
+                        # Успешный ответ — выходим из внутреннего retry
+                        break
+                        
+                    except Exception as e:
+                        if retry == max_retries - 1:
+                            raise
+                        logger.warning(f"LLM attempt {retry + 1}/{max_retries} failed: {e}")
+                        delay = base_delay * (2 ** retry)
+                        logger.info(f"Retrying in {delay}s... (attempt {retry + 2}/{max_retries})")
+                        time.sleep(delay)
 
                 result_text = response.choices[0].message.content
                 

@@ -94,43 +94,76 @@ class ResponseAgent:
 
         try:
             with timing_context("ResponseAgent.llm_completion"):
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt}
-                    ],
-                    temperature=temperature,
-                    max_tokens=max_tokens
-                )
+                # Retry-логика для обработки 502 ошибок провайдера
+                max_retries = 3
+                base_delay = 2  # секунды
                 
-                # Логирование полного ответа от провайдера
-                logger.info(f"LLM raw response: id={getattr(response, 'id', 'N/A')}, "
-                           f"choices={getattr(response, 'choices', None)}, "
-                           f"model={getattr(response, 'model', 'N/A')}")
-                
-                # Проверка на валидность ответа
-                if not response.choices:
-                    # Логируем всю структуру ответа для отладки
+                for attempt in range(max_retries):
                     try:
-                        response_dict = {
-                            "id": getattr(response, "id", None),
-                            "choices": getattr(response, "choices", None),
-                            "created": getattr(response, "created", None),
-                            "model": getattr(response, "model", None),
-                            "system_fingerprint": getattr(response, "system_fingerprint", None),
-                            "object": getattr(response, "object", None),
-                            "usage": {
-                                "prompt_tokens": getattr(getattr(response, "usage", None), "prompt_tokens", None),
-                                "completion_tokens": getattr(getattr(response, "usage", None), "completion_tokens", None),
-                                "total_tokens": getattr(getattr(response, "usage", None), "total_tokens", None),
-                            } if getattr(response, "usage", None) else None
-                        }
-                        logger.error(f"LLM empty choices structure: {json.dumps(response_dict, indent=2, default=str)}")
+                        response = self.client.chat.completions.create(
+                            model=self.model,
+                            messages=[
+                                {"role": "system", "content": system_prompt},
+                                {"role": "user", "content": user_prompt}
+                            ],
+                            temperature=temperature,
+                            max_tokens=max_tokens
+                        )
+                        
+                        # Логирование полного ответа от провайдера
+                        logger.info(f"LLM raw response: id={getattr(response, 'id', 'N/A')}, "
+                                   f"choices={getattr(response, 'choices', None)}, "
+                                   f"model={getattr(response, 'model', 'N/A')}")
+                        
+                        # Проверка на валидность ответа
+                        if not response.choices:
+                            # Проверяем, есть ли ошибка от провайдера
+                            error_info = getattr(response, 'error', {})
+                            if error_info:
+                                logger.warning(f"Attempt {attempt + 1}/{max_retries}: Provider error - {error_info}")
+                                
+                                # Если это 502/503 ошибка и это не последняя попытка — retry
+                                if attempt < max_retries - 1:
+                                    delay = base_delay * (2 ** attempt)  # Экспоненциальная задержка
+                                    logger.info(f"Retrying in {delay}s... (attempt {attempt + 2}/{max_retries})")
+                                    time.sleep(delay)
+                                    continue
+                            
+                            # Логируем всю структуру ответа для отладки
+                            try:
+                                response_dict = {
+                                    "id": getattr(response, "id", None),
+                                    "choices": getattr(response, "choices", None),
+                                    "created": getattr(response, "created", None),
+                                    "model": getattr(response, "model", None),
+                                    "system_fingerprint": getattr(response, "system_fingerprint", None),
+                                    "object": getattr(response, "object", None),
+                                    "usage": {
+                                        "prompt_tokens": getattr(getattr(response, "usage", None), "prompt_tokens", None),
+                                        "completion_tokens": getattr(getattr(response, "usage", None), "completion_tokens", None),
+                                        "total_tokens": getattr(getattr(response, "usage", None), "total_tokens", None),
+                                    } if getattr(response, "usage", None) else None,
+                                    "error": error_info
+                                }
+                                logger.error(f"LLM empty choices structure: {json.dumps(response_dict, indent=2, default=str)}")
+                            except Exception as e:
+                                logger.error(f"Failed to serialize response: {e}")
+                            
+                            raise ValueError(f"LLM returned empty choices: {response}")
+                        
+                        # Успешный ответ — выходим из цикла retry
+                        break
+                        
                     except Exception as e:
-                        logger.error(f"Failed to serialize response: {e}")
-                    
-                    raise ValueError(f"LLM returned empty choices: {response}")
+                        # Если это последняя попытка — пробрасываем ошибку дальше
+                        if attempt == max_retries - 1:
+                            raise
+                        
+                        # Логирование ошибки и retry
+                        logger.warning(f"Attempt {attempt + 1}/{max_retries} failed: {e}")
+                        delay = base_delay * (2 ** attempt)
+                        logger.info(f"Retrying in {delay}s... (attempt {attempt + 2}/{max_retries})")
+                        time.sleep(delay)
 
             answer = response.choices[0].message.content
             

@@ -53,7 +53,15 @@ export function renderMarkdown(text) {
       }
     })
 
-    // 3. Обрабатываем inline LaTeX формулы \(...\) (альтернативный синтаксис)
+    // 3. Сохраняем цитаты [1], [2] во временные плейсхолдеры
+    const citations = []
+    processedText = processedText.replace(/\[(\d+)\]/g, (match, num) => {
+      const index = citations.length
+      citations.push(`<a href="#source-${num}" class="source-link" data-source="${num}">${match}</a>`)
+      return `__CITATION_${index}__`
+    })
+
+    // 4. Обрабатываем inline LaTeX формулы \(...\) (альтернативный синтаксис)
     processedText = processedText.replace(/\\\(.*?\\\)/g, (match, latex) => {
       try {
         const rendered = katex.renderToString(latex.trim(), {
@@ -66,15 +74,10 @@ export function renderMarkdown(text) {
       }
     })
 
-    // 4. Преобразуем [1], [2] и т.д. в кликабельные ссылки (НО НЕ \[1\]!)
-    processedText = processedText.replace(/(?<!\\)\[(\d+)\](?!\\)/g, (match, num) => {
-      return `<a href="#source-${num}" class="source-link" data-source="${num}">${match}</a>`
-    })
-
-    // 5. Затем обрабатываем inline LaTeX $...$ (но не внутри ссылок)
+    // 5. Обрабатываем inline LaTeX формулы $...$ (но не внутри ссылок)
     processedText = processedText.replace(/\$([^\n$]+?)\$/g, (match, latex) => {
       // Пропускаем, если это уже обработанная ссылка
-      if (match.includes('<a') || match.includes('href')) return match
+      if (match.includes('<a') || match.includes('href') || match.includes('__CITATION_')) return match
       try {
         const rendered = katex.renderToString(latex.trim(), {
           throwOnError: false,
@@ -86,7 +89,12 @@ export function renderMarkdown(text) {
       }
     })
 
-    // 6. Удаляем экранирование для \[ и \] которые остались
+    // 6. Восстанавливаем цитаты из плейсхолдеров
+    processedText = processedText.replace(/__CITATION_(\d+)__/g, (match, index) => {
+      return citations[parseInt(index)] || match
+    })
+
+    // 7. Удаляем экранирование для \[ и \] которые остались (не были формулами)
     processedText = processedText.replace(/\\\[/g, '[').replace(/\\\]/g, ']')
 
     return marked(processedText)

@@ -238,12 +238,18 @@ function restoreHistoryFromStorage() {
     const today = []
     const yesterday = []
     const earlier = []
-    
+
     const now = new Date()
     const todayStr = now.toISOString().split('T')[0]
     const yesterdayStr = new Date(now.getTime() - 86400000).toISOString().split('T')[0]
-    
+
     for (const session of chatStore.chatSessions) {
+      // Проверка на валидность updated_at
+      if (!session.updated_at || typeof session.updated_at !== 'string') {
+        console.warn('Invalid session.updated_at:', session)
+        continue
+      }
+      
       const sessionDate = session.updated_at.split('T')[0]
       if (sessionDate === todayStr) {
         today.push(session)
@@ -253,7 +259,7 @@ function restoreHistoryFromStorage() {
         earlier.push(session)
       }
     }
-    
+
     sessions.value = { today, yesterday, earlier }
     console.log('History restored from chatStore:', { today: today.length, yesterday: yesterday.length, earlier: earlier.length })
     return true

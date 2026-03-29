@@ -187,13 +187,6 @@
         </div>
       </div>
       
-      <!-- Кнопка "Загрузить ещё" -->
-      <div v-if="hasMore && !loadingMore" class="load-more-container">
-        <button @click="loadMoreHistory" class="load-more-btn">
-          Загрузить ещё
-        </button>
-      </div>
-      
       <!-- Индикатор загрузки ещё -->
       <div v-if="loadingMore" class="loading-more">
         <div class="spinner"></div>
@@ -748,32 +741,6 @@ function handleScroll() {
 
 .session-card:hover .session-arrow {
   color: #0066cc;
-}
-
-/* Кнопка "Загрузить ещё" */
-.load-more-container {
-  display: flex;
-  justify-content: center;
-  margin: 32px 0;
-}
-
-.load-more-btn {
-  padding: 12px 24px;
-  background: white;
-  border: 2px solid #0066cc;
-  border-radius: 8px;
-  color: #0066cc;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.load-more-btn:hover {
-  background: #0066cc;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
 }
 
 /* Индикатор загрузки ещё */

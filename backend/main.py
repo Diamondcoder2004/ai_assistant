@@ -89,10 +89,13 @@ class AgenticRAG:
         # Создаём логгер сессии
         session_logger = debug_logger.create_session_log(log_session_id, user_query)
 
-        # Используем переданную историю или внутреннюю
+        # Оптимизация истории: берём только последние 4 сообщения (2 диалога)
+        # Это нужно, чтобы QueryGenerator не терялся в большом контексте
         dialog_history = ""
         if history:
-            for msg in history:
+            # Берём последние 4 сообщения (последний вопрос + ответ + предыдущий вопрос + ответ)
+            recent_history = history[-4:] if len(history) > 4 else history
+            for msg in recent_history:
                 role = "Пользователь" if msg["role"] == "user" else "Ассистент"
                 dialog_history += f"{role}: {msg['content']}\n"
         else:

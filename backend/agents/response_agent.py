@@ -8,7 +8,7 @@ from typing import List, Optional, Dict, Any
 
 from openai import OpenAI
 import config
-from prompts.system_prompt import get_system_prompt
+from prompts.synthesis_prompt import get_synthesis_prompt
 from tools.search_tool import SearchResult
 from agents.search_agent import SearchAgent
 from utils.timing import timing, timing_context
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def fix_latex_in_text(text: str) -> str:
     """
     Конвертирует формулы из (C_1) в \(C_1\) для правильного рендеринга.
-    
+
     Обрабатывает:
     - (C_{1.1}) → \(C_{1.1}\)
     - (C_1) → \(C_1\)
@@ -28,14 +28,66 @@ def fix_latex_in_text(text: str) -> str:
     """
     if not text:
         return text
-    
+
     # Паттерн для сложных формул с индексами: (C_{1.1}), (P_{\text{...}})
     result = re.sub(r'\(([A-Za-z]_\{[^}]+\})\)', r'\\(\1\\)', text)
-    
+
     # Паттерн для простых индексов: (C_1), (P_max)
     result = re.sub(r'\(([A-Za-z]_[A-Za-z0-9]+)\)', r'\\(\1\\)', result)
-    
+
     return result
+
+
+def filter_technical_phrases(text: str) -> str:
+    """
+    Удаляет технические фразы и внутренние рассуждения модели из ответа.
+
+    Обрабатывает:
+    - Фразы о поиске: "Let's search", "We need to call search", "Searching for"
+    - Технические комментарии: "Поиск завершен", "Я нашел информацию"
+    - Пустые строки в начале ответа
+    """
+    if not text:
+        return text
+
+    lines = text.split('\n')
+    filtered_lines = []
+
+    # Паттерны для фильтрации технических фраз
+    technical_patterns = [
+        r"^Let's\s+(search|do\s+search|call|use|find)",
+        r"^We\s+need\s+to\s+(search|call|find|use)",
+        r"^Searching\s+for",
+        r"^Search\s+completed",
+        r"^Поиск\s+завершен",
+        r"^Я\s+нашел\s+информацию",
+        r"^Вызываю\s+инструмент",
+        r"^Использую\s+поиск",
+        r"^Сначала\s+найду",
+        r"^Теперь\s+поищу",
+    ]
+
+    skip_until_content = True
+
+    for line in lines:
+        stripped = line.strip()
+
+        # Пропускаем пустые строки в начале
+        if skip_until_content and not stripped:
+            continue
+
+        # Проверяем на технические фразы
+        is_technical = False
+        for pattern in technical_patterns:
+            if re.search(pattern, stripped, re.IGNORECASE):
+                is_technical = True
+                break
+
+        if not is_technical:
+            filtered_lines.append(line)
+            skip_until_content = False
+
+    return '\n'.join(filtered_lines)
 
 
 class ResponseAgent:
@@ -101,8 +153,8 @@ class ResponseAgent:
         # Формирование истории диалога
         history_context = self._format_history(history)
 
-        # Системный промпт
-        system_prompt = get_system_prompt()
+        # Системный промпт для синтеза ответа (не для поиска!)
+        system_prompt = get_synthesis_prompt()
 
         # Пользовательский промпт
         with timing_context("ResponseAgent.create_prompt"):
@@ -175,12 +227,12 @@ class ResponseAgent:
                         
                         # Успешный ответ — выходим из цикла retry
                         break
-                        
+
                     except Exception as e:
                         # Если это последняя попытка — пробрасываем ошибку дальше
                         if attempt == max_retries - 1:
                             raise
-                        
+
                         # Логирование ошибки и retry
                         logger.warning(f"Attempt {attempt + 1}/{max_retries} failed: {e}")
                         delay = base_delay * (2 ** attempt)
@@ -188,9 +240,13 @@ class ResponseAgent:
                         time.sleep(delay)
 
             answer = response.choices[0].message.content
-            
+
             # Логирование частичного ответа (первые 200 символов)
             logger.info(f"LLM answer preview: {answer[:200]}...")
+
+            # Фильтрация технических фраз
+            answer = filter_technical_phrases(answer)
+            logger.info(f"Filtered answer preview: {answer[:200]}...")
 
             # Извлечение источников с перемаппингом индексов
             with timing_context("ResponseAgent.extract_sources"):

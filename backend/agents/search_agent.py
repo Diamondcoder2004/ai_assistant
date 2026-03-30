@@ -4,7 +4,9 @@ Search Agent — агент поиска с Tool Calling
 import logging
 import uuid
 import time
-from typing import List, Optional, Dict, Any
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from typing import List, Optional, Dict, Any, Tuple
 
 import config
 from tools.search_tool import SearchTool, SearchRequest, SearchResult

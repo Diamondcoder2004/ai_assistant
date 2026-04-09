@@ -1,0 +1,1754 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14">
+  <w:body>
+    <w:p w14:paraId="76E79394" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="007D58F4" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:ind w:left="5664"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+        </w:rPr>
+        <w:t>ЗАКАЗЧИК</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2D15840A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="60"/>
+        <w:ind w:left="5664"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:color w:val="333333"/>
+          <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Заместитель Генерального директора —</w:t>
+      <w:br/><w:t>Директор ПО «ИТиС» </w:t></w:r>
+      
+    </w:p>
+    <w:p w14:paraId="2D7733FF" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="60"/>
+        <w:ind w:left="5664"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>________ / Р. Х. Хадыев</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="51129899" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:ind w:left="5664"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>«___» _____________ 2025 г.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5175130D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="40"/>
+        <w:ind w:left="5954"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="1368C207" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="40"/>
+        <w:ind w:left="5954"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="34E83407" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="40"/>
+        <w:ind w:left="5954"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="4B20ADD5" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="80"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+        <w:t>ТЕХНИЧЕСКОЕ ЗАДАНИЕ</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3FB9B48C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>РАЗРАБОТКА ИНТЕЛЛЕКТУАЛЬНОГО АССИСТЕНТА НА ОСНОВЕ МЕТОДОВ ОБРАБОТКИ ЕСТЕСТВЕННОГО ЯЗЫКА ДЛЯ АВТОМАТИЗАЦИИ ТЕХНИЧЕСКОЙ ПОДДЕРЖКИ НУЛЕВОГО УРОВНЯ В МОДУЛЕ &#x201C;1С: УЧЕТ ТЕХНОЛОГИЧЕСКОГО ПРИСОЕДИНЕНИЯ&#x201D;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5250357A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="6A206242" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="77666F1D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="2FC1B661" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="24"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:w="9486" w:type="dxa"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="80" w:type="dxa"/>
+          <w:left w:w="0" w:type="dxa"/>
+          <w:bottom w:w="80" w:type="dxa"/>
+          <w:right w:w="150" w:type="dxa"/>
+        </w:tblCellMar>
+        <w:tblLook w:val="0000" w:firstRow="0" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="0"/>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="3163"/>
+        <w:gridCol w:w="2507"/>
+        <w:gridCol w:w="3816"/>
+      </w:tblGrid>
+      <w:tr w:rsidR="00234CA8" w14:paraId="4CF73D58" w14:textId="77777777" w:rsidTr="00F74B1F">
+        <w:trPr>
+          <w:trHeight w:val="2403"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="3163" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="357E710B" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>СОГЛАСОВАНО</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="4EC3899D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t xml:space="preserve">доц., к.т.н. </w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="3E8324FA" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>В. М. Гиниятуллин</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="482E5599" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>Подпись _____________</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="3496B310" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="24"/>
+                <w:szCs w:val="24"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>«___» __________2026 г.</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="2507" w:type="dxa"/>
+            <w:tcMar>
+              <w:left w:w="150" w:type="dxa"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p w14:paraId="1460368C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:snapToGrid w:val="0"/>
+              <w:spacing w:after="60"/>
+            </w:pPr>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="3816" w:type="dxa"/>
+            <w:tcMar>
+              <w:left w:w="150" w:type="dxa"/>
+              <w:right w:w="0" w:type="dxa"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p w14:paraId="4A194225" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>СОСТАВИЛ</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="460B6281" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>студент группы БПОи-22-04</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="3DCEB944" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>А. Ф. Сабитов</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="3EA64DB4" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="003A3438" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>Подпись _____________</w:t>
+            </w:r>
+          </w:p>
+          <w:p w14:paraId="0CFFD0BB" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00F74B1F">
+            <w:pPr>
+              <w:spacing w:after="60"/>
+              <w:rPr>
+                <w:sz w:val="24"/>
+                <w:szCs w:val="24"/>
+              </w:rPr>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="28"/>
+                <w:szCs w:val="28"/>
+              </w:rPr>
+              <w:t>«___» ___________ 2026 г.</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="43F947A3" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="4A84F067" w14:textId="32BBE60C" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="6D751D0B" w14:textId="40E82229" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="24735FC7" w14:textId="792E29CF" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="4FC558D0" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="69077A4E" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="5EEBFFD7" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:spacing w:after="300"/>
+        <w:rPr>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="1EC2BE76" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+        <w:t>г. Уфа, 2026</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3011892A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:lastRenderedPageBreak/>
+        <w:t>1. Наименование программы</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2BC7D0FF" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="007C5833" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:rPr>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="2BA99E14" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Программное средство «Интеллектуальный помощник потребителя» для автоматизации консультационной поддержки по вопросам технологического присоединения к электрическим сетям.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="25223E22" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>2. Основание для разработки</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2DB6622A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="007C5833" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:rPr>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="48E0A77F" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Разработка осуществляется в рамках выполнения выпускной квалификационной работы для автоматизации обработки обращений потребителей в ООО «Башкирэнерго» (адрес: 450008, Республика Башкортостан, г. Уфа, ул. Российская, д. 56; основной вид деятельности — передача и распределение электроэнергии; численность персонала — свыше 5 000 сотрудников; дата основания — 1995 год).</w:t>
+      </w:r>
+      
+      
+    </w:p>
+    <w:p w14:paraId="6D867C7D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>3. Область применения программы</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5B62C0F1" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="007C5833" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:rPr>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="7690CF5D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Программное средство применяется в процессе оказания услуги «Технологическое присоединение» и интегрируется с существующими каналами взаимодействия с потребителями:</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2C701F9E" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="1"/>
+        </w:numPr>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>веб-портал компании;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6479BB8D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="1"/>
+        </w:numPr>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>официальный Telegram-канал;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2D1CF12E" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="1"/>
+        </w:numPr>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>колл-центр;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4A5D4D33" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="1"/>
+        </w:numPr>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>модуль «1С: Учет технологического присоединения».</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="78676F0C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>4. Цель разработки</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="331C112D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="007C5833" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:rPr>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="56CBC1E4" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="005C323F" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Цель разработки — повышение эффективности консультационной поддержки потребителей услуги технологического присоединения за счёт:</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="61DA19CC" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>сокращения среднего времени обработки типового обращения с 8 минут до 2 минут;</w:t>
+      </w:r>
+      
+      
+    </w:p>
+    <w:p w14:paraId="071C9C60" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>снижения нагрузки на операторов колл-центра на 40–60% путём автоматизации обработки стандартных запросов;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6FA7CC9D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:lastRenderedPageBreak/>
+        <w:t>повышения качества и юридической точности предоставляемой информации через централизованный семантический поиск по нормативным документам;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="136196A7" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="0084316D" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:shd w:val="clear" w:color="auto" w:fill="FFFFFF"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU" w:bidi="ar-SA"/>
+        </w:rPr>
+        <w:t>обеспечения круглосуточной доступности консультационной поддержки без увеличения численности персонала.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="21DD42A3" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+      </w:pPr>
+      <w:r>
+        <w:t>5. Целевая аудитория</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="40522302" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Физические лица, обращающиеся по вопросам подключения объектов к электросетям;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2A15DB9E" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Юридические лица и индивидуальные предприниматели;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="239718B6" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Операторы колл-центра ООО «Башкирэнерго»;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="769BCF90" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Специалисты отдела технологического присоединения.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5276B229" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+      </w:pPr>
+      <w:r>
+        <w:t>6. Функциональные требования</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2E9DA9A2" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+      </w:pPr>
+      <w:r>
+        <w:t>6.1. Главный интерфейс</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7181846A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Отображение окна для ввода вопроса в свободной форме;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="10C1CB2D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Кнопки быстрого доступа к часто задаваемым темам;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="759C29C7" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Раздел «Помощь» с инструкцией по использованию;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="02FBAC7C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Возможность переключения на оператора.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0C14C7D3" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t>6.2. Обработка обращения</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="144294AB" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Приём текста вопроса от пользователя на естественном языке;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="594E1244" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Автоматический поиск ответа в базе нормативных документов и часто задаваемых вопросов;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="231FA777" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Формирование ответа с указанием источника информации (название документа, пункт, страница);</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1068397B" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Оценка уверенности системы в правильности ответа;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0971CE79" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>При низкой уверенности — предложение уточнить вопрос или подключение оператора.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6E0AA091" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:lastRenderedPageBreak/>
+        <w:t>6.3. Работа с базой знаний</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="28BEC5C0" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Возможность загрузки новых документов в систему без участия программиста;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="39B51FF5" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Автоматическое обновление поискового индекса при изменении нормативной базы;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7497BF3C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Ведение журнала обращений и выданных ответов для последующего анализа.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7C905AB4" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t>6.4. Интеграционные функции</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="48F4999C" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Передача данных о заявке в модуль «1С: Учет технологического присоединения»;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6AB5D700" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Экспорт статистики обращений в формате для аналитики;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5D061954" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Поддержка работы в защищённом контуре компании без передачи данных во внешние сети.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4E068ECC" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="6CA0F56F" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t>6.5. Общие функции</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="75F48E8B" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Сохранение истории диалога в личном кабинете пользователя;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="420D6800" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Формирование отчёта по обращению с указанием даты, времени и содержания;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="175BAB6F" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Адаптация интерфейса под разные устройства (компьютер, планшет, смартфон);</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="32CC763A" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Поддержка русского языка как основного, с возможностью расширения на другие языки.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="68E04BAF" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>7. Требования к интерфейсу</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7FC476C0" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Интерфейс на русском языке;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2F0C9F75" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Единый стиль оформления в соответствии с корпоративными стандартами ООО «Башкирэнерго»;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="124E2126" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Чёткое разделение на блоки: ввод вопроса, отображение ответа, дополнительные действия;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5A5A79E2" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Наличие визуальных подсказок и примеров формулировок вопросов;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5C02AD17" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:lastRenderedPageBreak/>
+        <w:t>Адаптивный дизайн для корректного отображения на экранах разного размера.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6DB72AF6" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>8. Технические требования</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="26F816E1" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Тип приложения: веб-сервис с возможностью интеграции в существующую инфраструктуру;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="169284CA" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Язык разработки: поддерживаемый в корпоративной среде заказчика;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0DFD0510" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Совместимость: операционные системы Windows 10/11, современные веб-браузеры;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3EB7FBD2" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Требования к оборудованию: возможность работы на стандартных серверах компании;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="33448C4B" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Безопасность: хранение и обработка данных только внутри защищённого контура организации.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="67C6ED63" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t>9. Требования к документации</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="558DEE7E" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Руководство пользователя с пошаговыми примерами использования;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="41033775" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Инструкция для администратора по установке, настройке и обновлению системы;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="33735B9F" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Описание алгоритмов формирования ответов и работы с базой знаний;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6B8EAD9D" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Отчёт о результатах тестирования с примерами типовых сценариев;</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5BA74B7B" w14:textId="77777777" w:rsidR="00234CA8" w:rsidRPr="00C32A56" w:rsidRDefault="00234CA8" w:rsidP="00234CA8">
+      <w:pPr>
+        <w:suppressAutoHyphens w:val="0"/>
+        <w:spacing w:line="360" w:lineRule="auto"/>
+        <w:ind w:firstLine="709"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+          <w:lang w:eastAsia="ru-RU"/>
+        </w:rPr>
+        <w:t>Исходные материалы с комментариями для возможности дальнейшего сопровождения.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="59B59C29" w14:textId="77777777" w:rsidR="00D75011" w:rsidRDefault="00D75011"/>
+    <w:sectPr w:rsidR="00D75011">
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="1134" w:right="850" w:bottom="1134" w:left="1701" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:space="708"/>
+      <w:docGrid w:linePitch="360"/>
+    </w:sectPr>
+  </w:body>
+</w:document>

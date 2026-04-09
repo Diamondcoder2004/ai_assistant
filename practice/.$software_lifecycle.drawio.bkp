@@ -1,0 +1,643 @@
+<mxfile host="Electron" modified="2026-04-09T12:00:00.000Z" type="device">
+  <diagram id="software-lifecycle" name="Жизненный цикл ПО">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="Жизненный цикл ИИ-ассистента Башкирэнерго — от разработки до production" style="text;fontSize=22;fontStyle=1;align=center;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="700" y="20" width="1000" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 1: РАЗРАБОТКА -->
+        <!-- ============================================ -->
+        <mxCell id="phase1" value="1. РАЗРАБОТКА (Development)" style="swimlane;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="100" y="100" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <!-- Backend Development -->
+        <mxCell id="dev-backend" value="Backend (Python 3.11 + FastAPI)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase1">
+          <mxGeometry x="30" y="60" width="320" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-be-agents" value="Агенты (agents/)&#xa;• Query Generator&#xa;• Search Agent&#xa;• Response Agent" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-backend">
+          <mxGeometry x="15" y="45" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-be-tools" value="Инструменты (tools/)&#xa;• Search Tool (BM25)&#xa;• Hybrid Search&#xa;• pymorphy3" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-backend">
+          <mxGeometry x="165" y="45" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-be-api" value="API (api/)&#xa;• POST /query&#xa;• POST /query/stream&#xa;• GET /history&#xa;• POST /feedback" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-backend">
+          <mxGeometry x="15" y="125" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-be-prompts" value="Промпты (prompts/)&#xa;• System prompts&#xa;• Фиксированы" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-backend">
+          <mxGeometry x="165" y="125" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Frontend Development -->
+        <mxCell id="dev-frontend" value="Frontend (Vue.js 3 + Vite)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase1">
+          <mxGeometry x="360" y="60" width="320" height="160" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-fe-components" value="Компоненты&#xa;(src/components/)&#xa;• Чат-интерфейс&#xa;• История диалогов&#xa;• Профиль" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-frontend">
+          <mxGeometry x="15" y="45" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-fe-stores" value="Pinia Stores&#xa;(src/stores/)&#xa;• auth store&#xa;• chat store&#xa;• hotkeys store" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-frontend">
+          <mxGeometry x="165" y="45" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-fe-services" value="API Services&#xa;(src/services/)&#xa;• HTTP клиент&#xa;• SSE streaming&#xa;• Auth" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-frontend">
+          <mxGeometry x="15" y="125" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-fe-views" value="Views (src/views/)&#xa;• Home (чат)&#xa;• History&#xa;• Profile" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-frontend">
+          <mxGeometry x="165" y="125" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Data Pipeline -->
+        <mxCell id="dev-pipeline" value="Data Pipeline (Обработка документов)" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase1">
+          <mxGeometry x="10" y="250" width="680" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-chunking" value="1. Chunking&#xa;(chunking/)&#xa;• Mardown_splitter.py&#xa;• token_count.py" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-pipeline">
+          <mxGeometry x="15" y="40" width="140" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-enrichment" value="2. LLM Enrichment&#xa;(chunking/)&#xa;• llm_chunking.py&#xa;• repair_json.py" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-pipeline">
+          <mxGeometry x="175" y="40" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-ingest" value="3. Qdrant Ingestion&#xa;(qdrant_ingest/)&#xa;• 3 вектора на чанк&#xa;• PREF+HYPE+CONTEXTUAL" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="dev-pipeline">
+          <mxGeometry x="345" y="40" width="160" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="dev-chunks-output" value="chunks_enriched_fixed/&#xa;(JSON файлы)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="dev-pipeline">
+          <mxGeometry x="525" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Pipeline edges -->
+        <mxCell id="e-chunk-enrich" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#82b366;" edge="1" source="dev-chunking" target="dev-enrichment" parent="dev-pipeline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-enrich-ingest" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#82b366;" edge="1" source="dev-enrichment" target="dev-ingest" parent="dev-pipeline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e-ingest-output" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#82b366;" edge="1" source="dev-ingest" target="dev-chunks-output" parent="dev-pipeline">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 2: ТЕСТИРОВАНИЕ -->
+        <!-- ============================================ -->
+        <mxCell id="phase2" value="2. ТЕСТИРОВАНИЕ (Testing &amp; QA)" style="swimlane;startSize=40;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="850" y="100" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-backend" value="Backend Testing" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase2">
+          <mxGeometry x="30" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-be-unit" value="Unit Tests (pytest)&#xa;• Агенты&#xa;• Search Tool&#xa;• API endpoints" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="test-backend">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-be-benchmark" value="Benchmark Tests&#xa;• benchmark.py&#xa;• analyze_benchmark.py&#xa;• quick_test.py" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="test-backend">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-be-judge" value="LLM Judge&#xa;• llm_judge.py&#xa;• Оценка качества" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="test-backend">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-be-debugger" value="Agent Debugger&#xa;• agent_debugger.py&#xa;• agent_debugger_api.py" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="test-backend">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-frontend" value="Frontend Testing" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase2">
+          <mxGeometry x="360" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-fe-unit" value="Unit Tests (Vitest)&#xa;• npm run test:unit&#xa;• Компоненты&#xa;• Stores" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="test-frontend">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-fe-lint" value="Linting &amp; Format&#xa;• npm run lint&#xa;• ESLint&#xa;• npm run format" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="test-frontend">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-fe-e2e" value="E2E Tests&#xa;• Интеграция с API&#xa;• User flows" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="test-frontend">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-fe-a11y" value="Accessibility&#xa;• a11y-debugging skill&#xa;• Chrome DevTools" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="test-frontend">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Integration Testing -->
+        <mxCell id="test-integration" value="Integration &amp; Performance Testing" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase2">
+          <mxGeometry x="10" y="220" width="680" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-health" value="Health Checks&#xa;• curl :8880/health&#xa;• Docker healthcheck" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="15" y="35" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-query" value="Query Testing&#xa;• POST /query с JWT&#xa;• SSE streaming test" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="185" y="35" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-perf" value="Performance&#xa;• Lighthouse audit&#xa;• Chrome DevTools&#xa;• performance_start_trace" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="355" y="35" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-debug" value="Debugging Tools&#xa;• docker logs -f&#xa;• check-status.bat&#xa;• Chrome DevTools MCP" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="525" y="35" width="140" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-logs" value="Log Analysis&#xa;• backend/logs/&#xa;• nginx/logs/&#xa;• AGENT_DEBUG_ENABLED" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="15" y="95" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-supabase" value="Supabase MCP&#xa;• get_logs&#xa;• get_advisors&#xa;• verify_jwt_secret" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="185" y="95" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-qdrant" value="Qdrant Checks&#xa;• list_vector_indexes&#xa;• get_vector_index_stats&#xa;• Collection health" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="355" y="95" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-int-security" value="Security&#xa;• RLS policies&#xa;• JWT validation&#xa;• Security advisors" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="test-integration">
+          <mxGeometry x="525" y="95" width="140" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 3: СБОРКА -->
+        <!-- ============================================ -->
+        <mxCell id="phase3" value="3. СБОРКА (Build &amp; Containerization)" style="swimlane;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="100" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-backend" value="Backend Docker Build" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase3">
+          <mxGeometry x="30" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-be-dockerfile" value="Dockerfile (backend/)&#xa;• python:3.11-slim&#xa;• gcc (system deps)&#xa;• requirements.txt" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="build-backend">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-be-steps" value="Build Steps&#xa;1. COPY requirements.txt&#xa;2. pip install&#xa;3. COPY code&#xa;4. EXPOSE 8880" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="build-backend">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-be-cmd" value="CMD&#xa;uvicorn api.api:app&#xa;--host 0.0.0.0&#xa;--port 8880" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="build-backend">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-be-env" value="Environment&#xa;• QDRANT_HOST/PORT&#xa;• SUPABASE_URL/KEYS&#xa;• ROUTERAI_API_KEY" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="build-backend">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-frontend" value="Frontend Docker Build (Multi-stage)" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase3">
+          <mxGeometry x="360" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-fe-stage1" value="Stage 1: Build&#xa;(node:20-alpine)&#xa;1. npm install&#xa;2. npm run build&#xa;3. VITE_* args" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="build-frontend">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-fe-stage2" value="Stage 2: Production&#xa;(nginx:alpine)&#xa;1. COPY dist&#xa;2. COPY nginx.conf&#xa;3. EXPOSE 80" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="build-frontend">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-fe-cmd" value="CMD&#xa;nginx -g&#xa;'daemon off;'" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="build-frontend">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-fe-nginx-conf" value="nginx.conf&#xa;• Reverse proxy&#xa;• Static files&#xa;• API routing" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=10;fontColor=#333333;" vertex="1" parent="build-frontend">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Docker Compose -->
+        <mxCell id="build-compose" value="Docker Compose Orchestration" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase3">
+          <mxGeometry x="10" y="220" width="680" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-services" value="Services&#xa;• backend (ai-assistant-backend)&#xa;• frontend (ai-assistant-frontend)&#xa;• nginx (ai-assistant-nginx)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="15" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-network" value="Network&#xa;• ai-assistant-network (bridge)&#xa;• Inter-service communication" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="215" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-volumes" value="Volumes&#xa;• backend/logs → /app/logs&#xa;• chunks_enriched_fixed (ro)&#xa;• nginx/logs" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="415" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-health" value="Healthchecks&#xa;• backend: curl :8880/health&#xa;• frontend: curl :80&#xa;• nginx: curl :80/health" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="15" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-ports" value="Port Mapping&#xa;• Frontend: 80 → 80&#xa;• Backend API: 8880 → 8880&#xa;• Qdrant: 6333 → 6333" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="215" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="build-comp-restart" value="Restart Policy&#xa;• unless-stopped&#xa;• depends_on chain&#xa;• auto-recovery" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="build-compose">
+          <mxGeometry x="415" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 4: РАЗВЁРТЫВАНИЕ -->
+        <!-- ============================================ -->
+        <mxCell id="phase4" value="4. РАЗВЁРТЫВАНИЕ (Deployment)" style="swimlane;startSize=40;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="100" y="520" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-env" value="Environment Configuration" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase4">
+          <mxGeometry x="30" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-env-file" value=".env File&#xa;• QDRANT_HOST, QDRANT_PORT&#xa;• SUPABASE_URL, KEYS&#xa;• ROUTERAI_API_KEY&#xa;• EMBEDDING_MODEL, DIM" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-env">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-env-example" value=".env.example&#xa;• Шаблон переменных&#xa;• Не коммитить .env!" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-env">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-env-validation" value="Validation&#xa;• start.bat проверка&#xa;• Docker --version&#xa;• .env existence check" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-env">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-env-external" value="External Services&#xa;• Supabase (PostgreSQL + Auth)&#xa;• Qdrant (Vector DB)&#xa;• RouterAI (LLM API)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-env">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-scripts" value="Deployment Scripts (Windows)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase4">
+          <mxGeometry x="360" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-start" value="start.bat&#xa;1. Проверка Docker&#xa;2. Проверка .env&#xa;3. docker-compose down&#xa;4. up -d --build" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-scripts">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-stop" value="stop.bat&#xa;1. docker-compose down&#xa;2. Очистка ресурсов" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-scripts">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-check" value="check-status.bat&#xa;• Статус контейнеров&#xa;• Health checks&#xa;• Port availability" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-scripts">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-backup" value="Backup Scripts&#xa;• backup-to-usb.bat&#xa;• export_to_usb.bat&#xa;• import_from_usb.bat" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-scripts">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Nginx Configuration -->
+        <mxCell id="deploy-nginx" value="Nginx Reverse Proxy Configuration" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase4">
+          <mxGeometry x="10" y="220" width="680" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-conf" value="nginx/nginx.conf&#xa;• / → frontend (port 80)&#xa;• /api/* → backend (port 8880)&#xa;• Health check endpoint" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="15" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-ssl" value="SSL (Future)&#xa;• 443:443 (закомментировано)&#xa;• HTTPS certificates&#xa;• Let's Encrypt" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="215" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-logs" value="Log Management&#xa;• nginx/logs → /var/log/nginx&#xa;• Access logs&#xa;• Error logs" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="415" y="35" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-static" value="Static Assets&#xa;• Vue.js SPA files&#xa;• JS, CSS, images&#xa;• Gzip compression" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="15" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-cors" value="Security Headers&#xa;• CORS policies&#xa;• Rate limiting&#xa;• Request size limits" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="215" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-nginx-upstream" value="Upstream Config&#xa;• backend:8880&#xa;• frontend:80&#xa;• Load balancing ready" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="deploy-nginx">
+          <mxGeometry x="415" y="95" width="180" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 5: PRODUCTION -->
+        <!-- ============================================ -->
+        <mxCell id="phase5" value="5. PRODUCTION (Running System)" style="swimlane;startSize=40;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="850" y="520" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <!-- User -->
+        <mxCell id="prod-user" value="Пользователь&#xa;(Клиент Башкирэнерго)" style="ellipse;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#b85450;fontSize=12;fontColor=#333333;fontStyle=1;" vertex="1" parent="phase5">
+          <mxGeometry x="280" y="60" width="140" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Query Flow -->
+        <mxCell id="prod-flow" value="Query Flow (Runtime)" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase5">
+          <mxGeometry x="20" y="150" width="660" height="210" as="geometry" />
+        </mxCell>
+
+        <!-- Row 1 -->
+        <mxCell id="prod-flow-1" value="1. User Query&#xa;Vue.js Chat UI&#xa;(JWT Auth)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="15" y="45" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-2" value="2. Nginx Proxy&#xa;Route to&#xa;Backend :8880" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="135" y="45" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-3" value="3. FastAPI&#xa;POST /query&#xa;/query/stream" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="255" y="45" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-4" value="4. Query Generator&#xa;Classify &amp;&#xa;decompose" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="375" y="45" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-5" value="5. Search Agent&#xa;Hybrid Search&#xa;(0.4+0.3+0.1+0.2)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="495" y="45" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Row 2 -->
+        <mxCell id="prod-flow-6" value="6. Response Agent&#xa;Generate answer&#xa;(Mercury 2 LLM)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="15" y="120" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-7" value="7. SSE Stream&#xa;Real-time&#xa;response" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="135" y="120" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-8" value="8. Save to&#xa;Supabase&#xa;(history)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="255" y="120" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-9" value="9. Display&#xa;to User&#xa;(Vue.js)" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="375" y="120" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prod-flow-10" value="10. Feedback&#xa;User rates&#xa;answer" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;fontStyle=1;" vertex="1" parent="prod-flow">
+          <mxGeometry x="495" y="120" width="100" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Flow edges -->
+        <mxCell id="e-flow-1-2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-1" target="prod-flow-2" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-2-3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-2" target="prod-flow-3" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-3-4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-3" target="prod-flow-4" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-4-5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-4" target="prod-flow-5" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-5-6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-5" target="prod-flow-6" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="545" y="100" />
+              <mxPoint x="65" y="100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-flow-6-7" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-6" target="prod-flow-7" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-7-8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-7" target="prod-flow-8" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-8-9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-8" target="prod-flow-9" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-flow-9-10" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#6c8ebf;" edge="1" source="prod-flow-9" target="prod-flow-10" parent="prod-flow">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- PHASE 6: МОНИТОРИНГ И ПОДДЕРЖКА -->
+        <!-- ============================================ -->
+        <mxCell id="phase6" value="6. МОНИТОРИНГ &amp; ПОДДЕРЖКА (Monitoring &amp; Maintenance)" style="swimlane;startSize=40;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="520" width="700" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-logs" value="Logging System" style="swimlane;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase6">
+          <mxGeometry x="30" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-log-backend" value="Backend Logs&#xa;• backend/logs/&#xa;• docker logs -f&#xa;• LOG_LEVEL env" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-logs">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-log-nginx" value="Nginx Logs&#xa;• nginx/logs/&#xa;• access.log&#xa;• error.log" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-logs">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-log-debug" value="Debug Mode&#xa;• AGENT_DEBUG_ENABLED&#xa;• AGENT_DEBUG_LOG_PROMPTS&#xa;• Verbose agent steps" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-logs">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-log-supabase" value="Supabase Logs&#xa;• MCP get_logs&#xa;• postgres, auth, storage&#xa;• realtime, postgrest" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-logs">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-health" value="Health Monitoring" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase6">
+          <mxGeometry x="360" y="60" width="320" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-hc-docker" value="Docker Healthchecks&#xa;• backend: :8880/health&#xa;• frontend: :80&#xa;• nginx: :80/health" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-health">
+          <mxGeometry x="15" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-hc-status" value="Status Checks&#xa;• check-status.bat&#xa;• docker-compose ps&#xa;• Port availability" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-health">
+          <mxGeometry x="165" y="40" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-hc-supabase" value="Supabase MCP&#xa;• get_database_stats&#xa;• get_advisors&#xa;• verify_jwt_secret" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-health">
+          <mxGeometry x="15" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-hc-qdrant" value="Qdrant Monitoring&#xa;• list_vector_indexes&#xa;• get_vector_index_stats&#xa;• Collection health" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-health">
+          <mxGeometry x="165" y="105" width="130" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Maintenance -->
+        <mxCell id="mon-maintenance" value="Maintenance Operations" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;fontColor=#333333;" vertex="1" parent="phase6">
+          <mxGeometry x="10" y="220" width="680" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-update" value="Updates&#xa;• docker-compose up -d --build&#xa;• Code changes&#xa;• Dependency updates" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="15" y="35" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-backup" value="Backup &amp; Restore&#xa;• backup-to-usb.bat&#xa;• export/import_from_usb&#xa;• RESTORE_FROM_USB.md" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="185" y="35" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-db" value="Database Maintenance&#xa;• Supabase migrations&#xa;• list_migrations&#xa;• apply_migration" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="375" y="35" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-vector" value="Vector DB Updates&#xa;• Re-ingest chunks&#xa;• Update embeddings&#xa;• Collection management" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="505" y="35" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-security" value="Security&#xa;• RLS policies&#xa;• JWT rotation&#xa;• Security advisors" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="15" y="95" width="150" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-performance" value="Performance&#xa;• Index optimization&#xa;• Query plans (EXPLAIN)&#xa;• Lighthouse audits" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="185" y="95" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-feedback" value="Feedback Loop&#xa;• User ratings analysis&#xa;• LLM judge evaluation&#xa;• Prompt refinement" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="375" y="95" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="mon-maint-docs" value="Documentation&#xa;• README.md&#xa;• QWEN.md&#xa;• backend/docs/" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=10;fontColor=#333333;" vertex="1" parent="mon-maintenance">
+          <mxGeometry x="505" y="95" width="160" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- ARROWS BETWEEN PHASES -->
+        <!-- ============================================ -->
+        
+        <!-- Phase 1 -> Phase 2 -->
+        <mxCell id="e-p1-p2" value="Код готов" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#d6b656;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="290" as="sourcePoint" />
+            <mxPoint x="850" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Phase 2 -> Phase 3 -->
+        <mxCell id="e-p2-p3" value="Тесты прошли" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#9673a6;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1550" y="290" as="sourcePoint" />
+            <mxPoint x="1600" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Phase 3 -> Phase 4 -->
+        <mxCell id="e-p3-p4" value="Контейнеры готовы" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#82b366;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1950" y="260" as="sourcePoint" />
+            <mxPoint x="1950" y="520" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1950" y="420" />
+              <mxPoint x="450" y="420" />
+              <mxPoint x="450" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Phase 4 -> Phase 5 -->
+        <mxCell id="e-p4-p5" value="start.bat" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#b85450;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="680" as="sourcePoint" />
+            <mxPoint x="850" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Phase 5 -> Phase 6 -->
+        <mxCell id="e-p5-p6" value="Мониторинг" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#9673a6;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1550" y="680" as="sourcePoint" />
+            <mxPoint x="1600" y="680" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Phase 6 -> Phase 1 (Feedback Loop) -->
+        <mxCell id="e-p6-p1" value="Обратная связь → Новые фичи" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#b85450;fontSize=12;fontColor=#333333;fontStyle=1;endArrow=classic;endFill=1;dashed=1;dashPattern=10 5;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1950" y="900" as="sourcePoint" />
+            <mxPoint x="450" y="480" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1950" y="940" />
+              <mxPoint x="450" y="940" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- EXTERNAL SERVICES -->
+        <!-- ============================================ -->
+        <mxCell id="external-services" value="ВНЕШНИЕ СЕРВИСЫ" style="swimlane;startSize=40;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="100" y="940" width="450" height="380" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-supabase" value="Supabase&#xa;(PostgreSQL + Auth)&#xa;&#xa;• JWT Authentication&#xa;• Chat history storage&#xa;• Feedback data&#xa;• MCP tools available" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=20;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontColor=#333333;fontStyle=1;" vertex="1" parent="external-services">
+          <mxGeometry x="20" y="60" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-qdrant" value="Qdrant&#xa;(Vector Database)&#xa;&#xa;• Hybrid search (BM25 + semantic)&#xa;• 3 vectors per chunk&#xa;• Collection: BASHKIR_ENERGO&#xa;• Port 6333" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=20;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontColor=#333333;fontStyle=1;" vertex="1" parent="external-services">
+          <mxGeometry x="230" y="60" width="180" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ext-routerai" value="RouterAI (Cloud API)&#xa;&#xa;• LLM: inception/mercury-2&#xa;• Embeddings: pplx-embed-v1-4b&#xa;• API key authentication&#xa;• https://routerai.ru/api/v1" style="ellipse;shape=cloud;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;fontColor=#333333;fontStyle=1;" vertex="1" parent="external-services">
+          <mxGeometry x="30" y="210" width="380" height="140" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================ -->
+        <!-- TECHNOLOGY STACK -->
+        <!-- ============================================ -->
+        <mxCell id="tech-stack" value="ТЕХНОЛОГИЧЕСКИЙ СТЕК" style="swimlane;startSize=40;fillColor=#e0f7fa;strokeColor=#006064;fontStyle=1;fontSize=15;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="600" y="940" width="1700" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-backend" value="Backend&#xa;&#xa;• Python 3.11&#xa;• FastAPI&#xa;• Uvicorn&#xa;• rank-bm25&#xa;• pymorphy3" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="20" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-frontend" value="Frontend&#xa;&#xa;• Vue.js 3&#xa;• Vite&#xa;• Pinia&#xa;• Vue Router&#xa;• TailwindCSS" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="170" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-database" value="Databases&#xa;&#xa;• PostgreSQL (Supabase)&#xa;• Qdrant (Vector DB)&#xa;• pgvector&#xa;• RLS policies" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="320" y="50" width="140" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-ai" value="AI/ML&#xa;&#xa;• RouterAI API&#xa;• Mercury 2 LLM&#xa;• pplx-embed-v1-4b&#xa;• Agentic RAG" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="480" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-docker" value="Infrastructure&#xa;&#xa;• Docker&#xa;• Docker Compose&#xa;• Nginx&#xa;• Health checks" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="630" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-testing" value="Testing&#xa;&#xa;• pytest&#xa;• Vitest&#xa;• Lighthouse&#xa;• Chrome DevTools" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="780" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-tools" value="Dev Tools&#xa;&#xa;• MCP Servers&#xa;• Context7&#xa;• OmG Agents&#xa;• Git" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="930" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-search" value="Search&#xa;&#xa;• Hybrid (4 weights)&#xa;• BM25 + Semantic&#xa;• 0.4+0.3+0.1+0.2&#xa;• score/max_score" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="1080" y="50" width="140" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-auth" value="Auth &amp; Security&#xa;&#xa;• Supabase JWT&#xa;• Bearer tokens&#xa;• RLS policies&#xa;• Service role key" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="1240" y="50" width="140" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-deploy" value="Deployment&#xa;&#xa;• Multi-stage build&#xa;• Windows scripts&#xa;• USB backup&#xa;• Auto-restart" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="1400" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-monitoring" value="Monitoring&#xa;&#xa;• Docker health&#xa;• MCP advisors&#xa;• Log files&#xa;• Debug mode" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#006064;fontSize=10;fontColor=#333333;" vertex="1" parent="tech-stack">
+          <mxGeometry x="1550" y="50" width="130" height="110" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

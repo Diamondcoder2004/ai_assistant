@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Отчет о проекте</w:t>
+      </w:r>
+      
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Постановка задачи, кейса возьму из google drive</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Выбор языковой модели выбор схемы обучения</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Очевидно, схемы обучения нет, тут я расскажу, что выбрал архитектуру RAG, так как нет ресурсов на дообучение.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Выбор языковой модели основывается на его скорости работы, стоимости и качества, </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>RAG, объясним как он работает, что нужно две модели, поисковик и генератор ответа, скажем как был выбран каждый компонент</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Обзор рынка, как я понял как решать </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Он имел в виду, что я типо на что то смотрел, чтобы понять как решать, анализировал конкурентов</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Тут можно рассказать про готовые rag чат боты или про подходы и улучшения rag, agentic rag, hybrid search, no reranker, </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Описать реализованную схему, преимущества и недостатки</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Рассказать, что схема состоит из веб интерфейса, модуль авторизации и регистрации, модуль ИИ и поиска, база данных для документов и для данных пользователя.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Дальше скажем, что система работает с платным сервисом router ai, которые предоставляют доступ к ИИ и поисковая нейронка.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Дальше расскажем про формирование </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">базы знаний, какая страткгия разбиения и кодирования. </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Дальше про детали поиска и генерации, про агентов</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Скажем, что жаннве чатов и пользователей записываются для аналитики</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Преимущества и недостатки, начну с недостатков, которые в любом случае можно исправить: Отсутсвие кэширования запросов, на один и тот же вопрос можно не отвечать, модель же заново отвечает, тут проблема в том, что можешь могла некорректно ответить, а мы это сохраним и будем показывать пользователям, с фидбеком надо работать.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Недостатки это зависимость от внешнего сервиса, на этот сервис уходят данные из запроса, это </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>проблема с безопасностью и конфиденциальностью.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Необходимо держать данные в актуальном состоянии при обновлении нормативной базы, автоматического обновления еще не реализовано.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Обновить может только программист</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Преимущества: не требует больших ресурсов для содержания, используются ИИ-агенты, которые позволяют улучшить поиск, путем переформулирования вопроса клиента с учетом предыдущих сообщений, есть разбиение сложного вопроса на составные вопросы для получения полного ответа, также агенты позволяют настроить параметры поиска в зависимости от сложности вопроса. В поиске используется  гибридный поиск, который сочетает в </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>себе, векторный поиск по трем векторам, вектору краткого содержания и самого содержания гипотетических вопросов и вектору текущего фрагмента и двух соседних.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>В дополнение к ним идет поиск по словесному совпадению.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Все эти 4 компоненты имеют свой вес, который влияет на конечный результат, эти веса контролируются агентом.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>К преимуществу можно отнести запись всех сообщений в базу и реализация обратной связи с клиентами.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>При этом надо указать, что время работы максимально быстрая у агентов за счет использования диффузионной языковой модели mercury 2, несмотря на то что мы вызываем LLM, около трех четырех раз</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Есть система уточнения вопроса, если </w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>вопрос не относится к технологическому присоединению или клиент задал вообще не понятный вопрос.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Есть история сообщений и возобновление предыдущих диалогов</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Ее реализация, на каком железе запущено и что нужно для работы</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Процессор 4 ядра где то, оперативка 4-8 гигабайт, внутренняя память от 10 гигабайт и выше, зависит от количества запросов,</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Деньги нужны для работы в сервисе router ai</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pageBreakBefore w:val="true"/>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="270" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r/>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:line="240" w:lineRule="auto" w:after="0" w:before="0"/>
+        <w:ind w:right="0" w:left="0"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial" w:eastAsia="Arial"/>
+          <w:color w:val="252525"/>
+          <w:sz w:val="61"/>
+        </w:rPr>
+        <w:t>Условия тиражирования для развертывания на их внутреннем контуре.</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr>
+      <w:pgSz w:h="16840" w:w="11900"/>
+      <w:pgMar>
+        <w:pgMar w:top="0" w:right="375" w:bottom="270" w:left="375" w:header="720" w:footer="720" w:gutter="0"/>
+      </w:pgMar>
+    </w:sectPr>
+  </w:body>
+</w:document>

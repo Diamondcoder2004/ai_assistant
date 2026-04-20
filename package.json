@@ -1,0 +1,27 @@
+{
+  "name": "ai_assistant",
+  "version": "1.0.0",
+  "description": "Проект для разворачивания сервера на Docker-compose. ИИ-ассистент для поддержки клиентов по вопросам технологического присоединения.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Diamondcoder2004/ai_assistant.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Diamondcoder2004/ai_assistant/issues"
+  },
+  "homepage": "https://github.com/Diamondcoder2004/ai_assistant#readme",
+  "dependencies": {
+    "pptxgenjs": "^4.0.1"
+  }
+}

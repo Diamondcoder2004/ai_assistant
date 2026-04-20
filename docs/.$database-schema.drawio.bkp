@@ -1,0 +1,190 @@
+<mxfile host="diagramkit" modified="2026-04-15T00:00:00.000Z" type="device">
+  <diagram id="er-diagram" name="ER Diagram">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1"
+                  tooltips="1" connect="1" arrows="1" fold="1" page="1"
+                  pageScale="1" pageWidth="1400" pageHeight="900"
+                  math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Title -->
+        <mxCell id="title" value="Database Schema — ER Diagram" style="text;fontSize=22;fontStyle=1;align=center;fontColor=#333333;"
+                vertex="1" parent="1">
+          <mxGeometry x="500" y="15" width="300" height="35" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== auth.users ==================== -->
+        <mxCell id="auth-users" value="auth.users" style="swimlane;startSize=30;fillColor=#1ba1e2;strokeColor=#006EAF;fontStyle=1;fontColor=#ffffff;align=center;"
+                vertex="1" parent="1">
+          <mxGeometry x="80" y="80" width="260" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth-users-pk" value="🔑 id  (UUID)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="auth-users">
+          <mxGeometry x="0" y="35" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth-users-email" value="email  (VARCHAR)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="auth-users">
+          <mxGeometry x="0" y="60" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth-users-password" value="password  (encrypted)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="auth-users">
+          <mxGeometry x="0" y="85" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="auth-users-dots" value="..." style="text;fontSize=12;fontColor=#999999;align=left;spacingLeft=10;fontStyle=2;"
+                vertex="1" parent="auth-users">
+          <mxGeometry x="0" y="110" width="260" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== profiles ==================== -->
+        <mxCell id="profiles" value="profiles" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontColor=#333333;align=center;"
+                vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="260" height="290" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-pk" value="🔑 id  (UUID) PK" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="35" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-fullname" value="full_name  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="60" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-lastname" value="last_name  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="85" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-email" value="email  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="110" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-phone" value="phone  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="135" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-telegram" value="telegram  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="160" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-avatar" value="avatar_url  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="185" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-created" value="created_at  (TIMESTAMPTZ)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="210" width="260" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="profiles-updated" value="updated_at  (TIMESTAMPTZ)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="profiles">
+          <mxGeometry x="0" y="235" width="260" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== chats ==================== -->
+        <mxCell id="chats" value="chats" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontColor=#333333;align=center;"
+                vertex="1" parent="1">
+          <mxGeometry x="480" y="80" width="300" height="340" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-pk" value="🔑 id  (BIGINT) PK" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="35" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-fk-user" value="🔗 user_id  (UUID) FK → auth.users" style="text;fontSize=12;fontColor=#b85450;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="60" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-question" value="question  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="85" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-answer" value="answer  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="110" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-parameters" value="parameters  (JSONB)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="135" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-context" value="context  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="160" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-sources" value="sources  (JSONB)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="185" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-created" value="created_at  (TIMESTAMPTZ)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="210" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="chats-session" value="session_id  (UUID)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="chats">
+          <mxGeometry x="0" y="235" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== feedback ==================== -->
+        <mxCell id="feedback" value="feedback" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d6b656;fontStyle=1;fontColor=#333333;align=center;"
+                vertex="1" parent="1">
+          <mxGeometry x="480" y="480" width="300" height="260" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-pk" value="🔑 id  (BIGINT) PK" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="35" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-fk-user" value="🔗 user_id  (UUID) FK → auth.users" style="text;fontSize=12;fontColor=#b85450;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="60" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-fk-query" value="🔗 query_id  (UUID) FK → chats.session_id" style="text;fontSize=12;fontColor=#b85450;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="85" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-type" value="feedback_type  (ENUM)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="110" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-rating" value="rating  (INTEGER)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="135" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-comment" value="comment  (TEXT)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="160" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-created" value="created_at  (TIMESTAMPTZ)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="185" width="300" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="feedback-updated" value="updated_at  (TIMESTAMPTZ)" style="text;fontSize=12;fontColor=#333333;align=left;spacingLeft=10;"
+                vertex="1" parent="feedback">
+          <mxGeometry x="0" y="210" width="300" height="25" as="geometry"/>
+        </mxCell>
+
+        <!-- ==================== EDGES ==================== -->
+
+        <!-- auth.users (1) → (0..*) profiles : id = id -->
+        <mxCell id="edge-users-profiles" value="1 : 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERmandOne;startArrow=ERmandOne;strokeColor=#666666;strokeWidth=2;fontSize=11;fontColor=#333333;"
+                edge="1" source="auth-users" target="profiles" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- auth.users (1) → (0..*) chats : id = user_id -->
+        <mxCell id="edge-users-chats" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERoneToMany;startArrow=ERmandOne;strokeColor=#666666;strokeWidth=2;fontSize=11;fontColor=#333333;"
+                edge="1" source="auth-users" target="chats" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- auth.users (1) → (0..*) feedback : id = user_id -->
+        <mxCell id="edge-users-feedback" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERoneToMany;startArrow=ERmandOne;strokeColor=#666666;strokeWidth=2;fontSize=11;fontColor=#333333;"
+                edge="1" source="auth-users" target="feedback" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- chats (1) → (0..*) feedback : session_id = query_id -->
+        <mxCell id="edge-chats-feedback" value="1 : N" style="edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=ERoneToMany;startArrow=ERmandOne;strokeColor=#666666;strokeWidth=2;fontSize=11;fontColor=#333333;"
+                edge="1" source="chats" target="feedback" parent="1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

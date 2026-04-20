@@ -117,6 +117,7 @@ class ResponseAgent:
         history: str = "",
         temperature: float = 0.7,
         max_tokens: int = 2000,
+        user_hints: Optional[Dict[str, Any]] = None,
         query_id: Optional[str] = None,
         session_id: Optional[str] = None,
         session_logger: Optional[Any] = None
@@ -161,7 +162,8 @@ class ResponseAgent:
             user_prompt = self._create_user_prompt(
                 user_query=user_query,
                 context=context,
-                history=history_context
+                history=history_context,
+                user_hints=user_hints
             )
 
         logger.info(f"Генерация ответа для '{user_query[:50]}...'")
@@ -317,9 +319,14 @@ class ResponseAgent:
         self,
         user_query: str,
         context: str,
-        history: str
+        history: str,
+        user_hints: Optional[Dict[str, Any]] = None
     ) -> str:
         """Создание пользовательского промпта."""
+        brevity_instruction = ""
+        if user_hints and (user_hints.get("max_tokens", 2000) < 1000 or user_hints.get("length") == "short"):
+            brevity_instruction = "\nВАЖНО: Отвечай максимально КРАТКО и по существу. Уложись в 1-2 абзаца.\n"
+
         return f"""
 {history}
 
@@ -327,7 +334,7 @@ class ResponseAgent:
 
 ---
 Вопрос пользователя: {user_query}
-
+{brevity_instruction}
 Используя приведённую выше информацию из базы знаний, дай точный и развёрнутый ответ на вопрос.
 
 ВАЖНО: При ссылке на источник используй ТОЛЬКО цифру в квадратных скобках:

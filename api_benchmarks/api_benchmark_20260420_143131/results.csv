@@ -1,0 +1,1 @@
+﻿index,question,expected,answer,time_total_sec,num_hits,sources,judge_relevance,judge_completeness,judge_helpfulness,judge_clarity,judge_hallucination_risk,judge_context_recall,judge_faithfulness,judge_currency,judge_binary_correctness,judge_overall_score,judge_justification

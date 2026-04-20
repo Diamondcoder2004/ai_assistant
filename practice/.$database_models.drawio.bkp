@@ -1,0 +1,292 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram id="page-1" name="Database Models">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- Title -->
+        <mxCell id="title" parent="1" style="text;fontSize=24;fontStyle=1;align=center;fontColor=#1a1a1a;" value="Логическая модель данных: Векторная и Реляционная базы данных" vertex="1">
+          <mxGeometry height="40" width="900" x="350" y="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== LEFT: Qdrant Vector DB ==================== -->
+        <mxCell id="qdrant-layer" parent="1" style="swimlane;startSize=40;fillColor=#e3f2fd;strokeColor=#1976d2;fontStyle=1;fontSize=16;fontColor=#1565c0;rounded=0;" value="🔵 Qdrant — Векторная база данных" vertex="1">
+          <mxGeometry height="780" width="750" x="30" y="80" as="geometry" />
+        </mxCell>
+        
+        <!-- Collection header -->
+        <mxCell id="collection-header" parent="qdrant-layer" style="swimlane;startSize=30;fillColor=#1976d2;strokeColor=#1565c0;fontStyle=1;fontSize=13;fontColor=#ffffff;rounded=1;arcSize=8;" value="Collection: BASHKIR_ENERGO_PERPLEXITY" vertex="1">
+          <mxGeometry height="60" width="680" x="30" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="collection-meta" parent="collection-header" style="text;fontSize=11;fontColor=#bbdefb;align=left;spacingLeft=10;" value="Model: pplx-embed-v1-4b  |  Dimension: 2560  |  Distance: Cosine  |  Index: HNSW" vertex="1">
+          <mxGeometry height="20" width="660" x="10" y="32" as="geometry" />
+        </mxCell>
+        
+        <!-- Named Vectors Section -->
+        <mxCell id="vectors-section" parent="qdrant-layer" style="swimlane;startSize=28;fillColor=#bbdefb;strokeColor=#1976d2;fontStyle=1;fontSize=12;fontColor=#1565c0;rounded=1;arcSize=8;" value="📊 Named Vectors (3 × 2560 dim)" vertex="1">
+          <mxGeometry height="140" width="680" x="30" y="130" as="geometry" />
+        </mxCell>
+        
+        <!-- Vector: pref -->
+        <mxCell id="vector-pref" parent="vectors-section" style="swimlane;startSize=22;fillColor=#ffffff;strokeColor=#1976d2;fontStyle=1;fontSize=11;fontColor=#1976d2;rounded=1;arcSize=6;" value="pref (semantic)" vertex="1">
+          <mxGeometry height="35" width="210" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="pref-desc" parent="vector-pref" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=8;" value="summary + content (8000 chars)" vertex="1">
+          <mxGeometry height="15" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        
+        <!-- Vector: hype -->
+        <mxCell id="vector-hype" parent="vectors-section" style="swimlane;startSize=22;fillColor=#ffffff;strokeColor=#1976d2;fontStyle=1;fontSize=11;fontColor=#1976d2;rounded=1;arcSize=6;" value="hype (hypothetical)" vertex="1">
+          <mxGeometry height="35" width="210" x="235" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="hype-desc" parent="vector-hype" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=8;" value="hypothetical questions" vertex="1">
+          <mxGeometry height="15" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        
+        <!-- Vector: contextual -->
+        <mxCell id="vector-contextual" parent="vectors-section" style="swimlane;startSize=22;fillColor=#ffffff;strokeColor=#1976d2;fontStyle=1;fontSize=11;fontColor=#1976d2;rounded=1;arcSize=6;" value="contextual" vertex="1">
+          <mxGeometry height="35" width="210" x="460" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="contextual-desc" parent="vector-contextual" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=8;" value="prev + current + next chunks" vertex="1">
+          <mxGeometry height="15" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        
+        <!-- Hybrid Search Weights -->
+        <mxCell id="weights-section" parent="qdrant-layer" style="swimlane;startSize=28;fillColor=#fff3e0;strokeColor=#f57c00;fontStyle=1;fontSize=12;fontColor=#e65100;rounded=1;arcSize=8;" value="⚖️ Веса гибридного поиска" vertex="1">
+          <mxGeometry height="70" width="680" x="30" y="290" as="geometry" />
+        </mxCell>
+        
+        <!-- Weight bars -->
+        <mxCell id="weight-pref" parent="weights-section" style="rounded=1;fillColor=#1976d2;strokeColor=none;fontSize=10;fontColor=#ffffff;align=center;" value="pref 40%" vertex="1">
+          <mxGeometry height="25" width="260" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="weight-hype" parent="weights-section" style="rounded=1;fillColor=#388e3c;strokeColor=none;fontSize=10;fontColor=#ffffff;align=center;" value="hype 30%" vertex="1">
+          <mxGeometry height="25" width="195" x="280" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="weight-bm25" parent="weights-section" style="rounded=1;fillColor=#f57c00;strokeColor=none;fontSize=10;fontColor=#ffffff;align=center;" value="BM25 20%" vertex="1">
+          <mxGeometry height="25" width="130" x="485" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="weight-contextual" parent="weights-section" style="rounded=1;fillColor=#7b1fa2;strokeColor=none;fontSize=10;fontColor=#ffffff;align=center;" value="ctx 10%" vertex="1">
+          <mxGeometry height="25" width="65" x="605" y="35" as="geometry" />
+        </mxCell>
+        
+        <!-- Payload Fields Section -->
+        <mxCell id="payload-section" parent="qdrant-layer" style="swimlane;startSize=28;fillColor=#e8f5e9;strokeColor=#388e3c;fontStyle=1;fontSize=12;fontColor=#2e7d32;rounded=1;arcSize=8;" value="📦 Payload Fields (метаданные точки)" vertex="1">
+          <mxGeometry height="380" width="680" x="30" y="380" as="geometry" />
+        </mxCell>
+        
+        <!-- Payload fields grid -->
+        <mxCell id="payload-chunk-id" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="chunk_id" vertex="1">
+          <mxGeometry height="45" width="210" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="chunk-id-type" parent="payload-chunk-id" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="string (PK)" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="chunk-id-desc" parent="payload-chunk-id" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Уникальный ID чанка" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-source" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="source_file" vertex="1">
+          <mxGeometry height="45" width="210" x="235" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="source-type" parent="payload-source" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="string" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="source-desc" parent="payload-source" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Исходный документ" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-category" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="category" vertex="1">
+          <mxGeometry height="45" width="210" x="460" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="category-type" parent="payload-category" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="string" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="category-desc" parent="payload-category" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="legal, instructions, faqs" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-summary" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="summary" vertex="1">
+          <mxGeometry height="45" width="210" x="10" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="summary-type" parent="payload-summary" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="string (500 chars)" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="summary-desc" parent="payload-summary" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Краткое содержание" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-content" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="content" vertex="1">
+          <mxGeometry height="45" width="210" x="235" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="content-type" parent="payload-content" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="string (2000 chars)" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="content-desc" parent="payload-content" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Текст чанка" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-questions" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="questions" vertex="1">
+          <mxGeometry height="45" width="210" x="460" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="questions-type" parent="payload-questions" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="JSON array" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="questions-desc" parent="payload-questions" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Гипотетические вопросы" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-keywords" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="keywords" vertex="1">
+          <mxGeometry height="45" width="210" x="10" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="keywords-type" parent="payload-keywords" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="JSON array" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="keywords-desc" parent="payload-keywords" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Ключевые слова" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="payload-entities" parent="payload-section" style="swimlane;startSize=20;fillColor=#ffffff;strokeColor=#388e3c;fontStyle=1;fontSize=10;fontColor=#2e7d32;rounded=1;arcSize=5;" value="entities" vertex="1">
+          <mxGeometry height="45" width="210" x="235" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="entities-type" parent="payload-entities" style="text;fontSize=9;fontColor=#999999;align=left;spacingLeft=8;" value="JSON array" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="22" as="geometry" />
+        </mxCell>
+        <mxCell id="entities-desc" parent="payload-entities" style="text;fontSize=9;fontColor=#666666;align=left;spacingLeft=8;" value="Именованные сущности" vertex="1">
+          <mxGeometry height="12" width="195" x="8" y="34" as="geometry" />
+        </mxCell>
+        
+        <!-- ==================== RIGHT: Supabase PostgreSQL ==================== -->
+        <mxCell id="supabase-layer" parent="1" style="swimlane;startSize=40;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontStyle=1;fontSize=16;fontColor=#6a1b9a;rounded=0;" value="🟣 Supabase — Реляционная база данных (PostgreSQL)" vertex="1">
+          <mxGeometry height="780" width="750" x="820" y="80" as="geometry" />
+        </mxCell>
+        
+        <!-- auth.users -->
+        <mxCell id="auth-users" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#7b1fa2;strokeColor=#6a1b9a;fontStyle=1;fontSize=11;fontColor=#ffffff;rounded=1;arcSize=6;" value="auth.users (Supabase Auth)" vertex="1">
+          <mxGeometry height="90" width="320" x="30" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-users-fields" parent="auth-users" style="text;fontSize=10;fontColor=#e1bee7;align=left;spacingLeft=10;" value="id (UUID, PK)&#xa;email&#xa;encrypted_password&#xa;raw_user_meta_data (JSONB)&#xa;created_at, last_sign_in_at" vertex="1">
+          <mxGeometry height="55" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- profiles -->
+        <mxCell id="profiles" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#ffffff;strokeColor=#7b1fa2;fontStyle=1;fontSize=11;fontColor=#6a1b9a;rounded=1;arcSize=6;" value="profiles" vertex="1">
+          <mxGeometry height="90" width="320" x="30" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="profiles-fields" parent="profiles" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (UUID, PK, FK→auth.users)&#xa;full_name (TEXT)&#xa;avatar_url (TEXT)&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="55" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- user_settings -->
+        <mxCell id="user-settings" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#ffffff;strokeColor=#7b1fa2;fontStyle=1;fontSize=11;fontColor=#6a1b9a;rounded=1;arcSize=6;" value="user_settings" vertex="1">
+          <mxGeometry height="90" width="320" x="30" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="user-settings-fields" parent="user-settings" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (BIGSERIAL, PK)&#xa;user_id (TEXT, UNIQUE)&#xa;hotkeys (JSONB)&#xa;theme, language&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="55" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- chats -->
+        <mxCell id="chats" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#e1bee7;strokeColor=#7b1fa2;fontStyle=1;fontSize=11;fontColor=#6a1b9a;rounded=1;arcSize=6;" value="chats" vertex="1">
+          <mxGeometry height="110" width="320" x="30" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="chats-fields" parent="chats" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (BIGSERIAL, PK)&#xa;user_id (UUID, FK→auth.users)&#xa;question (TEXT)&#xa;answer (TEXT)&#xa;parameters (JSONB)&#xa;context (TEXT)&#xa;created_at" vertex="1">
+          <mxGeometry height="75" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- sources -->
+        <mxCell id="sources" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#e1bee7;strokeColor=#7b1fa2;fontStyle=1;fontSize=11;fontColor=#6a1b9a;rounded=1;arcSize=6;" value="sources" vertex="1">
+          <mxGeometry height="100" width="320" x="30" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="sources-fields" parent="sources" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (TEXT, PK) ← chunk_id из Qdrant&#xa;filename (TEXT)&#xa;breadcrumbs (TEXT)&#xa;summary (TEXT)&#xa;category (TEXT)&#xa;created_at" vertex="1">
+          <mxGeometry height="65" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- chat_sources (junction table) -->
+        <mxCell id="chat-sources" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#fff3e0;strokeColor=#f57c00;fontStyle=1;fontSize=11;fontColor=#e65100;rounded=1;arcSize=6;" value="chat_sources (связь многие-ко-многим)" vertex="1">
+          <mxGeometry height="120" width="320" x="30" y="635" as="geometry" />
+        </mxCell>
+        <mxCell id="chat-sources-fields" parent="chat-sources" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (BIGSERIAL, PK)&#xa;chat_id (BIGINT, FK→chats)&#xa;source_id (TEXT, FK→sources)&#xa;position (INT)&#xa;score_hybrid, score_rerank&#xa;score_pref, score_bm25, score_hype&#xa;created_at" vertex="1">
+          <mxGeometry height="85" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- feedback -->
+        <mxCell id="feedback" parent="supabase-layer" style="swimlane;startSize=25;fillColor=#ffffff;strokeColor=#7b1fa2;fontStyle=1;fontSize=11;fontColor=#6a1b9a;rounded=1;arcSize=6;" value="feedback" vertex="1">
+          <mxGeometry height="100" width="320" x="390" y="385" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback-fields" parent="feedback" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="id (BIGSERIAL, PK)&#xa;chat_id (BIGINT, FK→chats)&#xa;user_id (UUID, FK→auth.users)&#xa;feedback_type (ENUM: like/dislike/star)&#xa;rating (INT 1-5)&#xa;comment (TEXT)&#xa;created_at, updated_at" vertex="1">
+          <mxGeometry height="65" width="300" x="10" y="28" as="geometry" />
+        </mxCell>
+        
+        <!-- Relationships arrows -->
+        <!-- auth.users → profiles -->
+        <mxCell id="edge-auth-profiles" parent="supabase-layer" source="auth-users" target="profiles" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;" edge="1" value="1:1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- auth.users → user_settings -->
+        <mxCell id="edge-auth-settings" parent="supabase-layer" source="auth-users" target="user-settings" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;" edge="1" value="1:1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="170" />
+              <mxPoint x="190" y="275" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- auth.users → chats -->
+        <mxCell id="edge-auth-chats" parent="supabase-layer" source="auth-users" target="chats" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;" edge="1" value="1:N">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="190" y="170" />
+              <mxPoint x="190" y="385" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- chats → chat_sources -->
+        <mxCell id="edge-chats-chat-sources" parent="supabase-layer" source="chats" target="chat-sources" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;" edge="1" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- sources → chat_sources -->
+        <mxCell id="edge-sources-chat-sources" parent="supabase-layer" source="sources" target="chat-sources" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;" edge="1" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- chats → feedback -->
+        <mxCell id="edge-chats-feedback" parent="supabase-layer" source="chats" target="feedback" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;dashed=1;" edge="1" value="1:N">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="440" />
+              <mxPoint x="390" y="440" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Cross-database connection: Qdrant chunk_id → sources.id -->
+        <mxCell id="edge-qdrant-sources" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=3;strokeColor=#ff5722;endArrow=classic;endFill=1;dashed=1;dashPattern=8 4;" edge="1" value="chunk_id → sources.id">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="780" y="650" as="sourcePoint" />
+            <mxPoint x="850" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- Legend -->
+        <mxCell id="legend" parent="1" style="swimlane;startSize=25;fillColor=#fafafa;strokeColor=#999999;fontStyle=1;fontSize=11;fontColor=#333333;rounded=1;arcSize=8;" value="📋 Легенда" vertex="1">
+          <mxGeometry height="100" width="280" x="30" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-1" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Сплошная линия: прямая связь (FK)" vertex="1">
+          <mxGeometry height="18" width="260" x="10" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-2" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Пунктирная: косвенная связь" vertex="1">
+          <mxGeometry height="18" width="260" x="10" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-3" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Оранжевая: связь между БД" vertex="1">
+          <mxGeometry height="18" width="260" x="10" y="70" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
   <diagram id="page-1" name="Pipeline обработки документов">
-    <mxGraphModel dx="1895" dy="1200" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+    <mxGraphModel dx="1303" dy="825" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,7 +8,7 @@
           <mxGeometry height="30" width="800" x="400" y="15" as="geometry" />
         </mxCell>
         <mxCell id="stage1" parent="1" style="swimlane;startSize=30;fillColor=#fff3e0;strokeColor=#e65100;fontStyle=1;fontSize=13;fontColor=#000000;" value="Этап 1. Исходные документы" vertex="1">
-          <mxGeometry height="180" width="220" x="50" y="70" as="geometry" />
+          <mxGeometry height="180" width="220" x="64" y="70" as="geometry" />
         </mxCell>
         <mxCell id="s1-docs" parent="stage1" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e65100;fontSize=11;fontColor=#000000;" value="Нормативные документы&#xa;Формат: PDF&#xa;Количество: 22 документа" vertex="1">
           <mxGeometry height="83.57" width="180" x="10" y="51.42999999999999" as="geometry" />
@@ -17,34 +17,35 @@
           <mxGeometry relative="1" x="-0.2405" y="9" as="geometry">
             <mxPoint as="offset" />
             <Array as="points">
-              <mxPoint x="340" y="168" />
-              <mxPoint x="340" y="140" />
+              <mxPoint x="174" y="307" />
+              <mxPoint x="174" y="307" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="stage2" parent="1" style="swimlane;startSize=30;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontStyle=1;fontSize=13;fontColor=#000000;" value="Этап 2. Парсинг текста (VLM модель)" vertex="1">
-          <mxGeometry height="290" width="260" x="330" y="70" as="geometry" />
+          <mxGeometry height="290" width="260" x="44" y="305" as="geometry" />
         </mxCell>
         <mxCell id="s2-parse" parent="stage2" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6a1b9a;fontSize=11;fontColor=#000000;fontStyle=1" value="VLM модель&#xa;(Vision-Language Model)&#xa;&#xa;Распознавание текста и изображений из&#xa;PDF с сохранением&#xa;структуры документа" vertex="1">
-          <mxGeometry height="100" width="180" x="40" y="39.28" as="geometry" />
+          <mxGeometry height="100" width="180" x="40" y="70" as="geometry" />
         </mxCell>
         <mxCell id="e-parse-sub1" edge="1" parent="stage2" source="s2-parse" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=1;strokeColor=#6a1b9a;" target="s2-markdown" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="s2-markdown" parent="stage2" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6a1b9a;fontSize=11;fontColor=#000000;" value="Конвертация в Markdown&#xa;&#xa;Сохранение иерархии заголовков&#xa;Сохранение структуры таблиц&#xa;Сохранение списков и нумерации&#xa;Очистка лишних символов" vertex="1">
-          <mxGeometry height="85.71" width="200" x="30" y="170" as="geometry" />
+          <mxGeometry height="85.71" width="200" x="30" y="191" as="geometry" />
         </mxCell>
         <mxCell id="e2-3" edge="1" parent="1" source="s2-markdown" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=10;fontColor=#000000;" target="s3-split" value="Markdown&#xa;файлы">
-          <mxGeometry relative="1" x="-0.05" as="geometry">
+          <mxGeometry relative="1" x="-0.5939" y="4" as="geometry">
             <mxPoint as="offset" />
             <Array as="points">
-              <mxPoint x="630" y="283" />
-              <mxPoint x="630" y="205" />
+              <mxPoint x="174" y="624" />
+              <mxPoint x="339" y="624" />
+              <mxPoint x="339" y="209" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="stage3" parent="1" style="swimlane;startSize=30;fillColor=#e0f2f1;strokeColor=#00695c;fontStyle=1;fontSize=13;fontColor=#000000;" value="Этап 3. Фрагментация (Chunking)" vertex="1">
-          <mxGeometry height="520" width="380" x="660" y="70" as="geometry" />
+          <mxGeometry height="520" width="380" x="365" y="70" as="geometry" />
         </mxCell>
         <mxCell id="s3-sub1-container" parent="stage3" style="swimlane;startSize=25;fillColor=#b2dfdb;strokeColor=#00695c;fontStyle=1;fontSize=11;fontColor=#000000;" value="Подэтап 3.1. Разбиение по заголовкам" vertex="1">
           <mxGeometry height="140" width="340" x="20" y="40" as="geometry" />
@@ -71,16 +72,16 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e3-4" edge="1" parent="1" source="s3-token" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=10;fontColor=#000000;" target="s4-llm" value="Чанки в формате&#xa;markdown">
-          <mxGeometry relative="1" x="0.001" as="geometry">
+          <mxGeometry relative="1" x="-0.6811" y="-1" as="geometry">
             <mxPoint as="offset" />
             <Array as="points">
-              <mxPoint x="1100" y="498" />
-              <mxPoint x="1100" y="168" />
+              <mxPoint x="829" y="497" />
+              <mxPoint x="829" y="139" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="stage4" parent="1" style="swimlane;startSize=30;fillColor=#e8f0fe;strokeColor=#4285f4;fontStyle=1;fontSize=13;fontColor=#000000;" value="Этап 4. LLM-обогащение чанков (Qwen 3.5 Flash)" vertex="1">
-          <mxGeometry height="420" width="340" x="1150" y="70" as="geometry" />
+          <mxGeometry height="420" width="340" x="871" y="61" as="geometry" />
         </mxCell>
         <mxCell id="s4-llm" parent="stage4" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#4285f4;fontSize=10;fontColor=#000000;fontStyle=1" value="LLM-модель Qwen 3.5 Flash&#xa;&#xa;Анализ каждого фрагмента и&#xa;генерация метаданных для&#xa;улучшения поиска" vertex="1">
           <mxGeometry height="75" width="280" x="30" y="40" as="geometry" />
@@ -110,16 +111,18 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="e4-5" edge="1" parent="1" source="s4-repair" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=10;fontColor=#000000;" target="s5-embed" value="Обогащённые&#xa;чанки (JSON)">
-          <mxGeometry relative="1" x="0.001" as="geometry">
+          <mxGeometry relative="1" x="-0.2832" y="2" as="geometry">
             <mxPoint as="offset" />
             <Array as="points">
-              <mxPoint x="1320" y="513" />
-              <mxPoint x="1320" y="513" />
+              <mxPoint x="1041" y="511" />
+              <mxPoint x="983" y="511" />
+              <mxPoint x="983" y="513" />
+              <mxPoint x="977" y="513" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="stage5" parent="1" style="swimlane;startSize=30;fillColor=#e6f4ea;strokeColor=#0d652d;fontStyle=1;fontSize=13;fontColor=#000000;" value="Этап 5. Кодирование и загрузка в Qdrant" vertex="1">
-          <mxGeometry height="420" width="340" x="1146" y="569" as="geometry" />
+          <mxGeometry height="420" width="340" x="851" y="546" as="geometry" />
         </mxCell>
         <mxCell id="s5-embed" parent="stage5" style="swimlane;startSize=25;fillColor=#ceead6;strokeColor=#0d652d;fontStyle=1;fontSize=11;fontColor=#000000;" value="Подэтап 5.1. Векторное кодирование" vertex="1">
           <mxGeometry height="170" width="300" x="20" y="40" as="geometry" />
@@ -138,36 +141,6 @@
         </mxCell>
         <mxCell id="e5-embed-qdrant" edge="1" parent="stage5" source="s5-embed" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=1;strokeColor=#0d652d;" target="s5-qdrant-container" value="">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="legend" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=11;fontColor=#000000;" value="Условные обозначения" vertex="1">
-          <mxGeometry height="130" width="500" x="50" y="870" as="geometry" />
-        </mxCell>
-        <mxCell id="leg1" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="▭  Swimlane — граница этапа" vertex="1">
-          <mxGeometry height="20" width="220" x="15" y="30" as="geometry" />
-        </mxCell>
-        <mxCell id="leg2" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="▭  Подэтап — логический блок внутри этапа" vertex="1">
-          <mxGeometry height="20" width="250" x="15" y="50" as="geometry" />
-        </mxCell>
-        <mxCell id="leg3" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="▭  Операция — действие над данными" vertex="1">
-          <mxGeometry height="20" width="220" x="15" y="70" as="geometry" />
-        </mxCell>
-        <mxCell id="leg4" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="→  Поток данных между этапами" vertex="1">
-          <mxGeometry height="20" width="220" x="260" y="30" as="geometry" />
-        </mxCell>
-        <mxCell id="leg5" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="■  Оранжевый — исходные данные" vertex="1">
-          <mxGeometry height="20" width="200" x="260" y="50" as="geometry" />
-        </mxCell>
-        <mxCell id="leg6" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="■  Фиолетовый — VLM парсинг" vertex="1">
-          <mxGeometry height="20" width="180" x="260" y="70" as="geometry" />
-        </mxCell>
-        <mxCell id="leg7" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="■  Бирюзовый — фрагментация" vertex="1">
-          <mxGeometry height="20" width="180" x="260" y="90" as="geometry" />
-        </mxCell>
-        <mxCell id="leg8" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="■  Синий — LLM-обработка" vertex="1">
-          <mxGeometry height="20" width="180" x="15" y="90" as="geometry" />
-        </mxCell>
-        <mxCell id="leg9" parent="legend" style="text;fontSize=10;fontColor=#000000;" value="■  Зелёный — векторная база данных" vertex="1">
-          <mxGeometry height="20" width="200" x="15" y="110" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

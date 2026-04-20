@@ -28,12 +28,17 @@ def parse_gift(filepath):
             question = ""
             answer = ""
             
-            # extract question text between :: and ::
-            q_match = re.search(r'::(.*?)::', block, re.DOTALL)
+            # extract question text (after second :: and before {)
+            q_match = re.search(r'::.*?::(?:\[.*?\])?(.*?)\{', block, re.DOTALL)
             if q_match:
                 question = strip_html(q_match.group(1))
             else:
-                continue
+                # fall back to name if text not found between :: and {
+                q_match_name = re.search(r'::(.*?)::', block, re.DOTALL)
+                if q_match_name:
+                    question = strip_html(q_match_name.group(1))
+                else:
+                    continue
                 
             # extract correct answer (starts with =)
             options_match = re.search(r'\{(.*?)\}', block, re.DOTALL)

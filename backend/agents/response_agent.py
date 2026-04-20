@@ -186,62 +186,25 @@ class ResponseAgent:
                             max_tokens=max_tokens
                         )
                         
-                        # Логирование полного ответа от провайдера
-                        logger.info(f"LLM raw response: id={getattr(response, 'id', 'N/A')}, "
-                                   f"choices={getattr(response, 'choices', None)}, "
-                                   f"model={getattr(response, 'model', 'N/A')}")
+                        if response and hasattr(response, 'choices') and response.choices:
+                            break
                         
-                        # Проверка на валидность ответа
-                        if not response.choices:
-                            # Проверяем, есть ли ошибка от провайдера
-                            error_info = getattr(response, 'error', {})
-                            if error_info:
-                                logger.warning(f"Attempt {attempt + 1}/{max_retries}: Provider error - {error_info}")
-                                
-                                # Если это 502/503 ошибка и это не последняя попытка — retry
-                                if attempt < max_retries - 1:
-                                    delay = base_delay * (2 ** attempt)  # Экспоненциальная задержка
-                                    logger.info(f"Retrying in {delay}s... (attempt {attempt + 2}/{max_retries})")
-                                    time.sleep(delay)
-                                    continue
-                            
-                            # Логируем всю структуру ответа для отладки
-                            try:
-                                response_dict = {
-                                    "id": getattr(response, "id", None),
-                                    "choices": getattr(response, "choices", None),
-                                    "created": getattr(response, "created", None),
-                                    "model": getattr(response, "model", None),
-                                    "system_fingerprint": getattr(response, "system_fingerprint", None),
-                                    "object": getattr(response, "object", None),
-                                    "usage": {
-                                        "prompt_tokens": getattr(getattr(response, "usage", None), "prompt_tokens", None),
-                                        "completion_tokens": getattr(getattr(response, "usage", None), "completion_tokens", None),
-                                        "total_tokens": getattr(getattr(response, "usage", None), "total_tokens", None),
-                                    } if getattr(response, "usage", None) else None,
-                                    "error": error_info
-                                }
-                                logger.error(f"LLM empty choices structure: {json.dumps(response_dict, indent=2, default=str)}")
-                            except Exception as e:
-                                logger.error(f"Failed to serialize response: {e}")
-                            
-                            raise ValueError(f"LLM returned empty choices: {response}")
-                        
-                        # Успешный ответ — выходим из цикла retry
-                        break
+                        logger.warning(f"Attempt {attempt + 1}: Empty response or choices")
+                        if attempt < max_retries - 1:
+                            time.sleep(base_delay * (attempt + 1))
+                            continue
+                        raise ValueError("Empty response from LLM")
 
                     except Exception as e:
-                        # Если это последняя попытка — пробрасываем ошибку дальше
                         if attempt == max_retries - 1:
                             raise
+                        logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                        time.sleep(base_delay * (attempt + 1))
 
-                        # Логирование ошибки и retry
-                        logger.warning(f"Attempt {attempt + 1}/{max_retries} failed: {e}")
-                        delay = base_delay * (2 ** attempt)
-                        logger.info(f"Retrying in {delay}s... (attempt {attempt + 2}/{max_retries})")
-                        time.sleep(delay)
+            if not response or not response.choices:
+                raise ValueError("Failed to get response after retries")
 
-            answer = response.choices[0].message.content
+            answer = response.choices[0].message.content or ""
 
             # Логирование частичного ответа (первые 200 символов)
             logger.info(f"LLM answer preview: {answer[:200]}...")

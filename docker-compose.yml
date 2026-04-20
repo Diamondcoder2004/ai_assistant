@@ -11,19 +11,8 @@ services:
     env_file:
       - .env
     environment:
-      # Подключение к существующему Qdrant на хосте
-      - QDRANT_HOST=host.docker.internal
-      - QDRANT_PORT=6333
-      - SUPABASE_URL=${SUPABASE_URL:-http://host.docker.internal:8000}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
-      - ROUTERAI_API_KEY=${ROUTERAI_API_KEY}
-      - ROUTERAI_BASE_URL=${ROUTERAI_BASE_URL:-https://routerai.ru/api/v1}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-perplexity/pplx-embed-v1-4b}
-      - EMBEDDING_DIM=${EMBEDDING_DIM:-2560}
-      - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-inception/mercury-2}
-      - COLLECTION_NAME=${COLLECTION_NAME:-BASHKIR_ENERGO_PERPLEXITY}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - JUDGE_LLM_MODEL=${JUDGE_LLM_MODEL}
+      - AGENT_DEBUG_ENABLED=${AGENT_DEBUG_ENABLED:-true}
     ports:
       - "8880:8880"
     volumes:

@@ -41,7 +41,7 @@ EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM", "2560"))
 # LLM
 # =============================================================================
 
-DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "mercury/mercury2")
+DEFAULT_LLM_MODEL = os.getenv("DEFAULT_LLM_MODEL", "inception/mercury-2")
 JUDGE_LLM_MODEL = os.getenv("JUDGE_LLM_MODEL", "deepseek/deepseek-v3.2")
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.7"))
 LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "2000"))

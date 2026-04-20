@@ -22,6 +22,13 @@ import pandas as pd
 from tqdm import tqdm
 
 import sys
+from pathlib import Path
+
+# Принудительная установка UTF-8 для вывода в консоль Windows
+if sys.platform == "win32":
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from llm_judge import LLMJudge
@@ -79,7 +86,7 @@ async def judge_response(question: str, expected: str, actual: str, sources: Lis
             return evaluation
 
         except Exception as e:
-            print(f"⚠️ Попытка {attempt + 1}/{JUDGE_MAX_RETRIES} для судьи не удалась: {e}")
+            print(f"ATTEMPT {attempt + 1}/{JUDGE_MAX_RETRIES} for judge failed: {e}")
             if attempt < JUDGE_MAX_RETRIES - 1:
                 delay = JUDGE_RETRY_DELAY * (2 ** attempt)
                 await asyncio.sleep(delay)
@@ -131,7 +138,7 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
             
             # Повторная попытка при сетевой ошибке (не 401)
             if "ERROR" in answer and "401" not in answer:
-                print(f"⚠️ Повторная попытка для вопроса {idx}...")
+                print(f"RETRY for question {idx}...")
                 await asyncio.sleep(2)
                 answer, sources, time_total = await asyncio.to_thread(fetch_api_sync, question, token)
 
@@ -164,7 +171,7 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
                     result["judge_justification"] = normalize_text(judge_result.reasoning)
             return result
         except Exception as e:
-            print(f"\n❌ Ошибка при обработке вопроса {idx}: {e}")
+            print(f"\nERROR processing question {idx}: {e}")
             return {
                 "index": idx,
                 "question": question,
@@ -186,12 +193,12 @@ async def main():
     args = parser.parse_args()
 
     print("=" * 60)
-    print("📊 ЗАПУСК БЕНЧМАРКА ЧЕРЕЗ API С LLM JUDGE")
+    print("STARTING API BENCHMARK WITH LLM JUDGE")
     print("=" * 60)
 
     test_file = Path(args.file)
     if not test_file.exists():
-        print(f"❌ Файл {test_file} не найден")
+        print(f"ERROR: File {test_file} not found")
         return
 
     # Поддержка CSV и JSON
@@ -202,13 +209,13 @@ async def main():
         with open(test_file, 'r', encoding='utf-8') as f:
             questions = json.load(f)
     else:
-        print("❌ Формат файла не поддерживается. Нужен .csv или .json")
+        print("ERROR: File format not supported. Use .csv or .json")
         return
 
     if args.limit:
         questions = questions[:args.limit]
 
-    print(f"✅ Загружено {len(questions)} вопросов из {test_file}")
+    print(f"SUCCESS: Loaded {len(questions)} questions from {test_file}")
 
     BENCHMARK_ROOT.mkdir(exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -218,12 +225,12 @@ async def main():
     print(f"📁 Результаты будут сохранены в: {output_dir}")
 
     if ENABLE_JUDGE:
-        print(f"🤖 Инициализация LLM Judge...")
+        print("Judge INITIALIZING...")
         judge = LLMJudge()
-        print("✅ LLM Judge готов")
+        print("Judge READY")
 
     token = generate_jwt()
-    print("🔑 JWT токен сгенерирован")
+    print("JWT token generated")
 
     all_columns = [
         "index", "question", "expected", "answer", "time_total_sec", "num_hits", "sources",
@@ -255,9 +262,9 @@ async def main():
             for res in batch_results:
                 writer.writerow(res)
 
-        print(f"✅ Обработан батч {i+1}-{i+len(batch)}")
+        print(f"Batch {i+1}-{i+len(batch)} processed")
 
-    print(f"\n✅ Результаты сохранены в {results_csv_path}")
+    print(f"\nResults saved to {results_csv_path}")
 
     # Статистика
     print("\n" + "=" * 60)
@@ -280,10 +287,10 @@ async def main():
 
     errors_count = result_df['answer'].apply(lambda x: str(x).startswith("ERROR") or str(x).startswith("HTTP")).sum()
     if errors_count > 0:
-        print(f"\n❌ ОШИБОК API: {errors_count}")
+        print(f"\nAPI ERRORS: {errors_count}")
 
     print("\n" + "=" * 60)
-    print("✅ БЕНЧМАРК ЗАВЕРШЁН")
+    print("BENCHMARK COMPLETED")
     print("=" * 60)
 
 if __name__ == "__main__":

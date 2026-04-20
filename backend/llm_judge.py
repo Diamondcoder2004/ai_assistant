@@ -147,7 +147,7 @@ class LLMJudge:
             api_key=config.ROUTERAI_API_KEY,
             base_url=config.ROUTERAI_BASE_URL
         )
-        self.model = config.DEFAULT_LLM_MODEL
+        self.model = config.JUDGE_LLM_MODEL
         logger.info(f"LLM Judge инициализирован: {self.model}")
     
     def evaluate(

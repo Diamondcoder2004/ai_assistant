@@ -90,7 +90,12 @@ for f in xlsx_files:
     all_qa.extend(parse_excel(f))
 
 df_out = pd.DataFrame(all_qa)
+if not df_out.empty:
+    initial_len = len(df_out)
+    df_out = df_out.drop_duplicates(subset=['question'], keep='first')
+    print(f"Removed {initial_len - len(df_out)} duplicate questions.")
+
 output_path = 'd:/ai_assistant/new_data/benchmark_dataset.csv'
 df_out.to_csv(output_path, index=False, encoding='utf-8-sig')
-print(f"Total QA pairs extracted: {len(all_qa)}")
+print(f"Total unique QA pairs: {len(df_out)}")
 print(f"Saved to: {output_path}")

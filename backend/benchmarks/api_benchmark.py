@@ -222,6 +222,7 @@ async def main():
     parser.add_argument("--limit", "-l", type=int, default=None, help="Ограничить количество вопросов")
     parser.add_argument("--batch-size", "-b", type=int, default=DEFAULT_BATCH_SIZE, help="Размер батча для параллельной обработки")
     parser.add_argument("--parallel", "-p", type=int, default=DEFAULT_PARALLEL_REQUESTS, help="Количество параллельных запросов")
+    parser.add_argument("--cache", "-c", default=None, help="Путь к CSV с уже готовыми ответами (кэш). Вопросы с непустым answer будут взяты оттуда.")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -248,6 +249,25 @@ async def main():
         questions = questions[:args.limit]
 
     print(f"SUCCESS: Loaded {len(questions)} questions from {test_file}")
+
+    # ===== КЭШИРУЕМ СТАРЫЕ РЕЗУЛЬТАТЫ =====
+    cache: dict = {}  # question_text -> row dict
+    if args.cache:
+        cache_path = Path(args.cache)
+        if cache_path.exists():
+            try:
+                cache_df = pd.read_csv(cache_path, encoding='utf-8-sig')
+                for _, row in cache_df.iterrows():
+                    q = str(row.get('question', '')).strip()
+                    a = str(row.get('answer', '')).strip()
+                    # Считаем ответ валидным если он непустой и не ERROR/HTTP_ERROR
+                    if q and a and a != 'nan' and not a.startswith('ERROR') and not a.startswith('HTTP_ERROR'):
+                        cache[q] = row.to_dict()
+                print(f"✅ Кэш загружен: {len(cache)} готовых ответов из {cache_path.name}")
+            except Exception as e:
+                print(f"⚠️  Не удалось загрузить кэш: {e}")
+        else:
+            print(f"⚠️  Файл кэша не найден: {cache_path}")
 
     BENCHMARK_ROOT.mkdir(exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -282,19 +302,49 @@ async def main():
     print(f"\n🚀 Запуск обращений к {API_BASE_URL} с батчем {args.batch_size} и параллелизмом {args.parallel}...")
 
     results = []
+    cached_count = 0
+    new_count = 0
+
     for i in range(0, len(questions), args.batch_size):
         batch = questions[i:i + args.batch_size]
-        tasks = [asyncio.create_task(process_question(q, i + j + 1, semaphore)) for j, q in enumerate(batch)]
+        batch_results = []
+        tasks_map = []  # (j, q) для вопросов без кэша
 
-        batch_results = await asyncio.gather(*tasks)
-        results.extend(batch_results)
+        for j, q in enumerate(batch):
+            q_text = str(q.get('question') or q.get('Вопрос', '')).strip()
+            if q_text in cache:
+                # Берём из кэша — конвертируем в нужный формат
+                cached_row = cache[q_text]
+                result = {col: cached_row.get(col, '') for col in all_columns}
+                result['index'] = i + j + 1
+                batch_results.append(('cached', j, result))
+                cached_count += 1
+            else:
+                tasks_map.append((j, q))
+                new_count += 1
+
+        # Обрабатываем только новые вопросы
+        if tasks_map:
+            tasks = [asyncio.create_task(process_question(q, i + j + 1, semaphore)) for j, q in tasks_map]
+            new_results = await asyncio.gather(*tasks)
+            for (j, _), res in zip(tasks_map, new_results):
+                batch_results.append(('new', j, res))
+
+        # Сортируем по оригинальному индексу в батче
+        batch_results.sort(key=lambda x: x[1])
+        ordered_results = [r for _, _, r in batch_results]
+        results.extend(ordered_results)
 
         with open(results_csv_path, 'a', encoding='utf-8-sig', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=all_columns, extrasaction='ignore')
-            for res in batch_results:
+            for res in ordered_results:
                 writer.writerow(res)
 
-        print(f"Batch {i+1}-{i+len(batch)} processed")
+        cached_in_batch = sum(1 for t, _, _ in batch_results if t == 'cached')
+        new_in_batch = sum(1 for t, _, _ in batch_results if t == 'new')
+        print(f"Batch {i+1}-{i+len(batch)} processed (кэш: {cached_in_batch}, новых: {new_in_batch})")
+
+    print(f"\n📊 Итого: {cached_count} из кэша, {new_count} новых запросов к API")
 
     print(f"\nResults saved to {results_csv_path}")
 

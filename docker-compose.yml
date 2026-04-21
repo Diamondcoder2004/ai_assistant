@@ -28,10 +28,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_SUPABASE_URL=http://46.191.174.57:8000
-        - VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzczNTc1MDkxLCJleHAiOjIwODg5MzUwOTF9.zMOszMWMS3yEzVKtLCZIVyfqukEQ0Kgwz8HzMeCWX7o
-        - VITE_API_BASE_URL=http://46.191.174.57:8877
-        - VITE_TEST_MODE=false
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_API_BASE_URL=
+        - VITE_TEST_MODE=${VITE_TEST_MODE:-false}
     container_name: ai-assistant-frontend
     restart: unless-stopped
     ports:

@@ -46,7 +46,7 @@ ENABLE_JUDGE = True
 JUDGE_MAX_RETRIES = 3
 JUDGE_RETRY_DELAY = 5
 
-DEFAULT_PARALLEL_REQUESTS = 2
+DEFAULT_PARALLEL_REQUESTS = 4
 DEFAULT_BATCH_SIZE = 10
 
 BENCHMARK_ROOT = Path("api_benchmarks")
@@ -129,57 +129,81 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
     async with semaphore:
         question = row.get("question") or row.get("Вопрос", "")
         expected = row.get("expected_answer") or row.get("Ответ", "")
-        
-        # Генерируем свежий токен для каждого запроса
-        token = generate_jwt()
-        
-        try:
-            answer, sources, time_total = await asyncio.to_thread(fetch_api_sync, question, token)
-            
-            # Повторная попытка при сетевой ошибке (не 401)
-            if "ERROR" in answer and "401" not in answer:
-                print(f"RETRY for question {idx}...")
-                await asyncio.sleep(2)
-                answer, sources, time_total = await asyncio.to_thread(fetch_api_sync, question, token)
 
-            is_bn = (answer.startswith("БН") or
-                     answer.startswith("Ничего не найдено") or
-                     "HTTP_ERROR" in answer or "ERROR" in answer)
-            result = {
-                "index": idx,
-                "question": question,
-                "expected": expected,
-                "answer": normalize_text(answer),
-                "time_total_sec": round(time_total, 3),
-                "num_hits": len(sources),
-                "sources": json.dumps(sources, ensure_ascii=False)
-            }
-            # LLM Judge оценка
-            if ENABLE_JUDGE and answer and not is_bn:
-                judge_result = await judge_response(question, expected, answer, sources)
-                if judge_result:
-                    result["judge_relevance"] = judge_result.relevance
-                    result["judge_completeness"] = judge_result.completeness
-                    result["judge_helpfulness"] = judge_result.helpfulness
-                    result["judge_clarity"] = judge_result.clarity
-                    result["judge_hallucination_risk"] = judge_result.hallucination_risk
-                    result["judge_context_recall"] = judge_result.context_recall
-                    result["judge_faithfulness"] = judge_result.faithfulness
-                    result["judge_currency"] = judge_result.currency
-                    result["judge_binary_correctness"] = judge_result.binary_correctness
-                    result["judge_overall_score"] = judge_result.overall_score
-                    result["judge_justification"] = normalize_text(judge_result.reasoning)
-            return result
-        except Exception as e:
-            print(f"\nERROR processing question {idx}: {e}")
-            return {
-                "index": idx,
-                "question": question,
-                "expected": expected,
-                "answer": f"ERROR: {e}",
-                "time_total_sec": 0.0,
-                "num_hits": 0,
-            }
+        answer = ""
+        sources = []
+        time_total = 0.0
+        attempt = 0
+
+        # Retry до победного — пока не получим нормальный ответ
+        while True:
+            attempt += 1
+            token = generate_jwt()
+            try:
+                answer, sources, time_total = await asyncio.to_thread(fetch_api_sync, question, token)
+            except Exception as e:
+                answer = f"ERROR: {e}"
+                sources = []
+                time_total = 0.0
+
+            is_error = (
+                "ERROR" in str(answer) or
+                "HTTP_ERROR" in str(answer) or
+                not str(answer).strip()
+            )
+
+            if not is_error:
+                break
+
+            delay = min(5 * (2 ** (attempt - 1)), 30)  # backoff: 5, 10, 20, 30, 30...
+            print(f"  [Q{idx}] Attempt {attempt} failed ({str(answer)[:60]}), retry in {delay}s...")
+            await asyncio.sleep(delay)
+
+        is_bn = (answer.startswith("БН") or answer.startswith("Ничего не найдено"))
+
+        result = {
+            "index": idx,
+            "question": question,
+            "expected": expected,
+            "answer": normalize_text(answer),
+            "time_total_sec": round(time_total, 3),
+            "num_hits": len(sources),
+            "sources": json.dumps(sources, ensure_ascii=False)
+        }
+
+        # LLM Judge оценка — тоже retry до победного
+        if ENABLE_JUDGE and answer and not is_bn:
+            judge_result = None
+            judge_attempt = 0
+            while judge_result is None:
+                judge_attempt += 1
+                try:
+                    judge_result = await asyncio.to_thread(
+                        judge.evaluate,
+                        question=question,
+                        answer=answer,
+                        expected=expected,
+                        sources=sources
+                    )
+                except Exception as e:
+                    delay = min(5 * (2 ** (judge_attempt - 1)), 30)
+                    print(f"  [Q{idx}] Judge attempt {judge_attempt} failed: {e}, retry in {delay}s...")
+                    await asyncio.sleep(delay)
+
+            result["judge_relevance"] = judge_result.relevance
+            result["judge_completeness"] = judge_result.completeness
+            result["judge_helpfulness"] = judge_result.helpfulness
+            result["judge_clarity"] = judge_result.clarity
+            result["judge_hallucination_risk"] = judge_result.hallucination_risk
+            result["judge_context_recall"] = judge_result.context_recall
+            result["judge_faithfulness"] = judge_result.faithfulness
+            result["judge_currency"] = judge_result.currency
+            result["judge_binary_correctness"] = judge_result.binary_correctness
+            result["judge_overall_score"] = judge_result.overall_score
+            result["judge_justification"] = normalize_text(judge_result.reasoning)
+
+        return result
+
 
 async def main():
     global judge

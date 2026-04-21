@@ -104,8 +104,8 @@ def fetch_api_sync(query: str, token: str) -> Tuple[str, List[Dict], float]:
         resp = requests.post(f"{API_BASE_URL}/query", json={
             "query": query,
             "k": 5,
-            "max_tokens": 500
-        }, headers=headers, timeout=120)
+            "max_tokens": 2000
+        }, headers=headers, timeout=180)
         end = time.perf_counter()
 
         if resp.status_code == 200:
@@ -134,10 +134,11 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
         sources = []
         time_total = 0.0
         attempt = 0
-        MAX_ERROR_RETRIES = 10  # Лимит для HTTP ошибок (rate limit и т.п.)
+        MAX_ERROR_RETRIES = 5   # Лимит для HTTP ошибок (rate limit и т.п.)
+        MAX_EMPTY_RETRIES = 4   # Лимит для пустых ответов (бэкенд завис)
 
         # Retry:
-        # - Пустой ответ → бесконечно (бэкенд просто не ответил)
+        # - Пустой ответ → максимум MAX_EMPTY_RETRIES раз, потом пишем пустым
         # - HTTP/ERROR → максимум MAX_ERROR_RETRIES раз, потом пишем как есть
         while True:
             attempt += 1
@@ -150,18 +151,21 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
                 time_total = 0.0
 
             is_empty = not str(answer).strip()
-            is_http_error = "HTTP_ERROR" in str(answer) or ("ERROR" in str(answer) and not is_empty)
+            is_http_error = "HTTP_ERROR" in str(answer) or (str(answer).startswith("ERROR") and not is_empty)
 
             if not is_empty and not is_http_error:
                 # Нормальный ответ
                 break
 
+            if is_empty and attempt >= MAX_EMPTY_RETRIES:
+                print(f"  [Q{idx}] Giving up after {attempt} attempts (empty response), writing empty")
+                break
+
             if is_http_error and attempt >= MAX_ERROR_RETRIES:
-                # Исчерпали лимит для постоянных ошибок — идём дальше
                 print(f"  [Q{idx}] Giving up after {attempt} attempts: {str(answer)[:80]}")
                 break
 
-            delay = min(5 * (2 ** min(attempt - 1, 5)), 60)  # backoff: 5,10,20,40,60,60...
+            delay = min(5 * (2 ** min(attempt - 1, 4)), 30)  # backoff: 5,10,20,30,30...
             print(f"  [Q{idx}] Attempt {attempt} failed ({str(answer)[:60]}), retry in {delay}s...")
             await asyncio.sleep(delay)
 

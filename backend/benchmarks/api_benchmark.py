@@ -222,7 +222,8 @@ async def main():
     parser.add_argument("--limit", "-l", type=int, default=None, help="Ограничить количество вопросов")
     parser.add_argument("--batch-size", "-b", type=int, default=DEFAULT_BATCH_SIZE, help="Размер батча для параллельной обработки")
     parser.add_argument("--parallel", "-p", type=int, default=DEFAULT_PARALLEL_REQUESTS, help="Количество параллельных запросов")
-    parser.add_argument("--cache", "-c", default=None, help="Путь к CSV с уже готовыми ответами (кэш). Вопросы с непустым answer будут взяты оттуда.")
+    parser.add_argument("--cache", "-c", default=None, help="Путь к CSV с уже готовыми ответами (кэш).")
+    parser.add_argument("--resume-dir", "-r", default=None, help="Продолжить бенчмарк в существующей папке: дописывает новые ответы в её results.csv, пропуская уже отвеченные вопросы.")
     args = parser.parse_args()
 
     print("=" * 60)
@@ -250,6 +251,25 @@ async def main():
 
     print(f"SUCCESS: Loaded {len(questions)} questions from {test_file}")
 
+    # ===== ОПРЕДЕЛЯЕМ ПАПКУ ВЫВОДА =====
+    BENCHMARK_ROOT.mkdir(exist_ok=True)
+    if args.resume_dir:
+        output_dir = Path(args.resume_dir)
+        if not output_dir.exists():
+            print(f"ERROR: --resume-dir папка не найдена: {output_dir}")
+            return
+        # Автоматически используем results.csv из этой папки как кэш
+        auto_cache = output_dir / "results.csv"
+        if auto_cache.exists() and not args.cache:
+            args.cache = str(auto_cache)
+        print(f"♻️  Режим продолжения: {output_dir}")
+    else:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_dir = BENCHMARK_ROOT / f"api_benchmark_{timestamp}"
+        output_dir.mkdir(exist_ok=True)
+
+    print(f"📁 Результаты будут сохранены в: {output_dir}")
+
     # ===== КЭШИРУЕМ СТАРЫЕ РЕЗУЛЬТАТЫ =====
     cache: dict = {}  # question_text -> row dict
     if args.cache:
@@ -268,13 +288,6 @@ async def main():
                 print(f"⚠️  Не удалось загрузить кэш: {e}")
         else:
             print(f"⚠️  Файл кэша не найден: {cache_path}")
-
-    BENCHMARK_ROOT.mkdir(exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = BENCHMARK_ROOT / f"api_benchmark_{timestamp}"
-    output_dir.mkdir(exist_ok=True)
-
-    print(f"📁 Результаты будут сохранены в: {output_dir}")
 
     if ENABLE_JUDGE:
         print("Judge INITIALIZING...")

@@ -134,8 +134,11 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
         sources = []
         time_total = 0.0
         attempt = 0
+        MAX_ERROR_RETRIES = 10  # Лимит для HTTP ошибок (rate limit и т.п.)
 
-        # Retry до победного — пока не получим нормальный ответ
+        # Retry:
+        # - Пустой ответ → бесконечно (бэкенд просто не ответил)
+        # - HTTP/ERROR → максимум MAX_ERROR_RETRIES раз, потом пишем как есть
         while True:
             attempt += 1
             token = generate_jwt()
@@ -146,20 +149,24 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
                 sources = []
                 time_total = 0.0
 
-            is_error = (
-                "ERROR" in str(answer) or
-                "HTTP_ERROR" in str(answer) or
-                not str(answer).strip()
-            )
+            is_empty = not str(answer).strip()
+            is_http_error = "HTTP_ERROR" in str(answer) or ("ERROR" in str(answer) and not is_empty)
 
-            if not is_error:
+            if not is_empty and not is_http_error:
+                # Нормальный ответ
                 break
 
-            delay = min(5 * (2 ** (attempt - 1)), 30)  # backoff: 5, 10, 20, 30, 30...
+            if is_http_error and attempt >= MAX_ERROR_RETRIES:
+                # Исчерпали лимит для постоянных ошибок — идём дальше
+                print(f"  [Q{idx}] Giving up after {attempt} attempts: {str(answer)[:80]}")
+                break
+
+            delay = min(5 * (2 ** min(attempt - 1, 5)), 60)  # backoff: 5,10,20,40,60,60...
             print(f"  [Q{idx}] Attempt {attempt} failed ({str(answer)[:60]}), retry in {delay}s...")
             await asyncio.sleep(delay)
 
         is_bn = (answer.startswith("БН") or answer.startswith("Ничего не найдено"))
+        is_failed = "HTTP_ERROR" in str(answer) or (str(answer).startswith("ERROR"))
 
         result = {
             "index": idx,
@@ -171,11 +178,11 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
             "sources": json.dumps(sources, ensure_ascii=False)
         }
 
-        # LLM Judge оценка — тоже retry до победного
-        if ENABLE_JUDGE and answer and not is_bn:
+        # LLM Judge оценка — retry до победного, но не более 10 попыток
+        if ENABLE_JUDGE and answer and not is_bn and not is_failed:
             judge_result = None
             judge_attempt = 0
-            while judge_result is None:
+            while judge_result is None and judge_attempt < 10:
                 judge_attempt += 1
                 try:
                     judge_result = await asyncio.to_thread(
@@ -186,21 +193,22 @@ async def process_question(row: Dict[str, Any], idx: int, semaphore: asyncio.Sem
                         sources=sources
                     )
                 except Exception as e:
-                    delay = min(5 * (2 ** (judge_attempt - 1)), 30)
+                    delay = min(5 * (2 ** min(judge_attempt - 1, 5)), 60)
                     print(f"  [Q{idx}] Judge attempt {judge_attempt} failed: {e}, retry in {delay}s...")
                     await asyncio.sleep(delay)
 
-            result["judge_relevance"] = judge_result.relevance
-            result["judge_completeness"] = judge_result.completeness
-            result["judge_helpfulness"] = judge_result.helpfulness
-            result["judge_clarity"] = judge_result.clarity
-            result["judge_hallucination_risk"] = judge_result.hallucination_risk
-            result["judge_context_recall"] = judge_result.context_recall
-            result["judge_faithfulness"] = judge_result.faithfulness
-            result["judge_currency"] = judge_result.currency
-            result["judge_binary_correctness"] = judge_result.binary_correctness
-            result["judge_overall_score"] = judge_result.overall_score
-            result["judge_justification"] = normalize_text(judge_result.reasoning)
+            if judge_result:
+                result["judge_relevance"] = judge_result.relevance
+                result["judge_completeness"] = judge_result.completeness
+                result["judge_helpfulness"] = judge_result.helpfulness
+                result["judge_clarity"] = judge_result.clarity
+                result["judge_hallucination_risk"] = judge_result.hallucination_risk
+                result["judge_context_recall"] = judge_result.context_recall
+                result["judge_faithfulness"] = judge_result.faithfulness
+                result["judge_currency"] = judge_result.currency
+                result["judge_binary_correctness"] = judge_result.binary_correctness
+                result["judge_overall_score"] = judge_result.overall_score
+                result["judge_justification"] = normalize_text(judge_result.reasoning)
 
         return result
 

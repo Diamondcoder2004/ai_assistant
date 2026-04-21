@@ -72,11 +72,57 @@ def parse_excel(filepath):
         # Приоритет 1: subject (вопрос) + message (ответ с HTML)
         if 'subject' in df.columns and 'message' in df.columns:
             print(f"Parsing {Path(filepath).name} via subject+message ({len(df)} rows)")
-            for _, row in df.iterrows():
-                question = str(row['subject']).strip()
-                answer = strip_html(str(row['message']))
-                if question and answer:
-                    qa_pairs.append({'question': question, 'expected_answer': answer, 'source_file': Path(filepath).name})
+
+            # === ФОРУМНЫЙ ФОРМАТ: parent=0 → вопрос/кейс, parent!=0 → Re: ответ ===
+            if 'parent' in df.columns and 'discussion' in df.columns:
+                print(f"  Detected forum format (parent/discussion columns)")
+                for disc_id, group in df.groupby('discussion'):
+                    questions = group[group['parent'] == 0]
+                    answers = group[group['parent'] != 0]
+
+                    if questions.empty:
+                        continue
+
+                    q_row = questions.iloc[0]
+                    subject_text = str(q_row['subject']).strip()
+                    question_body = strip_html(str(q_row['message']))
+
+                    if not answers.empty:
+                        # === Форумный кейс: Тема + Re: ответ ===
+                        a_row = answers.iloc[0]
+                        answer_text = strip_html(str(a_row['message']))
+
+                        # Вопрос = Тема + тело кейса
+                        if subject_text and subject_text.lower() not in ('nan', ''):
+                            question = f"{subject_text}\n{question_body}" if question_body else subject_text
+                        else:
+                            question = question_body
+
+                        if question.strip() and answer_text.strip():
+                            qa_pairs.append({
+                                'question': question.strip(),
+                                'expected_answer': answer_text.strip(),
+                                'source_file': Path(filepath).name
+                            })
+                    else:
+                        # === Fallback: дискуссия без ответа → subject=вопрос, message=ответ ===
+                        question = subject_text if subject_text and subject_text.lower() not in ('nan', '') else question_body
+                        answer_text = question_body  # message корневого поста = ответ
+
+                        if question.strip() and answer_text.strip() and question.strip() != answer_text.strip():
+                            qa_pairs.append({
+                                'question': question.strip(),
+                                'expected_answer': answer_text.strip(),
+                                'source_file': Path(filepath).name
+                            })
+
+            else:
+                # Старый формат: каждая строка — отдельная пара
+                for _, row in df.iterrows():
+                    question = str(row['subject']).strip()
+                    answer = strip_html(str(row['message']))
+                    if question and answer:
+                        qa_pairs.append({'question': question, 'expected_answer': answer, 'source_file': Path(filepath).name})
 
         # Приоритет 2: стандартные Q&A колонки (вопрос/ответ или question/answer)
         else:

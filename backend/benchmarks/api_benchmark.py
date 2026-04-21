@@ -306,9 +306,25 @@ async def main():
     ]
 
     results_csv_path = output_dir / "results.csv"
-    with open(results_csv_path, 'w', encoding='utf-8-sig', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=all_columns, extrasaction='ignore')
-        writer.writeheader()
+
+    # ===== ОПРЕДЕЛЯЕМ ЧТО УЖЕ ЗАПИСАНО В ФАЙЛ НА ДИСКЕ =====
+    already_written: set = set()  # вопросы которые уже физически в файле
+    if results_csv_path.exists() and args.resume_dir:
+        try:
+            existing_df = pd.read_csv(results_csv_path, encoding='utf-8-sig')
+            for _, row in existing_df.iterrows():
+                q = str(row.get('question', '')).strip()
+                if q:
+                    already_written.add(q)
+            print(f"📋 В файле уже записано: {len(already_written)} строк")
+        except Exception as e:
+            print(f"⚠️  Не удалось прочитать существующий results.csv: {e}")
+
+    # Создаём файл только если он не существует (не перезаписываем!)
+    if not results_csv_path.exists():
+        with open(results_csv_path, 'w', encoding='utf-8-sig', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=all_columns, extrasaction='ignore')
+            writer.writeheader()
 
     semaphore = asyncio.Semaphore(args.parallel)
 
@@ -317,6 +333,7 @@ async def main():
     results = []
     cached_count = 0
     new_count = 0
+    skipped_count = 0
 
     for i in range(0, len(questions), args.batch_size):
         batch = questions[i:i + args.batch_size]
@@ -325,8 +342,12 @@ async def main():
 
         for j, q in enumerate(batch):
             q_text = str(q.get('question') or q.get('Вопрос', '')).strip()
-            if q_text in cache:
-                # Берём из кэша — конвертируем в нужный формат
+            if q_text in already_written:
+                # Уже физически записано в файл — пропускаем
+                skipped_count += 1
+                batch_results.append(('skip', j, None))
+            elif q_text in cache:
+                # Есть в кэше но не записано — запишем
                 cached_row = cache[q_text]
                 result = {col: cached_row.get(col, '') for col in all_columns}
                 result['index'] = i + j + 1
@@ -345,19 +366,24 @@ async def main():
 
         # Сортируем по оригинальному индексу в батче
         batch_results.sort(key=lambda x: x[1])
-        ordered_results = [r for _, _, r in batch_results]
+        ordered_results = [r for _, _, r in batch_results if r is not None]  # пропускаем skip
         results.extend(ordered_results)
 
-        with open(results_csv_path, 'a', encoding='utf-8-sig', newline='') as f:
-            writer = csv.DictWriter(f, fieldnames=all_columns, extrasaction='ignore')
-            for res in ordered_results:
-                writer.writerow(res)
+        # Дозаписываем только не-skip строки
+        rows_to_write = [r for t, _, r in batch_results if t != 'skip']
+        if rows_to_write:
+            with open(results_csv_path, 'a', encoding='utf-8-sig', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=all_columns, extrasaction='ignore')
+                for res in rows_to_write:
+                    writer.writerow(res)
 
         cached_in_batch = sum(1 for t, _, _ in batch_results if t == 'cached')
         new_in_batch = sum(1 for t, _, _ in batch_results if t == 'new')
-        print(f"Batch {i+1}-{i+len(batch)} processed (кэш: {cached_in_batch}, новых: {new_in_batch})")
+        skip_in_batch = sum(1 for t, _, _ in batch_results if t == 'skip')
+        if cached_in_batch + new_in_batch > 0 or skip_in_batch == 0:
+            print(f"Batch {i+1}-{i+len(batch)} processed (кэш: {cached_in_batch}, новых: {new_in_batch}, пропущено: {skip_in_batch})")
 
-    print(f"\n📊 Итого: {cached_count} из кэша, {new_count} новых запросов к API")
+    print(f"\n📊 Итого: {cached_count} из кэша, {new_count} новых запросов к API, {skipped_count} пропущено (уже в файле)")
 
     print(f"\nResults saved to {results_csv_path}")
 

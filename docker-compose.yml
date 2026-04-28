@@ -11,19 +11,8 @@ services:
     env_file:
       - .env
     environment:
-      # Подключение к существующему Qdrant на хосте
-      - QDRANT_HOST=host.docker.internal
-      - QDRANT_PORT=6333
-      - SUPABASE_URL=${SUPABASE_URL:-http://host.docker.internal:8000}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
-      - ROUTERAI_API_KEY=${ROUTERAI_API_KEY}
-      - ROUTERAI_BASE_URL=${ROUTERAI_BASE_URL:-https://routerai.ru/api/v1}
-      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-perplexity/pplx-embed-v1-4b}
-      - EMBEDDING_DIM=${EMBEDDING_DIM:-2560}
-      - DEFAULT_LLM_MODEL=${DEFAULT_LLM_MODEL:-inception/mercury-2}
-      - COLLECTION_NAME=${COLLECTION_NAME:-BASHKIR_ENERGO_PERPLEXITY}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - JUDGE_LLM_MODEL=${JUDGE_LLM_MODEL}
+      - AGENT_DEBUG_ENABLED=${AGENT_DEBUG_ENABLED:-true}
     ports:
       - "8880:8880"
     volumes:
@@ -39,10 +28,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - VITE_SUPABASE_URL=http://46.191.174.57:8000
-        - VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiYXNlIiwiaWF0IjoxNzczNTc1MDkxLCJleHAiOjIwODg5MzUwOTF9.zMOszMWMS3yEzVKtLCZIVyfqukEQ0Kgwz8HzMeCWX7o
-        - VITE_API_BASE_URL=http://46.191.174.57:8877
-        - VITE_TEST_MODE=false
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+        - VITE_API_BASE_URL=
+        - VITE_TEST_MODE=${VITE_TEST_MODE:-false}
     container_name: ai-assistant-frontend
     restart: unless-stopped
     ports:

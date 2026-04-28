@@ -177,6 +177,8 @@ class AgenticRAG:
                     user_query=user_query,
                     search_results=search_result["results"],
                     history=dialog_history,
+                    max_tokens=user_hints.get("max_tokens", 2000) if user_hints else 2000,
+                    user_hints=user_hints,
                     query_id=query_id,
                     session_id=session_id,
                     session_logger=session_logger

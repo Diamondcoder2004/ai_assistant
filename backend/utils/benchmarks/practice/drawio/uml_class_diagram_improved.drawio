@@ -1,0 +1,229 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram id="page-1" name="UML Class Diagram">
+    <mxGraphModel dx="906" dy="574" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;fontSize=24;fontStyle=1;align=center;fontColor=#1a1a1a;" value="Архитектура приложения: UML диаграмма классов (Vue.js)" vertex="1">
+          <mxGeometry height="40" width="900" x="350" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-frontend" parent="1" style="swimlane;startSize=35;fillColor=#e3f2fd;strokeColor=#1976d2;fontStyle=1;fontSize=14;fontColor=#1565c0;" value=" Frontend Components (Vue.js)" vertex="1">
+          <mxGeometry height="560" width="1100" x="250" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="app" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#ffffff;strokeColor=#1976d2;fontStyle=1;fontSize=12;fontColor=#1a1a1a;rounded=1;arcSize=10;" value="App" vertex="1">
+          <mxGeometry height="80" width="160" x="470" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="app-attrs" parent="app" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ Router" vertex="1">
+          <mxGeometry height="20" width="140" x="10" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="app-divider" parent="app" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="140" x="10" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="app-methods" parent="app" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="" vertex="1">
+          <mxGeometry height="15" width="140" x="10" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-store" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#fff3e0;strokeColor=#f57c00;fontStyle=1;fontSize=12;fontColor=#e65100;rounded=1;arcSize=10;" value="AuthStore" vertex="1">
+          <mxGeometry height="150" width="200" x="50" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-attrs" parent="auth-store" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="- user&#xa;- profile" vertex="1">
+          <mxGeometry height="40" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-divider" parent="auth-store" style="line;strokeWidth=1;strokeColor=#000000;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="auth-methods" parent="auth-store" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ login()&#xa;+ register()&#xa;+ logout()" vertex="1">
+          <mxGeometry height="60" width="180" x="10" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="chat-store" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#e8f5e9;strokeColor=#388e3c;fontStyle=1;fontSize=12;fontColor=#2e7d32;rounded=1;arcSize=10;" value="ChatStore" vertex="1">
+          <mxGeometry height="190" width="220" x="300" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="chat-attrs" parent="chat-store" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="- messages&#xa;- history&#xa;- sessionId" vertex="1">
+          <mxGeometry height="50" width="200" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="chat-divider" parent="chat-store" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="200" x="10" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="chat-methods" parent="chat-store" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ sendQuestion()&#xa;+ newChat()&#xa;+ loadHistory()&#xa;+ submitFeedback()" vertex="1">
+          <mxGeometry height="85" width="200" x="10" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="home-view" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontStyle=1;fontSize=12;fontColor=#6a1b9a;rounded=1;arcSize=10;" value="HomeView" vertex="1">
+          <mxGeometry height="130" width="200" x="570" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="home-attrs" parent="home-view" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ question&#xa;+ answer" vertex="1">
+          <mxGeometry height="40" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="home-divider" parent="home-view" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="home-methods" parent="home-view" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ sendMessage()" vertex="1">
+          <mxGeometry height="35" width="180" x="10" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="assistant-chat" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#fce4ec;strokeColor=#c2185b;fontStyle=1;fontSize=12;fontColor=#ad1457;rounded=1;arcSize=10;" value="AssistantChat" vertex="1">
+          <mxGeometry height="150" width="220" x="820" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="assistant-attrs" parent="assistant-chat" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ messages&#xa;+ inputMessage" vertex="1">
+          <mxGeometry height="40" width="200" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="assistant-divider" parent="assistant-chat" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="200" x="10" y="78" as="geometry" />
+        </mxCell>
+        <mxCell id="assistant-methods" parent="assistant-chat" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ sendMessage()" vertex="1">
+          <mxGeometry height="55" width="200" x="10" y="82" as="geometry" />
+        </mxCell>
+        <mxCell id="faq-section" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#e0f2f1;strokeColor=#00796b;fontStyle=1;fontSize=12;fontColor=#00695c;rounded=1;arcSize=10;" value="FaqSection" vertex="1">
+          <mxGeometry height="130" width="200" x="570" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="faq-attrs" parent="faq-section" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ faqData" vertex="1">
+          <mxGeometry height="25" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="faq-divider" parent="faq-section" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="63" as="geometry" />
+        </mxCell>
+        <mxCell id="faq-methods" parent="faq-section" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ loadFaq()&#xa;+ toggleFaq()" vertex="1">
+          <mxGeometry height="50" width="180" x="10" y="67" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback-buttons" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#fff9c4;strokeColor=#f9a825;fontStyle=1;fontSize=12;fontColor=#f57f17;rounded=1;arcSize=10;" value="FeedbackButtons" vertex="1">
+          <mxGeometry height="130" width="200" x="820" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback-attrs" parent="feedback-buttons" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ chatId" vertex="1">
+          <mxGeometry height="25" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback-divider" parent="feedback-buttons" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="63" as="geometry" />
+        </mxCell>
+        <mxCell id="feedback-methods" parent="feedback-buttons" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ onLike()&#xa;+ onDislike()&#xa;+ onStar()" vertex="1">
+          <mxGeometry height="50" width="180" x="10" y="67" as="geometry" />
+        </mxCell>
+        <mxCell id="message-bubble" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#e8eaf6;strokeColor=#3949ab;fontStyle=1;fontSize=12;fontColor=#283593;rounded=1;arcSize=10;" value="MessageBubble" vertex="1">
+          <mxGeometry height="130" width="200" x="570" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="bubble-attrs" parent="message-bubble" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ content&#xa;+ role&#xa;+ sources" vertex="1">
+          <mxGeometry height="50" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="bubble-divider" parent="message-bubble" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="bubble-methods" parent="message-bubble" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="" vertex="1">
+          <mxGeometry height="25" width="180" x="10" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="source-card" parent="layer-frontend" style="swimlane;startSize=30;fillColor=#efebe9;strokeColor=#5d4037;fontStyle=1;fontSize=12;fontColor=#4e342e;rounded=1;arcSize=10;" value="SourceCard" vertex="1">
+          <mxGeometry height="130" width="200" x="820" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="source-attrs" parent="source-card" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="+ filename&#xa;+ breadcrumbs&#xa;+ summary" vertex="1">
+          <mxGeometry height="50" width="180" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="source-divider" parent="source-card" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="180" x="10" y="88" as="geometry" />
+        </mxCell>
+        <mxCell id="source-methods" parent="source-card" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="" vertex="1">
+          <mxGeometry height="25" width="180" x="10" y="92" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-services" parent="1" style="swimlane;startSize=35;fillColor=#f3e5f5;strokeColor=#7b1fa2;fontStyle=1;fontSize=14;fontColor=#6a1b9a;" value="🔧 Services Layer" vertex="1">
+          <mxGeometry height="140" width="1100" x="250" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase-service" parent="layer-services" style="swimlane;startSize=30;fillColor=#ffffff;strokeColor=#7b1fa2;fontStyle=1;fontSize=12;fontColor=#6a1b9a;rounded=1;arcSize=10;" value="SupabaseService" vertex="1">
+          <mxGeometry height="90" width="260" x="420" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase-attrs" parent="supabase-service" style="text;fontSize=11;fontColor=#666666;align=left;spacingLeft=10;" value="" vertex="1">
+          <mxGeometry height="15" width="240" x="10" y="32" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase-divider" parent="supabase-service" style="line;strokeWidth=1;strokeColor=#cccccc;" vertex="1">
+          <mxGeometry height="1" width="240" x="10" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="supabase-methods" parent="supabase-service" style="text;fontSize=11;fontColor=#1976d2;align=left;spacingLeft=10;fontStyle=0;" value="+ authService&#xa;+ chatService&#xa;+ feedbackService" vertex="1">
+          <mxGeometry height="35" width="240" x="10" y="54" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-app-auth" edge="1" parent="1" source="app" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#1976d2;endArrow=classic;endFill=1;" target="auth-store" value="использует">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="180" />
+              <mxPoint x="150" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-app-chat" edge="1" parent="1" source="app" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#1976d2;endArrow=classic;endFill=1;" target="chat-store" value="использует">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="180" />
+              <mxPoint x="410" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-home-chat" edge="1" parent="1" source="home-view" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;" target="chat-store" value="зависит от">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="290" />
+              <mxPoint x="410" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-assistant-chat" edge="1" parent="1" source="assistant-chat" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#7b1fa2;endArrow=classic;endFill=1;" target="chat-store" value="зависит от">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="290" />
+              <mxPoint x="410" y="290" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-assistant-bubble" edge="1" parent="1" source="assistant-chat" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#c2185b;endArrow=classic;endFill=1;" target="message-bubble" value="содержит">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="930" y="420" />
+              <mxPoint x="670" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-bubble-source" edge="1" parent="1" source="message-bubble" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#3949ab;endArrow=classic;endFill=1;" target="source-card" value="имеет">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="640" />
+              <mxPoint x="920" y="640" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-auth-supabase" edge="1" parent="1" source="auth-store" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;" target="supabase-service" value="вызывает">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="150" y="420" />
+              <mxPoint x="550" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-chat-supabase" edge="1" parent="1" source="chat-store" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#388e3c;endArrow=classic;endFill=1;" target="supabase-service" value="вызывает">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="420" />
+              <mxPoint x="550" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-faq-supabase" edge="1" parent="1" source="faq-section" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#00796b;endArrow=classic;endFill=1;" target="supabase-service" value="вызывает">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="520" />
+              <mxPoint x="550" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" parent="1" style="swimlane;startSize=30;fillColor=#fafafa;strokeColor=#999999;fontStyle=1;fontSize=12;fontColor=#333333;rounded=1;arcSize=10;" value="📋 Легенда" vertex="1">
+          <mxGeometry height="160" width="220" x="50" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-1" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Сплошная линия: прямая зависимость" vertex="1">
+          <mxGeometry height="20" width="200" x="10" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-2" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Пунктирная линия: косвенная связь" vertex="1">
+          <mxGeometry height="20" width="200" x="10" y="58" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-3" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Оранжевый: State Management" vertex="1">
+          <mxGeometry height="20" width="200" x="10" y="81" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-4" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Зеленый: Данные чата" vertex="1">
+          <mxGeometry height="20" width="200" x="10" y="104" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-5" parent="legend" style="text;fontSize=10;fontColor=#666666;align=left;spacingLeft=10;" value="Горизонтальная линия: разделитель&#xa;атрибутов и методов" vertex="1">
+          <mxGeometry height="25" width="200" x="10" y="127" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

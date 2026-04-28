@@ -26,9 +26,13 @@ class LLMEvaluation:
     completeness: float  # 1-5
     helpfulness: float  # 1-5
     clarity: float  # 1-5
-    hallucination_risk: float  # 1-5 (1 = высокий риск, 5 = низкий)
-    overall_score: float  # средняя оценка
-    reasoning: str  # обоснование оценки
+    hallucination_risk: float  # 1-5
+    context_recall: float  # 1-5 (Есть ли ответ в чанках)
+    faithfulness: float  # 1-5 (Насколько ответ следует чанкам)
+    currency: float  # 1-5 (Актуальность/соответствие ожидаемому)
+    binary_correctness: int  # 0 или 1
+    overall_score: float
+    reasoning: str
 
 
 EVALUATION_PROMPT = """Ты — независимый эксперт (LLM Judge) для оценки качества RAG системы.
@@ -41,6 +45,9 @@ EVALUATION_PROMPT = """Ты — независимый эксперт (LLM Judge
 
 **Сгенерированный ответ:**
 {answer}
+
+**Ожидаемый эталонный ответ:**
+{expected}
 
 **Найденные источники (контекст):**
 {sources}
@@ -87,17 +94,42 @@ EVALUATION_PROMPT = """Ты — независимый эксперт (LLM Judge
 - 4: В основном по источникам, minor допущения
 - 5: Строго по источникам, нет выдумок
 
+### 6. Context Recall (Наличие ответа в чанках)
+Есть ли в предоставленных ИСТОЧНИКАХ фактическая информация для ответа на вопрос?
+- 1: В источниках вообще нет информации для ответа.
+- 5: В источниках содержится исчерпывающая информация для ответа.
+
+### 7. Faithfulness (Верность источникам)
+Насколько ответ СТРОГО следует предоставленному контексту, не привнося внешних знаний или галлюцинаций?
+- 1: Ответ противоречит источникам или полностью выдуман.
+- 5: Ответ на 100% основан на предоставленных источниках.
+
+### 8. Currency & Correctness (Актуальность и Правильность)
+Насколько информация в ответе актуальна на текущий момент?
+- 1: Информация устарела.
+- 5: Информация абсолютно актуальна.
+
+### 9. Binary Correctness (Смысловая правильность)
+Это бинарный показатель (0 или 1):
+- 1: Ответ фактически и семантически ВЕРЕН. Он передает ту же суть, что и эталонный ответ. Не наказывай за лишние слова, вежливость или подробности, если основной факт/инструкция указаны правильно.
+- 0: Ответ фактически НЕВЕРЕН, противоречит эталону или содержит ложные данные.
+
+
 ## Формат ответа (JSON):
 
 ```json
 {{
-  "relevance": 4,
+  "relevance": 5,
   "completeness": 5,
-  "helpfulness": 4,
+  "helpfulness": 5,
   "clarity": 5,
-  "hallucination_risk": 4,
-  "overall_score": 4.4,
-  "reasoning": "Ответ релевантный и полный, хорошо структурирован. Информация основана на предоставленных источниках. Есть небольшие допущения в разделе рекомендаций."
+  "hallucination_risk": 5,
+  "context_recall": 5,
+  "faithfulness": 5,
+  "currency": 5,
+  "binary_correctness": 1,
+  "overall_score": 5.0,
+  "reasoning": "Причина оценки..."
 }}
 ```
 
@@ -120,29 +152,20 @@ class LLMJudge:
             api_key=config.ROUTERAI_API_KEY,
             base_url=config.ROUTERAI_BASE_URL
         )
-        self.model = config.DEFAULT_LLM_MODEL
+        self.model = config.JUDGE_LLM_MODEL
         logger.info(f"LLM Judge инициализирован: {self.model}")
     
     def evaluate(
         self,
         question: str,
         answer: str,
+        expected: str,
         sources: List[Dict[str, Any]],
         temperature: float = 0.3,
-        max_attempts: int = 2
+        max_attempts: int = 3
     ) -> LLMEvaluation:
         """
         Оценка ответа.
-        
-        Args:
-            question: Вопрос пользователя
-            answer: Сгенерированный ответ
-            sources: Найденные источники
-            temperature: Температура генерации
-            max_attempts: Максимальное количество попыток
-        
-        Returns:
-            Результат оценки
         """
         # Форматирование источников
         sources_text = self._format_sources(sources)
@@ -150,7 +173,8 @@ class LLMJudge:
         # Формирование промпта
         prompt = EVALUATION_PROMPT.format(
             question=question,
-            answer=answer[:3000],  # Ограничение длины ответа
+            answer=answer[:4000],
+            expected=expected[:4000],
             sources=sources_text
         )
         
@@ -163,7 +187,7 @@ class LLMJudge:
                     messages=[
                         {
                             "role": "system",
-                            "content": "Ты LLM Judge. Отвечай ТОЛЬКО в формате JSON."
+                            "content": "Ты LLM Judge. Твоя задача - строгий аудит RAG. Отвечай ТОЛЬКО в формате JSON. Не пиши ничего, кроме JSON."
                         },
                         {
                             "role": "user",
@@ -171,15 +195,27 @@ class LLMJudge:
                         }
                     ],
                     temperature=temperature,
-                    max_tokens=1000,
+                    max_tokens=1500,
                     response_format={"type": "json_object"}
                 )
                 
                 result_text = response.choices[0].message.content
                 
-                # Парсинг JSON
-                result_data = json.loads(result_text)
+                # Очистка текста от возможных артефактов DeepSeek
+                cleaned_text = self._extract_json_string(result_text)
                 
+                # Парсинг JSON
+                result_data = json.loads(cleaned_text)
+                
+                # Принудительное приведение типов
+                for field in ["relevance", "completeness", "helpfulness", "clarity", 
+                            "hallucination_risk", "context_recall", "faithfulness", "currency"]:
+                    if field in result_data:
+                        result_data[field] = float(result_data[field])
+
+                if "binary_correctness" in result_data:
+                    result_data["binary_correctness"] = int(result_data["binary_correctness"])
+
                 # Валидация полей
                 required_fields = ["relevance", "completeness", "helpfulness", 
                                    "clarity", "hallucination_risk", "overall_score", "reasoning"]
@@ -188,12 +224,6 @@ class LLMJudge:
                     logger.warning(f"Попытка {attempt + 1}: Не все поля в ответе")
                     continue
                 
-                # Проверка диапазонов
-                for field in ["relevance", "completeness", "helpfulness", "clarity", "hallucination_risk"]:
-                    if not (1 <= result_data[field] <= 5):
-                        logger.warning(f"Попытка {attempt + 1}: Оценка {field} вне диапазона 1-5")
-                        continue
-                
                 logger.info(f"Оценка успешна с попытки {attempt + 1}")
                 return LLMEvaluation(
                     relevance=result_data["relevance"],
@@ -201,20 +231,30 @@ class LLMJudge:
                     helpfulness=result_data["helpfulness"],
                     clarity=result_data["clarity"],
                     hallucination_risk=result_data["hallucination_risk"],
+                    context_recall=result_data.get("context_recall", 3.0),
+                    faithfulness=result_data.get("faithfulness", 3.0),
+                    currency=result_data.get("currency", 3.0),
+                    binary_correctness=result_data.get("binary_correctness", 0),
                     overall_score=result_data["overall_score"],
                     reasoning=result_data["reasoning"]
                 )
                 
-            except json.JSONDecodeError as e:
-                logger.warning(f"Попытка {attempt + 1}: Ошибка парсинга JSON: {e}")
-                if attempt == max_attempts - 1:
-                    return self._default_evaluation()
             except Exception as e:
-                logger.error(f"Попытка {attempt + 1}: Ошибка оценки: {e}")
+                logger.warning(f"Попытка {attempt + 1}: Ошибка оценки/парсинга: {e}")
                 if attempt == max_attempts - 1:
                     return self._default_evaluation()
         
         return self._default_evaluation()
+
+    def _extract_json_string(self, text: str) -> str:
+        """Вырезает JSON из строки, если модель добавила лишний текст или ```json."""
+        text = text.strip()
+        # Ищем начало и конец JSON объекта
+        start = text.find('{')
+        end = text.rfind('}')
+        if start != -1 and end != -1:
+            return text[start:end+1]
+        return text
     
     def _format_sources(self, sources: List[Dict[str, Any]]) -> str:
         """Форматирование источников."""
@@ -236,12 +276,9 @@ class LLMJudge:
     def _default_evaluation(self) -> LLMEvaluation:
         """Возвращает дефолтную оценку при ошибке."""
         return LLMEvaluation(
-            relevance=3.0,
-            completeness=3.0,
-            helpfulness=3.0,
-            clarity=3.0,
-            hallucination_risk=3.0,
-            overall_score=3.0,
+            relevance=3.0, completeness=3.0, helpfulness=3.0, clarity=3.0,
+            hallucination_risk=3.0, context_recall=3.0, faithfulness=3.0,
+            currency=3.0, binary_correctness=0, overall_score=3.0,
             reasoning="Оценка не выполнена из-за ошибки. Возвращена дефолтная оценка."
         )
     

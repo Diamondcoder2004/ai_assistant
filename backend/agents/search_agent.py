@@ -149,6 +149,8 @@ class SearchAgent:
         queries = self.query_generator.get_queries_text(gen_result)
         strategy = gen_result.search_params.get("strategy", "concat")
         k_per_query = gen_result.search_params.get("k", 10)
+        if user_hints and user_hints.get("k"):
+            k_per_query = user_hints.get("k")
 
         logger.info(f"Поиск по запросам: {queries}, стратегия: {strategy}")
 

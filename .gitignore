@@ -51,6 +51,26 @@ qdrant_storage/
 # Supabase
 .volumes/
 
+# Draw.io backups
+*.drawio.bkp
+docs/*.bkp
+
+# OpenCode runtime
+.opencode/node_modules/
+
+# Logs (runtime, not in repo)
+backend/logs/
+
+# Generated chunk data
+backend/chunking/chunks_*/
+
+# Benchmark results (runtime outputs)
+backend/results/
+backend/results_llm/
+backend/quick_test_results/
+backend/benchmarks/agentic_results/
+backend/benchmarks/agentic_benchmarks/
+
 # Temporary files
 *.tmp
 *.temp

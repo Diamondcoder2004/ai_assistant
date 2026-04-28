@@ -1,0 +1,217 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram id="lifecycle-simple" name="Жизненный цикл (простой)">
+    <mxGraphModel dx="1603" dy="1015" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;fontSize=24;fontStyle=1;align=center;fontColor=#333333;" value="Жизненный цикл ИИ-ассистента Башкирэнерго" vertex="1">
+          <mxGeometry height="40" width="800" x="70" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="phase1" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;fontColor=#333333;fontStyle=1;" value="1. Разработка" vertex="1">
+          <mxGeometry height="100" width="200" x="80" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="phase1-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Backend (FastAPI)&#xa;Frontend (Vue.js)&#xa;Data Pipeline" vertex="1">
+          <mxGeometry height="50" width="200" x="80" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="phase2" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=16;fontColor=#333333;fontStyle=1;" value="2. Тестирование" vertex="1">
+          <mxGeometry height="100" width="200" x="80" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="phase2-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Unit-тесты&#xa;Бенчмарки&#xa;Интеграция" vertex="1">
+          <mxGeometry height="50" width="200" x="80" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="phase3" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=16;fontColor=#333333;fontStyle=1;" value="3. Сборка" vertex="1">
+          <mxGeometry height="100" width="200" x="190" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="phase3-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Docker контейнеры&#xa;Multi-stage build&#xa;Docker Compose" vertex="1">
+          <mxGeometry height="50" width="200" x="190" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="phase4" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;fontColor=#333333;fontStyle=1;" value="4. Развёртывание" vertex="1">
+          <mxGeometry height="100" width="200" x="450" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="phase4-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Environment (.env)&#xa;Nginx Proxy&#xa;Скрипты запуска" vertex="1">
+          <mxGeometry height="50" width="200" x="450" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="phase5" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=16;fontColor=#333333;fontStyle=1;" value="5. Production" vertex="1">
+          <mxGeometry height="100" width="200" x="600" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="phase5-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Пользователь&#xa;Query → Ответ&#xa;SSE Streaming" vertex="1">
+          <mxGeometry height="50" width="200" x="600" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="phase6" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=16;fontColor=#333333;fontStyle=1;" value="6. Мониторинг" vertex="1">
+          <mxGeometry height="100" width="200" x="600" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="phase6-desc" parent="1" style="text;fontSize=11;align=center;fontColor=#333333;spacingTop=5;" value="Логи&#xa;Health Checks&#xa;Поддержка" vertex="1">
+          <mxGeometry height="50" width="200" x="600" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="e-1-2" edge="1" parent="1" source="phase1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;curved=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="phase2">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="170" as="sourcePoint" />
+            <mxPoint x="340" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-3-4" edge="1" parent="1" source="phase2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="phase3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="310" y="389.65999999999997" as="sourcePoint" />
+            <mxPoint x="370" y="389.65999999999997" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-feedback" edge="1" parent="1" source="phase6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#b85450;endArrow=classic;endFill=1;dashed=1;dashPattern=10 5;fontSize=12;fontColor=#b85450;fontStyle=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="phase1" value="Обратная связь → Улучшения">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="380" y="170" />
+              <mxPoint x="380" y="170" />
+            </Array>
+            <mxPoint x="1480" y="220" as="sourcePoint" />
+            <mxPoint x="180" y="220" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arch-block" parent="1" style="swimlane;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;fontColor=#333333;" value="Архитектура системы" vertex="1">
+          <mxGeometry height="440" width="1000" x="300" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-client" parent="arch-block" style="swimlane;startSize=25;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=12;fontColor=#333333;" value="Клиент" vertex="1">
+          <mxGeometry height="80" width="200" x="30" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="client-user" parent="layer-client" style="ellipse;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#6c8ebf;fontSize=11;fontColor=#333333;" value="👤 Пользователь" vertex="1">
+          <mxGeometry height="40" width="120" x="40" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-frontend" parent="arch-block" style="swimlane;startSize=25;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=12;fontColor=#333333;" value="Frontend" vertex="1">
+          <mxGeometry height="80" width="200" x="260" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-app" parent="layer-frontend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#9673a6;fontSize=11;fontColor=#333333;" value="Vue.js SPA&#xa;Чат + История" vertex="1">
+          <mxGeometry height="40" width="120" x="40" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-backend" parent="arch-block" style="swimlane;startSize=25;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=12;fontColor=#333333;" value="Backend" vertex="1">
+          <mxGeometry height="160" width="480" x="490" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="be-api" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontColor=#333333;" value="FastAPI&#xa;/query, /history" vertex="1">
+          <mxGeometry height="50" width="120" x="20" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="be-agents" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontColor=#333333;" value="Агенты&#xa;Query → Search → Response" vertex="1">
+          <mxGeometry height="50" width="140" x="160" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="be-search" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#d6b656;fontSize=11;fontColor=#333333;" value="Гибридный поиск&#xa;BM25 + Semantic (3 вектора)" vertex="1">
+          <mxGeometry height="50" width="140" x="320" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="be-llm" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;fontColor=#333333;fontStyle=1;" value="RouterAI&#xa;Mercury 2 LLM" vertex="1">
+          <mxGeometry height="50" width="140" x="160" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="e-api-agents" edge="1" parent="layer-backend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=1;strokeColor=#d6b656;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="55" as="sourcePoint" />
+            <mxPoint x="160" y="55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-agents-search" edge="1" parent="layer-backend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=1;strokeColor=#d6b656;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="300" y="55" as="sourcePoint" />
+            <mxPoint x="320" y="55" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-agents-llm" edge="1" parent="layer-backend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=1;strokeColor=#d6b656;endArrow=classic;endFill=1;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="80" as="sourcePoint" />
+            <mxPoint x="230" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="layer-data" parent="arch-block" style="swimlane;startSize=25;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=12;fontColor=#333333;" value="Данные" vertex="1">
+          <mxGeometry height="160" width="940" x="30" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="db-supabase" parent="layer-data" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontColor=#333333;" value="Supabase&#xa;PostgreSQL + Auth" vertex="1">
+          <mxGeometry height="90" width="140" x="60" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="db-qdrant" parent="layer-data" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontColor=#333333;" value="Qdrant&#xa;Vector DB" vertex="1">
+          <mxGeometry height="90" width="140" x="260" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud-routerai" parent="layer-data" style="ellipse;shape=cloud;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=11;fontColor=#333333;fontStyle=1;" value="RouterAI Cloud&#xa;LLM + Embeddings" vertex="1">
+          <mxGeometry height="110" width="200" x="480" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="docs-pipeline" parent="layer-data" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#82b366;fontSize=11;fontColor=#333333;" value="Документы&#xa;→ Chunking&#xa;→ Enrichment&#xa;→ Ingestion" vertex="1">
+          <mxGeometry height="90" width="140" x="740" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="e-docs-qdrant" edge="1" parent="layer-data" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#82b366;endArrow=classic;endFill=1;fontSize=10;fontColor=#333333;" value="Загрузка">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="740" y="85" as="sourcePoint" />
+            <mxPoint x="400" y="85" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-user-fe" edge="1" parent="arch-block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="230" y="80" as="sourcePoint" />
+            <mxPoint x="260" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-fe-be" edge="1" parent="arch-block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;fontSize=10;fontColor=#333333;" value="HTTP / SSE">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="460" y="80" as="sourcePoint" />
+            <mxPoint x="510" y="110" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-be-supabase" edge="1" parent="arch-block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="240" />
+              <mxPoint x="130" y="240" />
+            </Array>
+            <mxPoint x="550" y="200" as="sourcePoint" />
+            <mxPoint x="130" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-be-qdrant" edge="1" parent="arch-block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="250" />
+              <mxPoint x="330" y="250" />
+            </Array>
+            <mxPoint x="650" y="200" as="sourcePoint" />
+            <mxPoint x="330" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-be-routerai" edge="1" parent="arch-block" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#d6b656;endArrow=classic;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="730" y="200" as="sourcePoint" />
+            <mxPoint x="580" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="metrics" parent="1" style="swimlane;startSize=25;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=12;fontColor=#333333;" value="Ключевые метрики" vertex="1">
+          <mxGeometry height="440" width="230" x="1350" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="met-stack" parent="metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#666666;fontSize=10;fontColor=#333333;fontStyle=1;" value="Стек технологий" vertex="1">
+          <mxGeometry height="100" width="200" x="15" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="met-stack-content" parent="metrics" style="text;fontSize=10;align=left;fontColor=#333333;spacingTop=5;spacingLeft=10;" value="• Python 3.11 + FastAPI&#xa;• Vue.js 3 + Vite&#xa;• Docker Compose&#xa;• Qdrant + Supabase&#xa;• RouterAI (Mercury 2)" vertex="1">
+          <mxGeometry height="80" width="200" x="15" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="met-search" parent="metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#666666;fontSize=10;fontColor=#333333;fontStyle=1;" value="Поиск" vertex="1">
+          <mxGeometry height="50" width="200" x="15" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="met-search-content" parent="metrics" style="text;fontSize=10;align=left;fontColor=#333333;spacingTop=5;spacingLeft=10;" value="Гибридный: BM25 + Semantic&#xa;Веса: 0.4 + 0.3 + 0.1 + 0.2&#xa;3 вектора на чанк" vertex="1">
+          <mxGeometry height="60" width="200" x="15" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="met-deploy" parent="metrics" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#666666;fontSize=10;fontColor=#333333;fontStyle=1;" value="Развёртывание" vertex="1">
+          <mxGeometry height="50" width="200" x="15" y="355" as="geometry" />
+        </mxCell>
+        <mxCell id="met-deploy-content" parent="metrics" style="text;fontSize=10;align=left;fontColor=#333333;spacingTop=5;spacingLeft=10;" value="• Docker multi-stage&#xa;• Nginx reverse proxy&#xa;• Windows scripts&#xa;• USB backup" vertex="1">
+          <mxGeometry height="60" width="200" x="15" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="nfBxPixgdehAMUhjywXd-2" edge="1" parent="1" source="phase3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;curved=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="phase4">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="380" as="sourcePoint" />
+            <mxPoint x="400" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nfBxPixgdehAMUhjywXd-3" edge="1" parent="1" source="phase4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;curved=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="phase5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="520" as="sourcePoint" />
+            <mxPoint x="700" y="640" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nfBxPixgdehAMUhjywXd-4" edge="1" parent="1" source="phase5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="phase6">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="690" y="290" as="sourcePoint" />
+            <mxPoint x="750" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

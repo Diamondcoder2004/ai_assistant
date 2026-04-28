@@ -1,0 +1,116 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+  <diagram id="page-1" name="Архитектура системы - компактная">
+    <mxGraphModel dx="1158" dy="733" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;fontSize=14;fontStyle=1;align=center;fontColor=#1a1a1a;" value="Архитектура системы интеллектуального ассистента Башкирэнерго" vertex="1">
+          <mxGeometry height="35" width="800" x="300" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="user" parent="1" style="ellipse;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="👤 Пользователь" vertex="1">
+          <mxGeometry height="90" width="170" x="200" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-frontend" parent="1" style="swimlane;startSize=28;fillColor=#fff3e0;strokeColor=#e65100;fontStyle=1;fontSize=14;fontColor=#e65100;rounded=1;arcSize=8;shadow=1;" value="Frontend (Vue.js 3)" vertex="1">
+          <mxGeometry height="140" width="380" x="510" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-nginx" parent="layer-frontend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e65100;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="Nginx&#xa;Reverse Proxy" vertex="1">
+          <mxGeometry height="50" width="100" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-vue" parent="layer-frontend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e65100;fontSize=14;fontColor=#000000;shadow=1;" value="Vue.js SPA&#xa;Чат / История" vertex="1">
+          <mxGeometry height="50" width="110" x="140" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-auth" parent="layer-frontend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#e65100;fontSize=14;fontColor=#000000;shadow=1;" value="Auth UI&#xa;JWT" vertex="1">
+          <mxGeometry height="50" width="90" x="270" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-backend" parent="1" style="swimlane;startSize=28;fillColor=#e3f2fd;strokeColor=#1976d2;fontStyle=1;fontSize=14;fontColor=#1565c0;rounded=1;arcSize=8;shadow=1;" value="Backend (FastAPI)" vertex="1">
+          <mxGeometry height="220" width="710" x="190" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="be-api" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#1976d2;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="API Endpoints&#xa;/query /history /feedback" vertex="1">
+          <mxGeometry height="50" width="130" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="be-agents" parent="layer-backend" style="swimlane;startSize=22;fillColor=#bbdefb;strokeColor=#1976d2;fontStyle=1;fontSize=14;fontColor=#1565c0;rounded=1;arcSize=6;" value="Агенты" vertex="1">
+          <mxGeometry height="125" width="410" x="170" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="be-query" parent="be-agents" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#1976d2;fontSize=14;fontColor=#000000;shadow=1;" value="Query Generator&#xa;Классификация" vertex="1">
+          <mxGeometry height="50" width="100" x="10" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="be-search" parent="be-agents" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#1976d2;fontSize=14;fontColor=#000000;shadow=1;" value="Search Agent&#xa;Гибридный поиск" vertex="1">
+          <mxGeometry height="50" width="100" x="130" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="be-response" parent="be-agents" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#1976d2;fontSize=14;fontColor=#000000;shadow=1;" value="Response Agent&#xa;Генерация ответа" vertex="1">
+          <mxGeometry height="50" width="120" x="250" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-query-search" edge="1" parent="be-agents" source="be-query" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#1976d2;endArrow=classic;endFill=1;fontSize=14;" target="be-search" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-search-response" edge="1" parent="be-agents" source="be-search" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#1976d2;endArrow=classic;endFill=1;fontSize=14;" target="be-response" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="be-routerai" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#f57c00;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="RouterAI&#xa;Mercury 2 LLM" vertex="1">
+          <mxGeometry height="50" width="120" x="590" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="be-embeddings" parent="layer-backend" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#1976d2;fontSize=14;fontColor=#000000;shadow=1;" value="Embeddings&#xa;pplx-embed-v1-4b" vertex="1">
+          <mxGeometry height="45" width="110" x="405" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-api-query" edge="1" parent="layer-backend" source="be-api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#1976d2;endArrow=classic;endFill=1;fontSize=14;" target="be-query" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-response-router" edge="1" parent="layer-backend" source="be-response" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;fontSize=14;" target="be-routerai" value="LLM">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="layer-data" parent="1" style="swimlane;startSize=28;fillColor=#e8f5e9;strokeColor=#388e3c;fontStyle=1;fontSize=14;fontColor=#2e7d32;rounded=1;arcSize=8;shadow=1;" value="Слой данных" vertex="1">
+          <mxGeometry height="140" width="540" x="210" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="db-supabase" parent="layer-data" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#ffffff;strokeColor=#388e3c;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="Supabase&#xa;PostgreSQL" vertex="1">
+          <mxGeometry height="90" width="120" x="30" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="db-qdrant" parent="layer-data" style="shape=cylinder3;whiteSpace=wrap;boundedLbl=1;backgroundOutline=1;size=12;fillColor=#ffffff;strokeColor=#388e3c;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="Qdrant&#xa;Vector DB" vertex="1">
+          <mxGeometry height="90" width="120" x="180" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="cloud-routerai" parent="layer-data" style="ellipse;shape=cloud;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#f57c00;fontSize=14;fontColor=#000000;fontStyle=1;shadow=1;" value="RouterAI Cloud&#xa;LLM + Embeddings" vertex="1">
+          <mxGeometry height="100" width="200" x="340" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-embed-cloud" edge="1" parent="layer-data" source="be-embeddings" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;dashed=1;fontSize=14;" target="cloud-routerai" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-user-fe" edge="1" parent="1" source="user" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#666666;endArrow=classic;endFill=1;fontSize=14;" target="fe-nginx" value="HTTP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-fe-be" edge="1" parent="1" source="fe-nginx" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;endArrow=classic;endFill=1;fontSize=14;" target="be-api" value="REST API&#xa;JWT">
+          <mxGeometry relative="1" x="0.0013" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="590" y="190" />
+              <mxPoint x="400" y="190" />
+              <mxPoint x="400" y="200" />
+              <mxPoint x="280" y="200" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-be-supabase" edge="1" parent="1" source="be-api" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#388e3c;endArrow=classic;endFill=1;fontSize=14;" target="db-supabase" value="Auth&#xa;History">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="280" y="400" />
+              <mxPoint x="290" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-search-qdrant" edge="1" parent="1" source="be-search" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#388e3c;endArrow=classic;endFill=1;fontSize=14;" target="db-qdrant" value="Поиск">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="540" y="400" />
+              <mxPoint x="440" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-router-cloud" edge="1" parent="1" source="be-routerai" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#f57c00;endArrow=classic;endFill=1;dashed=1;fontSize=14;" target="cloud-routerai" value="API">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

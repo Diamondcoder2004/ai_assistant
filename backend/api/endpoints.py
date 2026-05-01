@@ -166,9 +166,29 @@ async def stream_query(
             retrieval_logger.info(f"[{query_id}] 🔍 Agentic RAG поиск...")
             yield {"event": "message", "data": json.dumps({"token": "⏳ Анализ запроса..."})}
 
+            # Загружаем историю диалога из БД если session_id существует
+            history = []
+            if request.session_id:
+                history = await get_chat_history(session_id, limit=10)
+                retrieval_logger.info(f"[{query_id}] Загружено {len(history)//2} сообщений истории")
+
+            # Формируем рекомендации от пользователя для LLM
+            user_hints = {}
+            if request.k:
+                user_hints["k"] = request.k
+            if request.temperature:
+                user_hints["temperature"] = request.temperature
+            if request.max_tokens:
+                user_hints["max_tokens"] = request.max_tokens
+
+            if user_hints:
+                retrieval_logger.info(f"[{query_id}] Рекомендации от пользователя: {user_hints}")
+
             result = rag.query(
                 user_query=request.query,
-                auto_retry=True
+                auto_retry=True,
+                history=history,
+                user_hints=user_hints if user_hints else None
             )
 
             # Проверка на уточнение
@@ -460,9 +480,11 @@ async def get_history_sessions(
     db_logger.info(f"Параметры: search={search}, start_date={start_date}, end_date={end_date}, limit={limit}, offset={offset}")
 
     try:
-        # Получаем все чаты пользователя с учётом limit и offset
-        all_chats = await get_user_chats(user_id, limit=1000, offset=0)
-        db_logger.info(f"Получено чатов: {len(all_chats)}")
+        # Получаем чаты пользователя с запасом для группировки по сессиям
+        # Одна сессия может содержать много сообщений, поэтому умножаем limit
+        fetch_limit = min(limit * 15, 500)  # максимум 500 записей
+        all_chats = await get_user_chats(user_id, limit=fetch_limit, offset=offset * 15)
+        db_logger.info(f"Получено чатов: {len(all_chats)} (fetch_limit={fetch_limit}, offset={offset * 15})")
 
         # Фильтрация по дате
         if start_date:

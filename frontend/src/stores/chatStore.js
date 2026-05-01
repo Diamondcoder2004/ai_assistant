@@ -164,30 +164,57 @@ export const useChatStore = defineStore('chat', () => {
   async function loadSession(session) {
     sessionId.value = session.id
     currentSessionTitle.value = session.question?.substring(0, 50) || 'Чат'
-    messages.value = [
-      {
-        id: Date.now() - 1,
-        role: 'user',
-        content: session.question,
-        sources: [],
-        sessionId: session.id,
-        timestamp: new Date(session.created_at)
-      },
-      {
-        id: Date.now(),
-        role: 'assistant',
-        content: session.answer,
-        sources: session.sources || [],
-        sessionId: session.id,
-        timestamp: new Date(session.created_at)
-      }
-    ]
+
+    // Если сессия содержит массив messages (многосообщенческая история) — загружаем все
+    if (session.messages && session.messages.length > 0) {
+      const msgs = []
+      let baseId = Date.now()
+      session.messages.forEach((msg, idx) => {
+        msgs.push({
+          id: baseId + idx * 2,
+          role: 'user',
+          content: msg.question,
+          sources: [],
+          sessionId: session.id,
+          timestamp: new Date(msg.created_at)
+        })
+        msgs.push({
+          id: baseId + idx * 2 + 1,
+          role: 'assistant',
+          content: msg.answer,
+          sources: msg.sources || [],
+          sessionId: session.id,
+          timestamp: new Date(msg.created_at)
+        })
+      })
+      messages.value = msgs
+    } else {
+      // Fallback: одна пара Q&A (старый формат)
+      messages.value = [
+        {
+          id: Date.now() - 1,
+          role: 'user',
+          content: session.question,
+          sources: [],
+          sessionId: session.id,
+          timestamp: new Date(session.created_at)
+        },
+        {
+          id: Date.now(),
+          role: 'assistant',
+          content: session.answer,
+          sources: session.sources || [],
+          sessionId: session.id,
+          timestamp: new Date(session.created_at)
+        }
+      ]
+    }
     saveToStorage()
   }
 
   // Обновить список сессий из истории
   function updateSessionsFromHistory(historyData) {
-    // Группируем по session_id
+    // Группируем по session_id, сохраняя ВСЕ сообщения
     const sessionsMap = new Map()
     historyData.forEach(chat => {
       if (!chat.session_id) return
@@ -198,12 +225,24 @@ export const useChatStore = defineStore('chat', () => {
           answer: chat.answer,
           sources: chat.sources,
           created_at: chat.created_at,
-          messagesCount: 1
+          messagesCount: 1,
+          messages: [{
+            question: chat.question,
+            answer: chat.answer,
+            sources: chat.sources,
+            created_at: chat.created_at
+          }]
         })
       } else {
         const session = sessionsMap.get(chat.session_id)
         session.messagesCount++
-        // Обновляем последний вопрос/ответ
+        session.messages.push({
+          question: chat.question,
+          answer: chat.answer,
+          sources: chat.sources,
+          created_at: chat.created_at
+        })
+        // Обновляем заголовок на последнее сообщение
         session.question = chat.question
         session.answer = chat.answer
         session.sources = chat.sources

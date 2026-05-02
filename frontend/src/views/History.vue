@@ -267,12 +267,13 @@ function restoreHistoryFromStorage() {
   return false
 }
 
-// Установка дат по умолчанию (без фильтрации - показываем все чаты)
+// Установка дат по умолчанию: последняя неделя
 function setDefaultDates() {
-  // Оставляем даты пустыми - показываем все чаты
-  startDate.value = ''
-  endDate.value = ''
-  console.log('setDefaultDates: даты сброшены, start=', startDate.value, 'end=', endDate.value)
+  const now = new Date()
+  const weekAgo = new Date(now.getTime() - 7 * 86400000)
+  endDate.value = now.toISOString().split('T')[0]
+  startDate.value = weekAgo.toISOString().split('T')[0]
+  console.log('setDefaultDates: start=', startDate.value, 'end=', endDate.value)
 }
 
 // Загрузка истории сессий

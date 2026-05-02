@@ -7,7 +7,6 @@
       <aside class="sidebar-left">
         <SearchParamsPanel
           v-model="searchParams"
-          @show-info="showInfoModal = 'settings'"
         />
       </aside>
 

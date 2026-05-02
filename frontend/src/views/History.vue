@@ -267,15 +267,6 @@ function restoreHistoryFromStorage() {
   return false
 }
 
-// Установка дат по умолчанию: последняя неделя
-function setDefaultDates() {
-  const now = new Date()
-  const weekAgo = new Date(now.getTime() - 7 * 86400000)
-  endDate.value = now.toISOString().split('T')[0]
-  startDate.value = weekAgo.toISOString().split('T')[0]
-  console.log('setDefaultDates: start=', startDate.value, 'end=', endDate.value)
-}
-
 // Загрузка истории сессий
 async function loadHistory(append = false, background = false) {
   if (!authStore.user) {
@@ -401,7 +392,8 @@ function applyFilters() {
 // Сброс фильтров
 function resetFilters() {
   searchQuery.value = ''
-  setDefaultDates()
+  startDate.value = ''
+  endDate.value = ''
   loadHistory()
 }
 
@@ -460,7 +452,6 @@ onMounted(async () => {
   }
 
   // 2. Загружаем свежую историю в фоне (не блокируя UI)
-  setDefaultDates()
   loadHistory(false, true) // background = true
 
   // Добавляем обработчик скролла для infinite scroll

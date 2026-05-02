@@ -66,7 +66,7 @@ function selectMode(modeId) {
   selectedMode.value = modeId
   const mode = modes.find(m => m.id === modeId)
   if (mode) {
-    emit('update:modelValue', { ...mode.params })
+    emit('update:modelValue', { ...mode.params, mode: modeId })
   }
 }
 </script>

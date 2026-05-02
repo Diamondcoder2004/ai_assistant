@@ -155,7 +155,9 @@ class ResponseAgent:
         history_context = self._format_history(history)
 
         # Системный промпт для синтеза ответа (не для поиска!)
-        system_prompt = get_synthesis_prompt()
+        # Выбираем промпт в зависимости от режима (brief/standard/detailed)
+        mode = (user_hints or {}).get("mode", "standard")
+        system_prompt = get_synthesis_prompt(mode=mode)
 
         # Пользовательский промпт
         with timing_context("ResponseAgent.create_prompt"):
@@ -286,10 +288,6 @@ class ResponseAgent:
         user_hints: Optional[Dict[str, Any]] = None
     ) -> str:
         """Создание пользовательского промпта."""
-        brevity_instruction = ""
-        if user_hints and (user_hints.get("max_tokens", 2000) < 1000 or user_hints.get("length") == "short"):
-            brevity_instruction = "\nВАЖНО: Отвечай максимально КРАТКО и по существу. Уложись в 1-2 абзаца.\n"
-
         return f"""
 {history}
 
@@ -297,7 +295,7 @@ class ResponseAgent:
 
 ---
 Вопрос пользователя: {user_query}
-{brevity_instruction}
+
 Используя приведённую выше информацию из базы знаний, дай точный и развёрнутый ответ на вопрос.
 
 ВАЖНО: При ссылке на источник используй ТОЛЬКО цифру в квадратных скобках:

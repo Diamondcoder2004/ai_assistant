@@ -180,6 +180,8 @@ async def stream_query(
                 user_hints["temperature"] = request.temperature
             if request.max_tokens:
                 user_hints["max_tokens"] = request.max_tokens
+            if request.mode:
+                user_hints["mode"] = request.mode
 
             if user_hints:
                 retrieval_logger.info(f"[{query_id}] Рекомендации от пользователя: {user_hints}")
@@ -325,6 +327,8 @@ async def query(
             user_hints["temperature"] = request.temperature
         if request.max_tokens:
             user_hints["max_tokens"] = request.max_tokens
+        if request.mode:
+            user_hints["mode"] = request.mode
         
         if user_hints:
             retrieval_logger.info(f"[{query_id}] Рекомендации от пользователя: {user_hints}")

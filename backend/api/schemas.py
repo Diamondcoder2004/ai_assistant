@@ -22,6 +22,8 @@ class QueryRequest(BaseModel):
     max_tokens: Optional[int] = Field(default=2000, ge=500, le=4000, description="Максимум токенов")
     min_score: Optional[float] = Field(default=0.0, ge=0.0, le=0.95, description="Минимальный порог схожести (0.0-0.95)")
     
+    mode: Optional[str] = Field(default="standard", pattern="^(brief|standard|detailed)$", description="Режим ответа: brief, standard, detailed")
+    
     # session_id должен быть строкой (конвертируем из int если нужно)
     session_id: Optional[str] = Field(None, description="ID сессии для контекста")
 
@@ -40,6 +42,7 @@ class QueryRequest(BaseModel):
                 "temperature": 0.8,
                 "max_tokens": 2000,
                 "min_score": 0.0,
+                "mode": "standard",
                 "session_id": "47"
             }
         }

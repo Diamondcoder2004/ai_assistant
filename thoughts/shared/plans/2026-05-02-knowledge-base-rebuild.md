@@ -57,16 +57,17 @@
 - **Dependencies**: Task 1.3 (chunking strategy)
 - **Verification**: Unit tests на 2-3 образцовых PDF
 
-### Task 2.2: Update Markdown Splitter
+### Task 2.2: Update Markdown Splitter (MINOR — keep current params)
 - **File to modify**: `backend/chunking/Mardown_splitter.py`
 - **Changes**:
-  - Уменьшить max chunk size с 20000 до 4000 символов
-  - Установить chunk_overlap: 200
-  - Добавить поддержку breadcrumbs из pdf_parser
-  - Сохранить текущую логику MarkdownHeaderTextSplitter + RecursiveCharacterTextSplitter
+  - **НЕ менять** `MAX_CHUNK_SIZE = 20_000` — это технический лимит для LLM (80k токенов)
+  - **НЕ добавлять overlap** — LLM в Stage 2 перераспределяет чанки семантически
+  - Добавить поддержку breadcrumbs из pdf_parser (передача структуры заголовков)
+  - Оставить текущую логику: MarkdownHeaderTextSplitter + RecursiveCharacterTextSplitter
+- **Важно**: Mardown_splitter — это физический пре-сплит для LLM. Настоящий смысловой чанкинг делает `llm_chunking.py`
 - **Constraints**: Не ломать существующую функциональность
 - **Dependencies**: Task 1.3
-- **Verification**: Тесты на размер чанков, сохранение заголовков
+- **Verification**: Все pre-chunks ≤ 20,000 chars, разделитель `---CHUNK---` присутствует
 
 ### Task 2.3: Update LLM Enrichment
 - **File to modify**: `backend/chunking/llm_chunking.py`

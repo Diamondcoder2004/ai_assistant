@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-Асинхронный обогатитель чанков с автоматическим восстановлением JSON,
-логированием ошибок, добавлением метаданных и few-shot примерами из CSV.
-Поддерживает докачку: обрабатываются только новые или ранее не удавшиеся чанки.
+Асинхронный обогатитель чанков для new_data.
+Использует deepseek-v4-flash с JSON output mode.
+Поддерживает докачку, retry, маппинг категорий и source_origin.
 """
+
 import os
 import re
 import json
@@ -14,44 +15,71 @@ import hashlib
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 
-import pandas as pd
 from openai import AsyncOpenAI
 from tqdm import tqdm
-PROCESSED_FILES = [
-    #"1. ФЗ 35 (28.04.2025).md",
-    "2. 861 (28.04.2025).md",
-    "3. 1178 Основы ценообразования.md",
-    "4. 490_22 Методические указания.md",
-    #"5. Постановление ГКТ РБ №508 от 29.11.2024 ставки ТП и выпадающие 2025.md",
 
-    #"8. 186 О единых стандартах обслуживания.md",
-    "9. 442 О ФУНКЦИОНИРОВАНИИ РОЗНИЧНЫХ РЫНКОВ.md",
+# ================= МАППИНГ ФАЙЛОВ =================
 
-    "6. Информационное письмо по платным услугам.md",
-    "6.2 Заявление на платные услуги ЮЛ.md",
-    "22.Документ из сайта, особенности тех приса.md",
-    "21. Памятка свыше 150 кВт.md",
-    "20. Памятка до 150 кВт.md"
+# Нормативные документы (из markdown_data, совпадают с PDF из normative/)
+NORMATIVE_FILES = {
+    "1. ФЗ 35 (28.04.2025)": {"category": "Общая", "source_origin": "normative"},
+    "2. 861 (28.04.2025)": {"category": "ТПП", "source_origin": "normative"},
+    "1178-cenoobrazovanie": {"category": "ТПП", "source_origin": "normative"},
+    "186-minenergo-standarty-kachestva": {"category": "Общая", "source_origin": "normative"},
+    "4. 490_22 Методические указания": {"category": "ТПП", "source_origin": "normative"},
+    "9. 442 О ФУНКЦИОНИРОВАНИИ РОЗНИЧНЫХ РЫНКОВ": {"category": "Общая", "source_origin": "normative"},
+    "gkt-rb-306-plata-2026": {"category": "ТПП", "source_origin": "normative"},
+}
 
-]
+# Операционные документы из markdown_data
+OPERATIONAL_MD_FILES = {
+    "10. Инструкция по работе в ЛК (для заявителя) (от января 2024)": {"category": "ЛК", "source_origin": "operational"},
+    "7. Инструкция по самостоятельному подключению": {"category": "ТПП", "source_origin": "operational"},
+    "faq-kt-tpp-2026": {"category": "ТПП", "source_origin": "operational"},
+    "pamyatka-do-670kvt": {"category": "ТПП", "source_origin": "operational"},
+    "pamyatka-svyshe-670kvt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-individualnyy-proekt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-pereraspredelenie": {"category": "ТПП", "source_origin": "operational"},
+    "passport-tp-15-150kvt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-tp-150-670kvt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-tp-do-15kvt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-tp-svyshe-670kvt": {"category": "ТПП", "source_origin": "operational"},
+    "passport-vosstanovlenie": {"category": "ТПП", "source_origin": "operational"},
+    "passport-vremennoe-tp": {"category": "ТПП", "source_origin": "operational"},
+    "passport-vyvod-iz-ekspluatatsii": {"category": "ТПП", "source_origin": "operational"},
+}
+
 # ================= НАСТРОЙКИ =================
-CHUNKS_DIR = Path("chunks_universal")                 # исходные чанки (подпапка legal)
-OUTPUT_DIR = Path("chechov")        # результаты
-LOGS_DIR = Path("logs")                            # логи
-RAW_DIR = Path("raw_responses_v2")                 # сырые ответы
-CSV_PATH = Path("../faq_question.csv")              # few-shot примеры
+
+SCRIPT_DIR = Path(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = SCRIPT_DIR / ".." / ".." / "new_data" / "source"
+
+# Входные папки (после pre_split_for_llm.py)
+MARKDOWN_SPLIT_DIR = (BASE_DIR / "markdown_data_split").resolve()
+HTML_SPLIT_DIR = (BASE_DIR / "html_pages_split").resolve()
+
+# Метаданные html_pages
+METADATA_PATH = (BASE_DIR / "operational" / "metadata.json").resolve()
+
+# Выходные папки
+OUTPUT_BASE = SCRIPT_DIR / "enriched_chunks"
+OUTPUT_NORMATIVE = OUTPUT_BASE / "normative"
+OUTPUT_OPERATIONAL = OUTPUT_BASE / "operational"
+
+# Логи
+LOGS_DIR = SCRIPT_DIR / "logs"
+RAW_DIR = SCRIPT_DIR / "raw_responses_v3"
 
 # Создаём папки
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-LOGS_DIR.mkdir(parents=True, exist_ok=True)
-RAW_DIR.mkdir(parents=True, exist_ok=True)
+for d in [OUTPUT_NORMATIVE, OUTPUT_OPERATIONAL, LOGS_DIR, RAW_DIR]:
+    d.mkdir(parents=True, exist_ok=True)
 
 # API настройки
 API_KEY = "sk-5ArynRNUi11lFMyvtj5NBv4bFPS0xBs0"
 BASE_URL = "https://routerai.ru/api/v1"
-MODEL_NAME = "qwen/qwen3.5-flash-02-23"
+MODEL_NAME = "deepseek/deepseek-v4-flash"
 TIMEOUT = 600
 MAX_TOKENS = 80_000
 TEMPERATURE = 0.15
@@ -60,42 +88,92 @@ BASE_DELAY = 2
 MAX_CONCURRENT_REQUESTS = 3
 
 CHUNK_SEPARATOR = "\n\n---CHUNK---\n\n"
-CATEGORY = "legal"
-
-# ================= ЗАГРУЗКА FEW-SHOT ПРИМЕРОВ =================
-few_shot_examples = []
-if CSV_PATH.exists():
-    try:
-        df = pd.read_csv(CSV_PATH)
-        if "Вопрос" in df.columns:
-            few_shot_examples = df["Вопрос"].dropna().astype(str).tolist()[:5]
-            logging.info(f"Загружено {len(few_shot_examples)} few-shot примеров из {CSV_PATH}")
-        else:
-            logging.warning("CSV не содержит столбца 'Вопрос', few-shot отключён")
-    except Exception as e:
-        logging.error(f"Ошибка загрузки CSV: {e}")
-else:
-    logging.warning(f"Файл {CSV_PATH} не найден, few-shot отключён")
 
 # ================= НАСТРОЙКА ЛОГГЕРА =================
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(LOGS_DIR / "processing.log", encoding='utf-8'),
+        logging.FileHandler(LOGS_DIR / "processing_v3.log", encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
 logger = logging.getLogger(__name__)
-
-FAILED_LOG = LOGS_DIR / "failed_chunks.json"
+FAILED_LOG = LOGS_DIR / "failed_chunks_v3.json"
 
 # ================= ИНИЦИАЛИЗАЦИЯ КЛИЕНТА =================
+
 client = AsyncOpenAI(api_key=API_KEY, base_url=BASE_URL, timeout=TIMEOUT)
 semaphore = asyncio.Semaphore(MAX_CONCURRENT_REQUESTS)
 
 
+# ================= ЗАГРУЗКА МЕТАДАННЫХ HTML =================
+
+def load_html_metadata() -> Dict[str, Dict]:
+    """Загружает категории html_pages из metadata.json."""
+    if not METADATA_PATH.exists():
+        logger.warning(f"metadata.json не найден: {METADATA_PATH}")
+        return {}
+    with open(METADATA_PATH, "r", encoding="utf-8") as f:
+        meta = json.load(f)
+    result = {}
+    for item in meta.get("html_pages", []):
+        fname = item["file"]
+        # Маппинг category: ДУ → ДУ, ТПП → ТПП
+        cat = item.get("category", "ТПП")
+        result[Path(fname).stem] = {
+            "category": cat,
+            "source_origin": "operational",
+            "document_source": "html_page",
+            "description": item.get("description", ""),
+        }
+    return result
+
+
+HTML_METADATA = load_html_metadata()
+
+
+# ================= ОПРЕДЕЛЕНИЕ МЕТАДАННЫХ ФАЙЛА =================
+
+def get_file_metadata(filename: str, is_html: bool) -> Dict:
+    """Определяет category, source_origin, document_source для файла."""
+    stem = Path(filename).stem
+    # Убираем _partN суффикс для поиска в маппинге
+    base_stem = re.sub(r'_part\d+$', '', stem)
+
+    if is_html:
+        meta = HTML_METADATA.get(base_stem, {})
+        return {
+            "category": meta.get("category", "ТПП"),
+            "source_origin": "operational",
+            "document_source": "html_page",
+        }
+
+    # markdown_data — проверяем normative или operational
+    if base_stem in NORMATIVE_FILES:
+        info = NORMATIVE_FILES[base_stem]
+        return {
+            "category": info["category"],
+            "source_origin": "normative",
+            "document_source": "pdf",
+        }
+
+    if base_stem in OPERATIONAL_MD_FILES:
+        info = OPERATIONAL_MD_FILES[base_stem]
+        return {
+            "category": info["category"],
+            "source_origin": "operational",
+            "document_source": "pdf",
+        }
+
+    # Фоллбэк
+    logger.warning(f"Файл {filename} не найден в маппинге, используем ТПП/operational/pdf")
+    return {"category": "ТПП", "source_origin": "operational", "document_source": "pdf"}
+
+
 # ================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =================
+
 def generate_parent_chunk_id(source_file: str, chunk_text: str) -> str:
     """Генерирует идентификатор родительского чанка (первые 12 символов md5)."""
     hash_input = f"{source_file}:{chunk_text[:100]}".encode()
@@ -130,7 +208,6 @@ def repair_json(raw: str) -> Optional[List[Dict]]:
                 cleaned = match.group(1)
             else:
                 return None
-        # Экранируем все обратные слеши, кроме разрешённых
         cleaned = re.sub(r'\\(?!["\\/bfnrtu]|u[0-9a-fA-F]{4})', r'\\\\', cleaned)
         data = json.loads(cleaned)
         if isinstance(data, dict):
@@ -151,7 +228,7 @@ def save_raw_response(content: str, source_file: str, parent_id: str, attempt: i
 
 
 def log_failure(source_file: str, parent_id: str, raw_response: str):
-    """Записывает информацию о полностью провалившемся чанке."""
+    """Записывает информацию о провалившемся чанке."""
     entry = {
         "timestamp": datetime.now().isoformat(),
         "source_file": source_file,
@@ -172,115 +249,147 @@ def log_failure(source_file: str, parent_id: str, raw_response: str):
     logger.warning(f"Зафиксирована неудача для {source_file} / {parent_id}")
 
 
+REQUIRED_FIELDS = [
+    "chunk_content", "breadcrumbs", "chunk_summary",
+    "hypothetical_questions", "keywords", "entities"
+]
+
 def validate_and_fix_enriched_objects(objects: List[Dict]) -> List[Dict]:
     """Добавляет отсутствующие поля в обогащённые объекты."""
-    required_fields = [
-        "chunk_content", "breadcrumbs", "chunk_summary",
-        "hypothetical_questions", "keywords", "entities"
-    ]
     validated = []
     for obj in objects:
         if not isinstance(obj, dict):
             continue
         fixed = {}
-        for field in required_fields:
+        for field in REQUIRED_FIELDS:
             if field in obj and obj[field] is not None:
                 fixed[field] = obj[field]
+            elif field in ("hypothetical_questions", "keywords", "entities"):
+                fixed[field] = []
+            elif field == "breadcrumbs":
+                fixed[field] = ""
             else:
-                if field == "hypothetical_questions":
-                    fixed[field] = []
-                elif field == "keywords":
-                    fixed[field] = []
-                elif field == "entities":
-                    fixed[field] = []
-                elif field == "breadcrumbs":
-                    fixed[field] = ""
-                else:
-                    fixed[field] = ""
+                fixed[field] = ""
         validated.append(fixed)
     return validated
 
 
-# ================= ОСНОВНАЯ ФУНКЦИЯ ОБОГАЩЕНИЯ =================
-async def enrich_chunk(
-    chunk_text: str,
-    source_file: str,
-    category: str
-) -> Optional[List[Dict]]:
-    parent_id = generate_parent_chunk_id(source_file, chunk_text)
+# ================= ПРОМПТ =================
 
-    if len(chunk_text) > 20000:
-        chunk_text = chunk_text[:20000]
+def build_prompt(chunk_text: str, source_file: str, meta: Dict) -> str:
+    category = meta["category"]
+    source_origin = meta["source_origin"]
+    document_source = meta["document_source"]
 
-    few_shot_block = ""
-    if few_shot_examples:
-        examples_str = "\n".join(f"- {q}" for q in few_shot_examples)
-        few_shot_block = f"""
-    ПРИМЕРЫ РЕАЛЬНЫХ ВОПРОСОВ ПОЛЬЗОВАТЕЛЕЙ (используй их как образец стиля для hypothetical_questions):
-    {examples_str}
-    """
+    origin_desc = "нормативный документ (закон, постановление, приказ)" if source_origin == "normative" else "операционный документ (инструкция, памятка, страница сайта)"
+    source_desc = "PDF-документ (нормативно-правовой акт)" if document_source == "pdf" else "HTML-страница сайта Башкирэнерго"
 
-    prompt = f"""Ты эксперт по обработке и структурированию документов в сфере электроэнергетики и технологического присоединения.
+    return f"""Ты эксперт по обработке документов в сфере электроэнергетики и технологического присоединения (ТП) к электросетям компании Башкирэнерго.
 
-Категория документа: {category}
-Имя файла: {source_file}
+## Контекст документа
+- Категория: {category}
+- Тип источника: {source_desc}
+- Классификация: {origin_desc}
+- Файл: {source_file}
 
-Исходный текст чанка (может содержать несколько логических блоков, разделённых маркдауном):
+## Исходный текст
 
 {chunk_text}
 
----
+## Задача
 
-ТВОЯ ЗАДАЧА:
-1. Разделить текст на **атомарные, самодостаточные фрагменты** (по заголовкам, спискам, смысловым абзацам). Таблицы можешь делить по строке by rows и логически связанные списки. Заявление не нужно делить на атомарные элементы, его вообще нельзя делить !
-2. Для каждого фрагмента исправь очевидные ошибки Markdown (если есть).
-3. Для каждого фрагмента создай объект JSON со следующими полями:
-   - `chunk_content` (строка): полный текст фрагмента с исправленным Markdown.
-   - `breadcrumbs` (строка): путь заголовков от корня документа до этого фрагмента, разделённый " > " (например "Глава 1 > Статья 3"). Если заголовков нет, оставь пустую строку.
-   - `chunk_summary` (строка): краткое описание сути фрагмента (2-4 предложения на русском).
-   - `hypothetical_questions` (массив строк): 4-5 вопросов, которые мог бы задать пользователь, чтобы найти этот фрагмент (на русском).
-   - `keywords` (массив строк): 5-10 ключевых слов или фраз (на русском).
-   - `entities` (массив строк): именованные сущности (организации, законы, даты, термины) — 3-8 штук.
+Раздели текст на атомарные, самодостаточные фрагменты и для каждого создай JSON-объект.
 
+### Правила деления:
+- По заголовкам, статьям, пунктам, логическим блокам
+- Каждый фрагмент должен быть понятен без остального текста
+- Заявления и формы документов НЕ делить
 
-ВАЖНО:
-- Все текстовые поля должны быть **только на русском языке**.
-- Верни **строго валидный JSON-массив** (без пояснений, без обёрток ```json).
-- Массив может содержать от 1 до N объектов в зависимости от размера исходного текста.
-- Каждый объект должен быть самодостаточным.
+### Размер фрагментов:
+- Целевой размер `chunk_content`: **500–2000 символов** (примерно 3-15 предложений)
+- Минимум: 300 символов — не создавай слишком мелкие фрагменты из 1-2 предложений
+- Максимум: 3000 символов — если блок больше, дели его на подпункты
+- Одна статья закона, один пункт правил, один FAQ-вопрос = один фрагмент
 
-Пример корректного ответа (но ты можешь создать свою структуру, главное — соблюсти поля):
+### Таблицы:
+- Таблицы ≤20 строк: НЕ разделяй, включи целиком в один фрагмент
+- Таблицы >20 строк: дели по логическим группам (по категории, по диапазону мощности и т.д.)
+- Всегда сохраняй заголовок таблицы (первую строку с названиями колонок) в каждом фрагменте
+- Если таблица является частью пункта/статьи — включи контекст (текст до/после таблицы)
+
+### Изображения:
+- Удаляй ссылки на изображения вида ![alt](url) — они бесполезны без файлов
+- Сохраняй обычные ссылки [текст](url)
+
+### Поля JSON-объекта:
+
+1. `chunk_content` (строка) — полный текст фрагмента с исправленным Markdown (500-2000 символов)
+2. `breadcrumbs` (строка) — путь заголовков: "Глава X > Статья Y > Пункт Z". Если нет — пустая строка.
+3. `chunk_summary` (строка) — краткое описание сути (2-4 предложения на русском)
+4. `hypothetical_questions` (массив строк) — 4-6 вопросов на русском
+
+   КРИТИЧЕСКИ ВАЖНО для вопросов:
+   - Формулируй как РЕАЛЬНЫЙ КЛИЕНТ Башкирэнерго, который ищет информацию
+   - ЗАПРЕЩЕНЫ абстрактные вопросы: "Что описано в данном разделе?", "О чём этот фрагмент?", "Что написано здесь?"
+   - НУЖНЫ конкретные поисковые вопросы:
+     * "Какой срок подключения к электросетям до 15 кВт?"
+     * "Сколько стоит технологическое присоединение для физических лиц?"
+     * "Какие документы нужны для подачи заявки на ТП?"
+     * "Что говорит пункт 17 Правил 861 о плате за присоединение?"
+   - Для нормативных документов: ссылайся на конкретные статьи и пункты
+   - Для операционных: вопросы про процедуры, сроки, стоимость, порядок действий
+
+5. `keywords` (массив строк) — 5-10 конкретных ключевых фраз для поиска (термины, процедуры, числа)
+6. `entities` (массив строк) — 3-8 именованных сущностей (законы с номерами, организации, даты, суммы, мощности в кВт)
+
+### Формат ответа
+
+Верни строго валидный JSON-массив объектов. Без пояснений, без обёрток, без markdown.
+
+Пример:
 [
   {{
-    "chunk_content": "# Глава 1. Общие положения\\n\\n## Статья 1. Предмет регулирования\\n1. Настоящий Федеральный закон устанавливает правовые основы...",
-    "breadcrumbs": "Глава 1. Общие положения > Статья 1. Предмет регулирования",
-    "chunk_summary": "Статья определяет предмет регулирования Федерального закона № 35-ФЗ, а именно правовые основы экономических отношений в сфере электроэнергетики.",
+    "chunk_content": "## Статья 26. Регулирование доступа к электрическим сетям...",
+    "breadcrumbs": "Глава 4 > Статья 26",
+    "chunk_summary": "Статья устанавливает обязанность сетевой организации осуществить технологическое присоединение...",
     "hypothetical_questions": [
-      "Что регулирует Федеральный закон № 35-ФЗ?",
-      "Какие отношения устанавливает данный закон?",
-      "Кто является субъектами электроэнергетики?",
-      "Какие полномочия определяет закон для органов власти?"
+      "Обязана ли сетевая организация подключить мой дом к электросетям?",
+      "Что говорит статья 26 ФЗ-35 о технологическом присоединении?",
+      "Может ли сетевая организация отказать в технологическом присоединении?",
+      "Какие основания для обязательного присоединения к электросетям?"
     ],
-    "keywords": [
-      "предмет регулирования",
-      "электроэнергетика",
-      "правовые основы",
-      "экономические отношения",
-      "субъекты электроэнергетики"
-    ],
-    "entities": [
-      "Федеральный закон № 35-ФЗ",
-      "электроэнергетика",
-      "Правительство Российской Федерации"
-    ]
+    "keywords": ["технологическое присоединение", "сетевая организация", "доступ к электросетям", "обязанность присоединения", "энергопринимающие устройства"],
+    "entities": ["Федеральный закон № 35-ФЗ", "статья 26", "сетевая организация"]
   }}
-]
+]"""
 
-Твой ответ (только JSON):
-"""
+
+# ================= ОСНОВНАЯ ФУНКЦИЯ ОБОГАЩЕНИЯ =================
+
+async def enrich_chunk(
+    chunk_text: str,
+    source_file: str,
+    meta: Dict,
+) -> Optional[List[Dict]]:
+    parent_id = generate_parent_chunk_id(source_file, chunk_text)
+
+    # Safety truncation: keep within model context window (~128k tokens)
+    # pre_split_for_llm.py already limits input to 100k tokens, but defend in depth
+    try:
+        import tiktoken
+        enc = tiktoken.get_encoding("cl100k_base")
+        chunk_tokens = enc.encode(chunk_text)
+        if len(chunk_tokens) > 100_000:
+            chunk_text = enc.decode(chunk_tokens[:100_000])
+            logger.warning(f"Чанк обрезан до 100k токенов для {source_file}/{parent_id}")
+    except ImportError:
+        # Fallback: no tiktoken available, rely on pre_split_for_llm.py's sizing
+        pass
+
+    prompt = build_prompt(chunk_text, source_file, meta)
 
     messages = [
-        {"role": "system", "content": "Ты помощник, который возвращает только JSON без дополнительных пояснений."},
+        {"role": "system", "content": "Ты помощник, который возвращает только валидный JSON без дополнительных пояснений."},
         {"role": "user", "content": prompt}
     ]
 
@@ -290,6 +399,7 @@ async def enrich_chunk(
         try:
             if attempt > 0:
                 delay = BASE_DELAY * (2 ** (attempt - 1))
+                logger.info(f"Retry {attempt+1}/{MAX_RETRIES} для {source_file}/{parent_id}, задержка {delay}с")
                 await asyncio.sleep(delay)
 
             async with semaphore:
@@ -297,12 +407,12 @@ async def enrich_chunk(
                     model=MODEL_NAME,
                     messages=messages,
                     temperature=TEMPERATURE,
-                    max_tokens=MAX_TOKENS
+                    max_tokens=MAX_TOKENS,
+                    response_format={"type": "json_object"},
                 )
 
             raw = response.choices[0].message.content or ""
             last_raw = raw
-            logger.debug(f"Получен ответ, длина {len(raw)}")
             save_raw_response(raw, source_file, parent_id, attempt)
 
             cleaned = clean_json_string(raw)
@@ -311,19 +421,33 @@ async def enrich_chunk(
                 continue
 
             data = json.loads(cleaned)
+
+            # JSON output mode может вернуть {"chunks": [...]} вместо [...]
             if isinstance(data, dict):
-                data = [data]
+                # Ищем массив в значениях
+                for key, val in data.items():
+                    if isinstance(val, list):
+                        data = val
+                        break
+                else:
+                    data = [data]
+
             if not isinstance(data, list):
                 logger.debug("Ответ не является массивом")
                 continue
 
             validated_data = validate_and_fix_enriched_objects(data)
+            if not validated_data:
+                logger.warning(f"Пустой результат валидации для {source_file}/{parent_id}")
+                continue
 
             enriched = []
             for idx, obj in enumerate(validated_data, start=1):
                 obj["chunk_id"] = f"{parent_id}_p{idx}"
                 obj["source_file"] = source_file
-                obj["category"] = category
+                obj["category"] = meta["category"]
+                obj["source_origin"] = meta["source_origin"]
+                obj["document_source"] = meta["document_source"]
                 enriched.append(obj)
             return enriched
 
@@ -334,16 +458,19 @@ async def enrich_chunk(
             logger.error(f"Ошибка API (попытка {attempt+1}): {e}")
             continue
 
+    # Все попытки исчерпаны — пробуем repair
     if last_raw:
         recovered = repair_json(last_raw)
         if recovered:
-            logger.info(f"🔧 Восстановлено через repair для {source_file} / {parent_id}")
+            logger.info(f"🔧 Восстановлено через repair для {source_file}/{parent_id}")
             validated_recovered = validate_and_fix_enriched_objects(recovered)
             enriched = []
             for idx, obj in enumerate(validated_recovered, start=1):
                 obj["chunk_id"] = f"{parent_id}_p{idx}"
                 obj["source_file"] = source_file
-                obj["category"] = category
+                obj["category"] = meta["category"]
+                obj["source_origin"] = meta["source_origin"]
+                obj["document_source"] = meta["document_source"]
                 enriched.append(obj)
             return enriched
         else:
@@ -355,18 +482,17 @@ async def enrich_chunk(
 
 
 # ================= ОБРАБОТКА ФАЙЛА =================
-async def process_file(file_path: Path):
-    file_name = file_path.name
-    base_name = file_path.stem  # имя без расширения
-    # Если файл в списке обработанных – пропускаем
-    if file_name in PROCESSED_FILES:
-        logger.info(f"Файл {file_name} находится в списке обработанных, пропускаем")
-        return
-    # Папка для сохранения результатов (с подпапкой категории)
-    output_subdir = OUTPUT_DIR / CATEGORY
-    output_subdir.mkdir(parents=True, exist_ok=True)
 
-    # Читаем исходный файл
+async def process_file(file_path: Path, is_html: bool):
+    file_name = file_path.name
+    base_name = file_path.stem
+    meta = get_file_metadata(file_name, is_html)
+
+    # Выбираем output dir
+    output_dir = OUTPUT_NORMATIVE if meta["source_origin"] == "normative" else OUTPUT_OPERATIONAL
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Читаем файл
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
 
@@ -374,20 +500,20 @@ async def process_file(file_path: Path):
     chunks = [c.strip() for c in chunks if c.strip()]
 
     if not chunks:
-        logger.warning(f"Файл {file_name} не содержит чанков")
+        # Если нет разделителей — весь файл как один чанк
+        chunks = [content.strip()] if content.strip() else []
+
+    if not chunks:
+        logger.warning(f"Файл {file_name} пуст")
         return
 
-    # Собираем уже обработанные parent_id по наличию файлов
+    # Собираем уже обработанные parent_id
     processed_parent_ids = set()
-    # Ищем все файлы вида: baseName_*_p*.json
     pattern = re.compile(rf"^{re.escape(base_name)}_(.*?)_p\d+\.json$")
-    for existing_file in output_subdir.glob(f"{base_name}_*_p*.json"):
+    for existing_file in output_dir.glob(f"{base_name}_*_p*.json"):
         match = pattern.match(existing_file.name)
         if match:
-            parent_id = match.group(1)
-            processed_parent_ids.add(parent_id)
-
-    logger.info(f"Файл {file_name}: всего чанков {len(chunks)}, уже обработано {len(processed_parent_ids)}")
+            processed_parent_ids.add(match.group(1))
 
     # Определяем, какие чанки ещё не обработаны
     chunks_to_process = []
@@ -396,48 +522,55 @@ async def process_file(file_path: Path):
         if parent_id not in processed_parent_ids:
             chunks_to_process.append((parent_id, chunk))
 
+    logger.info(f"📄 {file_name}: {len(chunks)} чанков, {len(processed_parent_ids)} обработано, {len(chunks_to_process)} новых | {meta['category']} / {meta['source_origin']}")
+
     if not chunks_to_process:
-        logger.info(f"Все чанки в {file_name} уже обработаны")
         return
 
-    # Обрабатываем только новые чанки
     for parent_id, chunk in tqdm(chunks_to_process, desc=file_name):
-        enriched = await enrich_chunk(chunk, file_name, CATEGORY)
+        enriched = await enrich_chunk(chunk, file_name, meta)
         if enriched:
             for idx, obj in enumerate(enriched, start=1):
                 chunk_filename = f"{base_name}_{parent_id}_p{idx}.json"
-                chunk_path = output_subdir / chunk_filename
+                chunk_path = output_dir / chunk_filename
                 with open(chunk_path, "w", encoding="utf-8") as f:
                     json.dump(obj, f, ensure_ascii=False, indent=2)
-                logger.debug(f"Сохранён {chunk_path}")
         else:
-            logger.warning(f"Не удалось обработать чанк {parent_id} – он будет повторно запрошен при следующем запуске")
+            logger.warning(f"Не удалось обработать чанк {parent_id} из {file_name}")
 
 
 # ================= ГЛАВНАЯ ФУНКЦИЯ =================
+
 async def main():
-    category_path = CHUNKS_DIR / CATEGORY
-    if not category_path.exists():
-        logger.error(f"Папка {category_path} не существует")
-        return
+    logger.info("=" * 60)
+    logger.info("ЗАПУСК ОБРАБОТЧИКА v3 (new_data pipeline)")
+    logger.info(f"Модель: {MODEL_NAME}")
+    logger.info(f"markdown_data_split: {MARKDOWN_SPLIT_DIR}")
+    logger.info(f"html_pages_split: {HTML_SPLIT_DIR}")
+    logger.info(f"Выход normative: {OUTPUT_NORMATIVE}")
+    logger.info(f"Выход operational: {OUTPUT_OPERATIONAL}")
+    logger.info("=" * 60)
 
-    files = list(category_path.glob("*.md"))
-    if not files:
-        logger.warning(f"В папке {category_path} нет .md файлов")
-        return
+    # Проход 1: markdown_data (бывшие PDF)
+    if MARKDOWN_SPLIT_DIR.exists():
+        files = sorted(MARKDOWN_SPLIT_DIR.glob("*.md"))
+        logger.info(f"\n📂 markdown_data_split: {len(files)} файлов")
+        for fp in files:
+            await process_file(fp, is_html=False)
+    else:
+        logger.warning(f"Папка {MARKDOWN_SPLIT_DIR} не найдена. Запустите сначала pre_split_for_llm.py")
 
-    logger.info(f"Найдено файлов: {len(files)}")
-    for file_path in files:
-        await process_file(file_path)
+    # Проход 2: html_pages (бывшие HTML)
+    if HTML_SPLIT_DIR.exists():
+        files = sorted(HTML_SPLIT_DIR.glob("*.md"))
+        logger.info(f"\n📂 html_pages_split: {len(files)} файлов")
+        for fp in files:
+            await process_file(fp, is_html=True)
+    else:
+        logger.warning(f"Папка {HTML_SPLIT_DIR} не найдена. Запустите сначала pre_split_for_llm.py")
 
-    logger.info("🏁 Все файлы обработаны")
+    logger.info("\n🏁 Все файлы обработаны")
 
 
 if __name__ == "__main__":
-    logger.info("="*50)
-    logger.info("ЗАПУСК ОБРАБОТЧИКА")
-    logger.info(f"Категория: {CATEGORY}")
-    logger.info(f"Папка с исходниками: {CHUNKS_DIR / CATEGORY}")
-    logger.info(f"Папка для результатов: {OUTPUT_DIR / CATEGORY}")
-    logger.info("="*50)
     asyncio.run(main())

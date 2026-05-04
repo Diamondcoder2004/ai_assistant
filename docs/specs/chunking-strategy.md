@@ -1,143 +1,153 @@
 # Chunking Strategy Specification
 
 **Project:** AI Assistant (Башкирэнерго) — RAG-based Technical Connection Support  
-**Date:** 2026-05-03  
-**Version:** 2.0 (corrected from v1.0 which misunderstood the pipeline)  
-**Status:** Draft  
-**Related:** `backend/chunking/Mardown_splitter.py`, `backend/chunking/llm_chunking.py`, Ubiquitous Language glossary
+**Date:** 2026-05-04  
+**Version:** 3.0 — new `pre_split_for_llm.py` pipeline, deepseek-v4-flash model, enriched output  
+**Status:** Active  
+**Related:** `backend/chunking/pre_split_for_llm.py`, `backend/chunking/llm_chunking.py`, Ubiquitous Language glossary
 
 ---
 
-## 1. Overview: Two-Stage Chunking Pipeline
+## 1. Overview: Two-Stage Chunking Pipeline (v3)
 
-The Bashkirenergo AI Assistant uses a **two-stage chunking pipeline**:
+The Bashkirenergo AI Assistant uses a **two-stage chunking pipeline** with token-aware splitting:
 
 ```
-Raw Document
+Raw Markdown Files (.md)
+   ├── new_data/source/markdown_data/       (former PDFs)
+   └── new_data/source/operational/html_pages/  (former HTML pages)
        │
        ▼
-┌─────────────────────────────────────────────┐
-│ STAGE 1: Physical Pre-Split (Mardown_splitter.py)  │
-│   - Purpose: Fit chunks within LLM token limit     │
-│   - Method: MarkdownHeaderTextSplitter              │
-│             + RecursiveCharacterTextSplitter        │
-│   - Output: .md files with "---CHUNK---" separators│
-│   - chunk_size: 1,000–20,000 chars                  │
-│   - chunk_overlap: 0                                │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ STAGE 1: Pre-split (pre_split_for_llm.py)    │
+│   - Purpose: Fit files within LLM context    │
+│             window (100k token limit)        │
+│   - Method: tiktoken (cl100k_base) counting  │
+│             + header/section splitting        │
+│   - Split: Files ≤100k tokens → copy as-is   │
+│            Files >100k  tokens → split into   │
+│            _partN.md files by document        │
+│            structure (headings, paragraphs)   │
+│   - Image cleanup: strips ![]() markdown     │
+│   - Output: markdown_data_split/             │
+│             html_pages_split/                │
+│   - Token limit: 100,000 per part            │
+└──────────────────────────────────────────────┘
        │
        ▼
-┌─────────────────────────────────────────────┐
-│ STAGE 2: LLM Semantic Chunking (llm_chunking.py)   │
-│   - Purpose: Atomic semantic fragments             │
-│             + metadata enrichment                  │
-│   - Method: qwen/qwen3.5-flash-02-23 via RouterAI  │
-│   - Input: pre-chunks from Stage 1                 │
-│   - Output: 1–N atomic JSON chunks per pre-chunk   │
-│   - chunk_id: {parent_md5}_p{idx}                 │
-│   - Enriched with: summary, questions, keywords,   │
-│     entities, breadcrumbs, category                │
-└─────────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ STAGE 2: LLM Semantic Chunking               │
+│          (llm_chunking.py)                    │
+│   - Purpose: Atomic semantic fragments       │
+│             + metadata enrichment            │
+│   - Model: deepseek/deepseek-v4-flash        │
+│            via RouterAI (JSON output mode)   │
+│   - Input: each _partN.md as one unit        │
+│            (no intermediate splitting)        │
+│   - Safety: token-based truncation at 100k   │
+│            tokens (defense-in-depth)         │
+│   - Output: 1–N atomic JSON chunks per part  │
+│   - chunk_id: {parent_md5}_p{idx}            │
+│   - Enriched with: summary, questions,       │
+│     keywords, entities, breadcrumbs,         │
+│     category, source_origin, document_source │
+└──────────────────────────────────────────────┘
        │
        ▼
-    Qdrant Ingestion
+┌──────────────────────────────────────────────┐
+│ Output: enriched_chunks/                     │
+│   ├── normative/   (laws, regulations)       │
+│   └── operational/ (FAQs, instructions, etc) │
+└──────────────────────────────────────────────┘
+       │
+       ▼
+    Qdrant Ingestion (future)
 ```
 
 ### 1.1 Why Two Stages?
 
-- Documents (laws, regulations, FAQ collections) can be too large to feed into an LLM directly. Stage 1 guarantees each chunk stays within the 80k-token limit of the LLM model.
-- Stage 1 is a **rough physical split** — boundaries may be imperfect, but that's acceptable.
-- Stage 2 is the **semantic split** — the LLM re-divides each pre-chunk into **atomic, self-contained fragments** with proper metadata. This is where real chunk quality is achieved.
-- The LLM has full context of its pre-chunk and produces optimally sized, semantically coherent sub-chunks. Rules about tables, numbered clauses, and Q&A pairs are enforced in the LLM prompt, not in the physical splitter.
+- Large documents (FZ-35: 240k tokens, PP-861: 291k tokens, PP-442: 549k tokens) must be cut to fit the LLM's context window (128k tokens for deepseek-v4-flash). Stage 1 uses `tiktoken` to count tokens accurately and splits files by header/section structure.
+- Stage 1 is a **rough physical split** — boundaries may cut mid-article. This is acceptable because:
+  - Stage 2 sees the entire part and re-chunks it semantically
+  - The LLM has full context of its part and produces optimally-sized atomic fragments
+- Stage 2 is the **semantic split** — the LLM re-divides each part into **atomic, self-contained fragments** with proper metadata. This is where real chunk quality is achieved.
+- **Key difference from v2**: `Mardown_splitter.py` (LangChain text splitter with `---CHUNK---` separators) is replaced by `pre_split_for_llm.py` (token-aware file splitting). `llm_chunking.py` now processes each part file as a single unit — there is no intermediate chunk splitting between stages.
 
 ---
 
-## 2. Stage 1: Physical Pre-Split (Mardown_splitter.py)
+## 2. Stage 1: Token-Aware Pre-Split (`pre_split_for_llm.py`)
 
 ### 2.1 Purpose
 
-Reduce document size to fit within the LLM's token limit (80k tokens for `qwen3.5-flash-02-23`). The output is an intermediate `.md` file with chunks separated by `\n\n---CHUNK---\n\n`.
+Split files exceeding the LLM context window into parts that fit. Files already small enough are copied as-is (with image references removed).
 
 ### 2.2 Configuration
 
 | Parameter | Value | Rationale |
 |-----------|-------|-----------|
-| `MIN_CHUNK_SIZE` | 1,000 chars | Avoids information fragmentation. Smaller chunks waste LLM calls. |
-| `MAX_CHUNK_SIZE` | 20,000 chars | Fits within 80k token LLM limit. **Do NOT reduce** — this is a technical constraint, not a quality parameter. |
-| `chunk_overlap` | 0 | **Not needed.** The LLM in Stage 2 re-chunks everything semantically. Overlap would be wasteful noise. |
-| `SEPARATOR` | `\n\n---CHUNK---\n\n` | Token marking chunk boundaries in output files. Used by Stage 2 to split back into individual chunks. |
+| `MAX_TOKENS` | 100,000 per part | Fits within deepseek-v4-flash 128k context window with room for prompt overhead |
+| `ENCODING_NAME` | `cl100k_base` | tiktoken encoding for accurate token counting (Cyrillic: ~1 token/char) |
+| `IMAGE_PATTERN` | `!\[.*?\]\(.*?\)` | Strips all markdown images (188 → 0 in original run) |
+| Output format | Separate `_partN.md` files | No `---CHUNK---` separators — each part is one LLM input unit |
 
-### 2.3 Splitter Strategy
+### 2.3 Splitter Logic
 
 ```
-┌─────────────────────────────────────────┐
-│ MarkdownHeaderTextSplitter (Primary)    │
-│   - Splits on h1–h5 headers             │
-│   - Preserves header structure          │
-│   - Keeps headers in chunk content      │
-│   - respects document hierarchy         │
-└─────────────────────────────────────────┘
-              │
-       ┌──────┴──────┐
-       │              │
-  Some sections   No headers
-  exceed 20k       found
-       │              │
-       ▼              ▼
-┌─────────────────────────────────────────┐
-│ RecursiveCharacterTextSplitter (Fallback)│
-│   - chunk_size: 20,000                  │
-│   - chunk_overlap: 0                    │
-│   - separators: \n\n, \n, . ,           │
-│   - table-aware (\n\| separator)        │
-└─────────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ 1. split_into_sections() — Header split      │
+│    - Regex on h1–h5 markdown headers          │
+│    - Returns [(level, header, body), ...]     │
+└──────────────────────────────────────────────┘
+                     │
+                     ▼
+┌──────────────────────────────────────────────┐
+│ 2. group_sections_into_parts()               │
+│    - Groups sections into parts ≤100k tokens  │
+│    - Sections exceeding 100k are split by     │
+│      paragraphs via split_by_paragraphs()     │
+└──────────────────────────────────────────────┘
 ```
 
-### 2.4 Post-Split Merge
+### 2.4 Post-Split: Image Cleanup
 
-Small chunks (< 1,000 chars) are merged with neighbors to avoid wasting LLM calls on tiny fragments. Merged chunks stay under 20,000 chars.
+Every output part is passed through `strip_images()` which removes `![alt](url)` patterns and collapses triple+ newlines. This ensures the LLM prompt doesn't waste tokens on inaccessible image references.
 
 ### 2.5 What Stage 1 Does NOT Do
 
+- Does **not** add `---CHUNK---` separators — each part file IS one processing unit
 - Does **not** guarantee semantic chunk boundaries — that's Stage 2's job
 - Does **not** produce final chunk sizes — the LLM further subdivides
-- Does **not** add overlap — the LLM has full context of its pre-chunk
-- Does **not** add metadata (except file structure via headers)
-
-### 2.6 Correctness
-
-The current values (`MIN=1000`, `MAX=20000`, `overlap=0`) are **correct and should NOT be changed**. The pipeline was correctly designed — the misunderstanding was about what stage produces the final chunks.
+- Does **not** add metadata (except file naming via `_partN` suffix)
 
 ---
 
-## 3. Stage 2: LLM Semantic Chunking (llm_chunking.py)
+## 3. Stage 2: LLM Semantic Chunking (`llm_chunking.py`)
 
 ### 3.1 Purpose
 
-Take a pre-chunk from Stage 1 and produce 1–N **atomic, self-contained semantic fragments** enriched with metadata. This is the **primary chunking step** — the chunks that go into Qdrant come from this stage.
+Take a part file from Stage 1 and produce 1–N **atomic, self-contained semantic fragments** enriched with metadata. This is the **primary chunking step** — the chunks that go into Qdrant come from this stage.
 
 ### 3.2 How It Works
 
-1. Read `.md` file produced by Stage 1
-2. Split on `\n\n---CHUNK---\n\n` into pre-chunks
-3. For each pre-chunk:
-   - Generate `parent_chunk_id` = MD5(source_file + first 100 chars)[:12]
-   - Truncate to 20,000 chars if needed (safety)
-   - Send to LLM with enrichment prompt
-   - LLM splits into atomic fragments and generates metadata
-   - Each output fragment gets `chunk_id` = `{parent_id}_p{idx}` (e.g., `a3f7e2d9b1c4_p1`)
-4. Output: individual JSON files per chunk in `chechov/{category}/`
+1. Read `.md` part file produced by Stage 1 (e.g., `1. ФЗ 35 (28.04.2025)_part1.md`)
+2. The entire file is one input chunk (no intermediate `---CHUNK---` splitting)
+3. Safety: if file exceeds 100k tokens, truncate to 100k tokens (defense-in-depth)
+4. Send entire part to LLM with enrichment prompt + `response_format={"type":"json_object"}`
+5. LLM splits into atomic fragments and generates metadata (summary, questions, keywords, entities, breadcrumbs)
+6. Each output fragment gets `chunk_id` = `{parent_id}_p{idx}` (e.g., `a3f7e2d9b1c4_p3`)
+7. Output: individual JSON files in `enriched_chunks/{normative|operational}/`
 
 ### 3.3 LLM Configuration
 
 | Parameter | Value | Notes |
 |-----------|-------|-------|
-| Model | `qwen/qwen3.5-flash-02-23` | Via RouterAI API |
-| Max tokens | 80,000 | Input limit |
+| Model | `deepseek/deepseek-v4-flash` | Via RouterAI API with JSON output mode |
+| Max output tokens | 80,000 | Response limit |
+| Input safety limit | 100,000 tokens | Token-based truncation (not char-based) |
 | Temperature | 0.15 | Low for deterministic output |
-| Max retries | 5 | With exponential backoff |
+| Max retries | 5 | With exponential backoff (base delay: 2s) |
 | Concurrency | 3 | Semaphore-limited async |
-| Category | `legal` (current) | Will support: `faq`, `stage_description`, `infomaterial`, `instruction` |
+| Response format | `json_object` | Forces JSON-only output, LLM wraps in `{"chunks":[...]}` |
 
 ### 3.4 Metadata Enrichment
 
@@ -145,15 +155,22 @@ Each atomic chunk gets these fields from the LLM:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `chunk_id` | string | `{parent_id}_p{idx}` — unique identifier |
+| `chunk_id` | string | `{parent_id}_p{idx}` — unique identifier (e.g., `a3f7e2d9b1c4_p3`) |
 | `source_file` | string | Original Markdown filename |
 | `chunk_content` | string | Full text of the fragment with corrected Markdown |
 | `breadcrumbs` | string | Header path from root, e.g. "Глава 1 > Статья 3" (generated by LLM from the text) |
 | `chunk_summary` | string | 2–4 sentence summary in Russian |
-| `hypothetical_questions` | array | 4–5 questions a user might ask to find this fragment |
-| `keywords` | array | 5–10 key phrases in Russian |
-| `entities` | array | 3–8 named entities (organizations, laws, dates, terms) |
+| `hypothetical_questions` | array | 4–6 specific search queries a Bashkirenergo client would ask |
+| `keywords` | array | 5–10 key phrases for search in Russian |
+| `entities` | array | 3–8 named entities (laws with numbers, organizations, dates, kW amounts) |
 | `category` | string | Domain category: ЛК / ДУ / ТПП |
+
+Additional fields injected by the pipeline (not LLM-generated):
+
+| Field | Source | Description |
+|-------|--------|-------------|
+| `source_origin` | File mapping | `normative` or `operational` — determines output directory |
+| `document_source` | File mapping | `pdf` or `html_page` — original file format |
 
 ### 3.5 LLM Prompt Logic
 
@@ -313,16 +330,17 @@ These fields are **not** generated by the LLM in the current prompt. Options:
 
 ### 8.1 Stage 1 Validation
 - [ ] Run on PDF-parsed Markdown files — verify output files exist
-- [ ] All pre-chunks ≤ 20,000 chars
-- [ ] No pre-chunk < 1,000 chars (except genuine small documents)
-- [ ] `---CHUNK---` separator present between chunks
+- [ ] All part files ≤ 100,000 tokens (via tiktoken count)
+- [ ] No image references (`![]()` patterns) in output files
+- [ ] `_partN` suffix present on split files, non-split files have original names
 
 ### 8.2 Stage 2 Validation
-- [ ] Calculate average output chunks per input pre-chunk
+- [ ] Calculate average output chunks per input part file
 - [ ] Spot-check: at least 3 random chunks manually verified for semantic coherence
 - [ ] All required fields present in JSON output
 - [ ] `chunk_id` follows `{parent_id}_p{idx}` format
 - [ ] Zero failed chunks (or all failures retried/recovered)
+- [ ] Chunks correctly placed in `normative/` or `operational/` based on `source_origin`
 
 ### 8.3 End-to-End Validation
 - [ ] Run benchmark on final Qdrant collections
@@ -335,21 +353,21 @@ These fields are **not** generated by the LLM in the current prompt. Options:
 
 | Term | Definition |
 |------|------------|
-| **Pre-chunk** | A physical text fragment from Stage 1 (Mardown_splitter), sized 1,000–20,000 chars, separated by `---CHUNK---` |
+| **Part file** | A physical text file from Stage 1 (`pre_split_for_llm.py`), sized ≤100,000 tokens, named `_partN.md` for split documents |
 | **Atomic chunk** | A semantically self-contained fragment from Stage 2 (LLM), stored as JSON and ingested into Qdrant |
-| **Parent chunk** | The pre-chunk that an atomic chunk was derived from (identified by MD5 prefix in chunk_id) |
+| **Parent chunk** | The part file that an atomic chunk was derived from (identified by MD5 prefix in chunk_id) |
 | **Breadcrumbs** | Header hierarchy path (e.g., "Глава 1 > Статья 2") generated by the LLM from the chunk's content |
-| **Two-stage pipeline** | Physical pre-split for LLM token limits → LLM semantic split for quality |
+| **Two-stage pipeline** | Token-aware file pre-split for LLM context limits → LLM semantic split for quality |
 
 ---
 
 ## 10. References
 
-- `backend/chunking/Mardown_splitter.py` — Stage 1: physical pre-split
-- `backend/chunking/llm_chunking.py` — Stage 2: LLM semantic chunking
+- `backend/chunking/pre_split_for_llm.py` — Stage 1: token-aware file splitting
+- `backend/chunking/llm_chunking.py` — Stage 2: LLM semantic chunking + enrichment
 - `backend/chunking/repair_json.py` — JSON recovery fallback
-- `backend/chunking/token_count.py` — token counting utilities
 - `docs/specs/qdrant-collections-schema.md` — final Qdrant collections schema
+- `new_data/source/operational/metadata.json` — html_pages category/dtype mapping
 - `UBIQUITOUS_LANGUAGE.md` — domain terminology glossary
 
 ---
@@ -360,3 +378,4 @@ These fields are **not** generated by the LLM in the current prompt. Options:
 |---------|------|--------|---------|
 | 1.0 | 2026-05-02 | AI Assistant | Initial version — incorrectly described single-stage chunking with overlap |
 | 2.0 | 2026-05-03 | AI Assistant | Complete rewrite — correct two-stage pipeline, retains existing parameters, adds LLM-based chunking as primary method |
+| 3.0 | 2026-05-04 | AI Assistant | New `pre_split_for_llm.py` replaces `Mardown_splitter.py`; model → deepseek-v4-flash; JSON output mode; new fields `source_origin`, `document_source`; output → `enriched_chunks/{normative|operational}/`; removed `---CHUNK---` separator; token-based truncation safety |

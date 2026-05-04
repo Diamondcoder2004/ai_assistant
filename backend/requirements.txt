@@ -31,3 +31,6 @@ pytest-asyncio>=0.21.0
 # Benchmark
 tqdm>=4.66.0
 pandas>=2.0.0
+
+# Chunking
+tiktoken>=0.7.0

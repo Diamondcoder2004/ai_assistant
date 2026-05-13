@@ -3,13 +3,6 @@
     <Header />
 
     <div class="main-layout">
-      <!-- Левая колонка: параметры поиска -->
-      <aside class="sidebar-left">
-        <SearchParamsPanel
-          v-model="searchParams"
-        />
-      </aside>
-
       <!-- Основная область чата -->
       <main class="chat-area">
         <!-- Шапка чата -->
@@ -40,13 +33,47 @@
         />
       </main>
 
-      <!-- Правая колонка: источники -->
-      <SourcesPanel
-        v-if="expandedMessage && showSourcesPanel"
-        :expanded-message="expandedMessage"
-        @close="expandedMessage = null; showSourcesPanel = false"
-        @open-source="openSourceModal"
-      />
+      <!-- Единый правый сайдбар: параметры + источники -->
+      <aside class="unified-sidebar" :class="{ 'is-open': showSidebar }">
+        <!-- Хедер сайдбара с кнопкой закрытия -->
+        <div class="sidebar-header">
+          <button @click="closeSidebar" class="sidebar-close-btn" title="Закрыть">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Контент сайдбара -->
+        <div class="sidebar-content">
+          <!-- Секция параметров (сворачиваемая) -->
+          <div class="sidebar-section params-section">
+            <div class="section-header" @click="showParams = !showParams">
+              <span class="section-title">⚙️ Формат ответа</span>
+              <span class="section-toggle">{{ showParams ? '▼' : '▶' }}</span>
+            </div>
+            <div class="section-body" v-show="showParams">
+              <SearchParamsPanel
+                v-model="searchParams"
+              />
+            </div>
+          </div>
+
+          <!-- Секция источников (показывается если есть развёрнутое сообщение) -->
+          <div v-if="expandedMessage" class="sidebar-section sources-section">
+            <div class="section-header">
+              <span class="section-title">📚 Источники</span>
+            </div>
+            <div class="section-body sources-body">
+              <SourcesPanel
+                :expanded-message="expandedMessage"
+                :compact="true"
+                @open-source="openSourceModal"
+              />
+            </div>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <Footer :force-show="showFooter" @hide="showFooter = false" />
@@ -118,12 +145,15 @@ const currentFeedbackSessionId = ref(null)
 const selectedStars = ref(0)
 
 // Debouncing для фидбека
-const feedbackCooldowns = ref({}) // { sessionId: timestamp }
+const feedbackCooldowns = ref({})
 
 // Развёрнутое сообщение для показа источников
 const expandedMessage = ref(null)
 const expandedMessageId = computed(() => expandedMessage.value?.id || null)
-const showSourcesPanel = ref(false) // Показывать ли панель источников
+
+// Управление единым сайдбаром
+const showSidebar = ref(false)
+const showParams = ref(true)
 
 // Показывать ли футер
 const showFooter = ref(false)
@@ -167,6 +197,13 @@ function handleNewChat() {
   chatStore.newChat()
   newMessage.value = ''
   expandedMessage.value = null
+  showSidebar.value = false
+}
+
+// Закрыть сайдбар
+function closeSidebar() {
+  showSidebar.value = false
+  expandedMessage.value = null
 }
 
 // Показать/скрыть источники для сообщения
@@ -174,21 +211,20 @@ function toggleSources(message) {
   if (expandedMessage.value?.id === message.id) {
     // Если уже открыто — закрываем
     expandedMessage.value = null
-    showSourcesPanel.value = false
+    showSidebar.value = false
   } else {
     // Открываем новое
     expandedMessage.value = message
-    showSourcesPanel.value = true
+    showSidebar.value = true
   }
 }
 
 // Прокрутка к источнику
 function scrollToSource(sourceNum) {
-  // Сначала открываем панель источников если закрыта
-  if (!showSourcesPanel.value && expandedMessage.value) {
-    showSourcesPanel.value = true
+  if (!showSidebar.value && expandedMessage.value) {
+    showSidebar.value = true
   }
-  
+
   const sourceElement = document.getElementById(`source-${sourceNum}`)
   if (sourceElement) {
     sourceElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -202,26 +238,23 @@ function scrollToSource(sourceNum) {
 // Обработчик события прокрутки к источнику
 function handleScrollToSource({ sourceNum, messageId }) {
   if (expandedMessage.value) {
-    // Если панель уже открыта, проверяем, то ли это сообщение
     if (expandedMessage.value.id === messageId) {
       scrollToSource(sourceNum)
     } else {
-      // Если другое сообщение — переключаемся на него
       const targetMessage = chatStore.messages.find(m => m.id === messageId)
       if (targetMessage) {
         expandedMessage.value = targetMessage
-        showSourcesPanel.value = true
+        showSidebar.value = true
         nextTick(() => {
           scrollToSource(sourceNum)
         })
       }
     }
   } else {
-    // Если панель закрыта, находим нужное сообщение
     const targetMessage = chatStore.messages.find(m => m.id === messageId)
     if (targetMessage) {
       expandedMessage.value = targetMessage
-      showSourcesPanel.value = true
+      showSidebar.value = true
       nextTick(() => {
         scrollToSource(sourceNum)
       })
@@ -236,7 +269,6 @@ async function handleFeedback(queryId, type) {
     return
   }
 
-  // Проверка cooldown (1 секунда задержка)
   const now = Date.now()
   const lastFeedbackTime = feedbackCooldowns.value[queryId] || 0
   if (now - lastFeedbackTime < 1000) {
@@ -246,11 +278,9 @@ async function handleFeedback(queryId, type) {
 
   const current = chatStore.feedbacks[queryId]
   try {
-    // Если кликнули на ту же кнопку — снимаем фидбек
     if (current?.feedback_type === type) {
       await chatStore.removeFeedback(queryId)
     } else {
-      // Иначе ставим новый фидбек
       await chatStore.submitFeedback(queryId, type)
       feedbackCooldowns.value[queryId] = now
     }
@@ -270,18 +300,14 @@ function openStarRating(queryId) {
 }
 
 async function submitStarRating(rating) {
-  console.log('submitStarRating called with:', rating, 'queryId:', currentFeedbackSessionId.value)
   if (!currentFeedbackSessionId.value || !rating || rating < 1) {
-    console.warn('Invalid rating or queryId:', { rating, queryId: currentFeedbackSessionId.value })
     showStarRating.value = false
     return
   }
 
-  // Проверка cooldown
   const now = Date.now()
   const lastFeedbackTime = feedbackCooldowns.value[currentFeedbackSessionId.value] || 0
   if (now - lastFeedbackTime < 1000) {
-    console.log('Star rating cooldown active')
     showStarRating.value = false
     return
   }
@@ -307,46 +333,26 @@ function openSourceModal(source) {
 // Загрузка истории при монтировании
 onMounted(async () => {
   console.log('===== Home.vue: onMounted START =====')
-  console.log('Home mounted, checking for resumeSessionId...')
-  
-  // 1. Сначала пробуем восстановить сессию из History.vue
+
   const resumeSessionId = localStorage.getItem('resumeSessionId')
-  console.log('resumeSessionId:', resumeSessionId)
-  console.log('authStore.user:', authStore.user)
-  console.log('chatStore.messages before:', chatStore.messages?.length || 0)
-  console.log('chatStore.sessionId before:', chatStore.sessionId)
 
   if (authStore.user) {
     if (resumeSessionId) {
-      console.log('=== RESUME SESSION MODE ===')
       localStorage.removeItem('resumeSessionId')
-
-      // 1. Включаем лоадер, чтобы UI сразу отреагировал на переход
       chatStore.isLoading = true
-      console.log('chatStore.isLoading set to:', chatStore.isLoading)
 
       try {
-        // 2. Делаем тяжелый запрос к истории
-        console.log('Loading history for session:', resumeSessionId)
         await chatStore.loadHistory(50)
-        console.log('chatStore.history loaded:', chatStore.history?.length || 0)
 
-        // Находим записи для этой сессии
         const sessionChats = (chatStore.history || [])
           .filter(c => c.session_id === resumeSessionId || c.id == resumeSessionId)
           .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-
-        console.log('sessionChats found:', sessionChats.length)
-        if (sessionChats.length > 0) {
-          console.log('First chat:', sessionChats[0])
-        }
 
         if (sessionChats.length > 0) {
           const actualSessionId = String(sessionChats[0].session_id || sessionChats[0].id)
           chatStore.sessionId = actualSessionId
           chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
 
-          // Очищаем и добавляем все сообщения из сессии
           chatStore.messages = []
           for (const chat of sessionChats) {
             chatStore.messages.push({
@@ -366,69 +372,40 @@ onMounted(async () => {
               timestamp: new Date(chat.created_at)
             })
           }
-          console.log('Session restored from History.vue:', chatStore.messages.length, 'messages')
-          console.log('Messages:', chatStore.messages)
-          
-          // Сохраняем в sessionStorage для последующего восстановления после F5
+
           chatStore.saveToStorage()
-          console.log('Saved to sessionStorage')
-          
-          // Сохраняем текущую сессию для быстрого доступа
           localStorage.setItem('currentSession', JSON.stringify({
             sessionId: actualSessionId,
             title: chatStore.currentSessionTitle
           }))
-        } else {
-          console.warn('No chats found for session:', resumeSessionId)
         }
       } catch (err) {
         console.error('Error loading history:', err)
       } finally {
-        // 3. Гарантированно выключаем лоадер
         chatStore.isLoading = false
-        console.log('chatStore.isLoading set to:', chatStore.isLoading)
       }
-    } 
-    // 2. Если resumeSessionId нет, пробуем восстановить из sessionStorage (после F5)
-    else {
-      console.log('=== F5 REFRESH MODE ===')
-      console.log('No resumeSessionId, trying to restore from sessionStorage...')
-      
-      // Проверяем, что есть в sessionStorage
-      console.log('sessionStorage keys:', Object.keys(sessionStorage))
-      console.log('sessionStorage.chat_messages:', sessionStorage.getItem('chat_messages'))
-      console.log('sessionStorage.chat_session_id:', sessionStorage.getItem('chat_session_id'))
-      
+    } else {
       const restored = chatStore.restoreFromStorage()
-      console.log('restoreFromStorage returned:', restored)
-      console.log('chatStore.messages after restore:', chatStore.messages?.length || 0)
-      console.log('chatStore.sessionId after restore:', chatStore.sessionId)
-      
+
       if (restored) {
-        console.log('Session restored from sessionStorage:', chatStore.messages.length, 'messages')
+        // Session restored from storage
       } else {
-        // Если нет сохранённой сессии, загружаем последнюю активную сессию из истории
-        console.log('No saved session in sessionStorage, loading history...')
         chatStore.isLoading = true
         try {
           await chatStore.loadHistory(50)
-          
-          // Находим последнюю сессию (первую в списке)
+
           if (chatStore.history && chatStore.history.length > 0) {
             const lastSession = chatStore.history[0]
             const actualSessionId = String(lastSession.session_id || lastSession.id)
-            
-            console.log('Loading last session:', actualSessionId)
-            
-            // Загружаем все сообщения этой сессии
+
             const sessionChats = (chatStore.history || [])
               .filter(c => c.session_id === actualSessionId || c.id == actualSessionId)
               .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-            
+
             if (sessionChats.length > 0) {
               chatStore.sessionId = actualSessionId
               chatStore.currentSessionTitle = sessionChats[0].question?.substring(0, 50) || 'Чат'
-              
+
               chatStore.messages = []
               for (const chat of sessionChats) {
                 chatStore.messages.push({
@@ -448,12 +425,8 @@ onMounted(async () => {
                   timestamp: new Date(chat.created_at)
                 })
               }
-              
-              console.log('Last session restored:', chatStore.messages.length, 'messages')
-              
-              // Сохраняем в sessionStorage для последующего восстановления после F5
+
               chatStore.saveToStorage()
-              console.log('Saved to sessionStorage')
             }
           }
         } finally {
@@ -461,31 +434,140 @@ onMounted(async () => {
         }
       }
     }
-  } else {
-    console.log('User not authenticated')
   }
-  
-  console.log('===== Home.vue: onMounted END =====')
-  console.log('Final state:')
-  console.log('  chatStore.messages:', chatStore.messages?.length || 0)
-  console.log('  chatStore.sessionId:', chatStore.sessionId)
-  console.log('  chatStore.isLoading:', chatStore.isLoading)
 })
 </script>
 
 <style scoped>
 .home {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .main-layout {
   display: flex;
   flex: 1;
   min-height: 0;
-  height: calc(100vh - 180px);
   overflow: hidden;
+}
+
+/* Центральная колонка (чат) */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Унифицированный правый сайдбар */
+.unified-sidebar {
+  width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f8f9fa;
+  border-left: none;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease, border-left 0.25s ease;
+}
+
+.unified-sidebar.is-open {
+  width: 380px;
+  border-left: 1px solid #ddd;
+}
+
+/* Хедер сайдбара */
+.sidebar-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.sidebar-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.sidebar-close-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+/* Контент сайдбара (скроллируемый) */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Секции сайдбара */
+.sidebar-section {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.section-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.section-header:hover {
+  background: #f3f4f6;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.section-toggle {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.section-body {
+  padding: 14px 16px;
+}
+
+/* Секция параметров */
+.params-section {
+  flex-shrink: 0;
+}
+
+/* Секция источников (заполняет оставшееся пространство) */
+.sources-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sources-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
 }
 
 /* Кнопка для показа футера */
@@ -518,53 +600,6 @@ onMounted(async () => {
   transform: translateY(0);
 }
 
-/* Левая колонка с параметрами - фиксированная */
-.sidebar-left {
-  width: 320px;
-  background: #f8f9fa;
-  border-right: 1px solid #ddd;
-  padding: 20px;
-  overflow-y: auto;
-  flex-shrink: 0;
-  position: sticky;
-  left: 0;
-  top: 0;
-  height: 100%;
-  max-height: 100%;
-}
-
-/* Центральная колонка (чат) - скроллится */
-.chat-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: white;
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  min-width: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-/* Правая колонка с источниками - фиксированная */
-.sources-panel {
-  width: 400px;
-  background: #ffffff;
-  border-left: 1px solid #ddd;
-  padding: 0;
-  overflow-y: auto;
-  flex-shrink: 0;
-  height: 100%;
-}
-
-.sources-panel .sources-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #f9fafb;
-}
-
 /* FAQ под чатом */
 .faq-below-chat {
   padding: 20px;
@@ -576,21 +611,15 @@ onMounted(async () => {
 }
 
 /* Адаптивность */
-@media (max-width: 1200px) {
-  .sidebar-left {
-    width: 280px;
-  }
-}
-
 @media (max-width: 992px) {
-  .sidebar-left {
-    display: none;
+  .unified-sidebar.is-open {
+    width: 340px;
   }
 }
 
 @media (max-width: 768px) {
-  .chat-area {
-    max-width: 100%;
+  .unified-sidebar {
+    display: none;
   }
 }
 </style>

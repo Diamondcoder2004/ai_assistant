@@ -1,5 +1,6 @@
 <template>
-  <aside class="sources-panel" v-if="expandedMessage && expandedMessage.sources?.length > 0">
+  <!-- Standalone mode (used outside unified sidebar — existing behavior) -->
+  <aside v-if="!compact && expandedMessage && expandedMessage.sources?.length > 0" class="sources-panel">
     <div class="sources-header">
       <h3>Источники ответа</h3>
       <button @click="$emit('close')" class="close-sources-btn">
@@ -30,6 +31,34 @@
       </div>
     </div>
   </aside>
+
+  <!-- Compact mode (inside unified sidebar — header provided by Home.vue) -->
+  <template v-if="compact">
+    <div v-if="expandedMessage && expandedMessage.sources?.length > 0" class="sources-list">
+      <div
+        v-for="(source, idx) in expandedMessage.sources"
+        :key="idx"
+        :id="'source-' + (idx + 1)"
+        class="source-card"
+        @click="$emit('openSource', source)"
+      >
+        <div class="source-number">{{ idx + 1 }}</div>
+        <div class="source-info">
+          <div class="source-filename">{{ removeExtension(source.filename) }}</div>
+          <div class="source-breadcrumbs" v-if="source.breadcrumbs && source.breadcrumbs.trim()">{{ formatBreadcrumbs(source.breadcrumbs) }}</div>
+          <div class="source-summary">{{ truncate(source.summary || 'Нет описания', 80) }}</div>
+          <div class="source-scores">
+            <span class="score semantic">Смысл: {{ formatScore(source.score_semantic) }}</span>
+            <span class="score lexical">Слова: {{ formatScore(source.score_lexical) }}</span>
+            <span class="score hybrid">Общая: {{ formatScore(source.score_hybrid) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="sources-empty">
+      <p class="empty-text">Нет источников для этого ответа</p>
+    </div>
+  </template>
 </template>
 
 <script setup>
@@ -37,6 +66,10 @@ defineProps({
   expandedMessage: {
     type: Object,
     default: null
+  },
+  compact: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -221,5 +254,16 @@ function formatBreadcrumbs(breadcrumbs) {
 .score.hybrid {
   background: #dcfce7;
   color: #166534;
+}
+
+.sources-empty {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.empty-text {
+  color: #9ca3af;
+  font-size: 14px;
+  margin: 0;
 }
 </style>

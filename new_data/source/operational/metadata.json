@@ -1,0 +1,151 @@
+{
+  "html_pages": [
+    {
+      "file": "gid-po-tp.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "Гид по ТП (главная)"
+    },
+    {
+      "file": "tp-do-15kvt.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "ТП до 15 кВт (ФЛ)"
+    },
+    {
+      "file": "tp-15-150kvt.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt-150kvt/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "ТП от 15 до 150 кВт (ЮЛ/ИП)"
+    },
+    {
+      "file": "tp-150-670kvt.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/150kvt-670kvt/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "ТП от 150 до 670 кВт"
+    },
+    {
+      "file": "tp-svyshe-670kvt.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/670kvt/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "ТП свыше 670 кВт"
+    },
+    {
+      "file": "1-shag-podacha-zayavki.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/1-shag/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "1 шаг: подача заявки"
+    },
+    {
+      "file": "2-shag-vypolnenie-rabot.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/2-shag/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "2 шаг: выполнение работ"
+    },
+    {
+      "file": "3-shag-poluchenie-aktov.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/3-shag/",
+      "category": "ТПП",
+      "document_type": "stage_description",
+      "description": "3 шаг: получение актов"
+    },
+    {
+      "file": "status.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/status/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "Узнать статус заявки"
+    },
+    {
+      "file": "normative-base.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/normative-base/",
+      "category": "ТПП",
+      "document_type": "regulation",
+      "description": "Нормативная база (перечень документов)"
+    },
+    {
+      "file": "forms-documents.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/forms-documents/",
+      "category": "ТПП",
+      "document_type": "instruction",
+      "description": "Формы и образцы (заявки, договоры, акты)"
+    },
+    {
+      "file": "passport.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/passport/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "Паспорта услуг (процессов)"
+    },
+    {
+      "file": "calc.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "Калькулятор стоимости ТП"
+    },
+    {
+      "file": "calc-school.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc-school/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "Калькулятор необходимой мощности"
+    },
+    {
+      "file": "faq.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/questions/",
+      "category": "ТПП",
+      "document_type": "faq",
+      "description": "Часто задаваемые вопросы"
+    },
+    {
+      "file": "katalog-du.md",
+      "url": "https://www.bashkirenergo.ru/store/",
+      "category": "ДУ",
+      "document_type": "infomaterial",
+      "description": "Каталог дополнительных услуг"
+    },
+    {
+      "file": "dop-uslugi-pri-tp.md",
+      "url": "https://www.bashkirenergo.ru/store/dopolnitelnye-uslugi/dopolnitelnye-uslugi-pri-tekhnologicheskom-prisoedinenii.php",
+      "category": "ДУ",
+      "document_type": "infomaterial",
+      "description": "Доп. услуги при ТП (пакеты)"
+    },
+    {
+      "file": "map.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/map/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "Адреса и телефоны пунктов обслуживания потребителей"
+    },
+    {
+      "file": "cok.md",
+      "url": "https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/cok/",
+      "category": "ТПП",
+      "document_type": "infomaterial",
+      "description": "ЦОК — запись на очный приём (интерактивная форма)"
+    }
+  ],
+  "instructions": [
+    {
+      "file": "10. Инструкция по работе в ЛК (для заявителя) (от января 2024).pdf",
+      "category": "ЛК",
+      "document_type": "instruction",
+      "description": "Инструкция по работе в личном кабинете — пошаговое руководство для заявителя"
+    },
+    {
+      "file": "7. Инструкция по самостоятельному подключению.PDF",
+      "category": "ТПП",
+      "document_type": "instruction",
+      "description": "Инструкция по самостоятельному технологическому присоединению"
+    }
+  ]
+}

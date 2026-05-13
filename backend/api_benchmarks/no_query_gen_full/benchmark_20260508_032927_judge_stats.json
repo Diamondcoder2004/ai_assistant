@@ -1,0 +1,40 @@
+{
+  "judge_relevance": {
+    "mean": 4.14935064935065,
+    "count": 308
+  },
+  "judge_completeness": {
+    "mean": 2.772727272727273,
+    "count": 308
+  },
+  "judge_helpfulness": {
+    "mean": 4.058441558441558,
+    "count": 308
+  },
+  "judge_clarity": {
+    "mean": 4.461038961038961,
+    "count": 308
+  },
+  "judge_hallucination_risk": {
+    "mean": 4.136363636363637,
+    "count": 308
+  },
+  "judge_context_recall": {
+    "mean": 3.029220779220779,
+    "count": 308
+  },
+  "judge_faithfulness": {
+    "mean": 4.097402597402597,
+    "count": 308
+  },
+  "judge_currency": {
+    "mean": 4.548701298701299,
+    "count": 308
+  },
+  "judge_overall_score": {
+    "mean": 3.6074350649350646,
+    "count": 308
+  },
+  "binary_correctness_pct": 18.181818181818183,
+  "total_judged": 308
+}

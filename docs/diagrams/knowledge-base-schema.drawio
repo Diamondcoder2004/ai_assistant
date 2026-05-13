@@ -1,0 +1,212 @@
+<mxfile host="Electron">
+  <diagram name="Схема базы знаний" id="knowledge-base">
+    <mxGraphModel dx="2688" dy="825" grid="1" gridSize="20" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="Как нам группировать документы?" vertex="1">
+          <mxGeometry height="40" width="500" x="320" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="cat_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;fontStyle=bold;" value="Категории заявлений" vertex="1">
+          <mxGeometry height="40" width="200" x="740" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="tp_ellipse" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Технологическое&#xa;присоединение сетям" vertex="1">
+          <mxGeometry height="80" width="200" x="740" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lk_ellipse" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Личный кабинет" vertex="1">
+          <mxGeometry height="70" width="150" x="370" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="tpp_ellipse" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="ТПП" vertex="1">
+          <mxGeometry height="60" width="120" x="550" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="du_ellipse" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Доп Услуги (ДУ)" vertex="1">
+          <mxGeometry height="70" width="160" x="700" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="edge1" edge="1" parent="1" source="tp_ellipse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="lk_ellipse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" edge="1" parent="1" source="tp_ellipse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="tpp_ellipse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" edge="1" parent="1" source="tp_ellipse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="du_ellipse">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="800" y="265" />
+              <mxPoint x="760" y="265" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="info_cat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;fontStyle=bold;" value="Категории доступной информации для ассистента" vertex="1">
+          <mxGeometry height="35" width="450" x="50" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="norm_docs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Нормативные&#xa;документы" vertex="1">
+          <mxGeometry height="50" width="120" x="80" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="faq" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Часто задаваемые&#xa;вопросы" vertex="1">
+          <mxGeometry height="50" width="140" x="180" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" edge="1" parent="1" source="norm_docs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="faq">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="norm_base" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Нормативная база" vertex="1">
+          <mxGeometry height="50" width="140" x="120" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" edge="1" parent="1" source="norm_docs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="norm_base">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" edge="1" parent="1" source="norm_docs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="forms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="stages" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Этапы&#xa;технологического&#xa;присоединения" vertex="1">
+          <mxGeometry height="70" width="140" x="-310" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="power_box" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="До 15 кВт&#xa;От 15 до 150 кВт&#xa;От 150 до 670 кВт&#xa;Свыше 670 кВт" vertex="1">
+          <mxGeometry height="100" width="160" x="-320" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="edge7" edge="1" parent="1" source="stages" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="power_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="info_mat" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Информационные&#xa;материалы" vertex="1">
+          <mxGeometry height="50" width="180" x="400" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="mem_670" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Памятка до 670 кВт&#xa;Памятка свыше 670 кВт" vertex="1">
+          <mxGeometry height="60" width="200" x="345" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="edge9" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="mem_670">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="510" />
+              <mxPoint x="440" y="581" />
+              <mxPoint x="420" y="581" />
+            </Array>
+            <mxPoint x="490" y="510" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="passports" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Паспорта услуг" vertex="1">
+          <mxGeometry height="80" width="140" x="560" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="edge10" edge="1" parent="1" source="info_mat" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="passports">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="560" />
+              <mxPoint x="580" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="common_info" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Общая информация" vertex="1">
+          <mxGeometry height="50" width="160" x="860" y="410" as="geometry" />
+        </mxCell>
+        <mxCell id="coc_addr" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Адреса пунктов&#xa;ЦОК и ПОК" vertex="1">
+          <mxGeometry height="50" width="150" x="740" y="605" as="geometry" />
+        </mxCell>
+        <mxCell id="edge12" edge="1" parent="1" source="common_info" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="coc_addr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="570" />
+              <mxPoint x="845" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="status" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Узнать статус заявки" vertex="1">
+          <mxGeometry height="50" width="180" x="1100" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="edge13" edge="1" parent="1" source="common_info" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="status">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="redist" parent="1" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Перераспределение&#xa;мощности" vertex="1">
+          <mxGeometry height="60" width="180" x="900" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="edge14" edge="1" parent="1" source="common_info" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="redist">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="990" y="500" />
+              <mxPoint x="990" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="common_ellipse" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Общая&#xa;информация" vertex="1">
+          <mxGeometry height="70" width="140" x="920" y="305" as="geometry" />
+        </mxCell>
+        <mxCell id="edge15" edge="1" parent="1" source="tp_ellipse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="common_ellipse">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="880" y="268" />
+              <mxPoint x="990" y="268" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="fallback" parent="1" style="ellipse;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Нет информации&#xa;Передача оператору" vertex="1">
+          <mxGeometry height="70" width="150" x="1080" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="edge16" edge="1" parent="1" source="tp_ellipse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;endArrow=classic;fontSize=15;" target="fallback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="OgrllGmRCpHiXNS7i_7w-3" connectable="0" parent="1" style="group;fontSize=15;" value="" vertex="1">
+          <mxGeometry height="300" width="640" x="-20" y="840" as="geometry" />
+        </mxCell>
+        <mxCell id="services_box" parent="OgrllGmRCpHiXNS7i_7w-3" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;fontStyle=bold;" value="" vertex="1">
+          <mxGeometry height="300" width="640" as="geometry" />
+        </mxCell>
+        <mxCell id="services_list" parent="OgrllGmRCpHiXNS7i_7w-3" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=15;whiteSpace=wrap;" value="• Физических лиц с максимальной мощностью до 15 кВт&#xa;• Юридических лиц и ИП с мощностью до 150 кВт&#xa;• Юридических лиц и ИП с мощностью от 150 до 670 кВт&#xa;• Юридических лиц и ИП с мощностью свыше 670 кВт&#xa;• Перераспределения максимальной мощности&#xa;• По индивидуальному проекту&#xa;• Восстановление (переоформление) документов&#xa;• В целях вывода из эксплуатации объектов электросетевого хозяйства&#xa;• Временное технологическое присоединение к электрическим сетям" vertex="1">
+          <mxGeometry height="190.9090909090909" width="416.5079365079365" x="60.95238095238095" y="81.81818181818181" as="geometry" />
+        </mxCell>
+        <mxCell id="OgrllGmRCpHiXNS7i_7w-1" parent="OgrllGmRCpHiXNS7i_7w-3" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=15;" value="&lt;span&gt;Виды услуг (Паспорта)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="40.90909090909091" width="203.17460317460316" x="60.95238095238095" y="27.27272727272727" as="geometry" />
+        </mxCell>
+        <mxCell id="OgrllGmRCpHiXNS7i_7w-4" connectable="0" parent="1" style="group;fontSize=15;" value="" vertex="1">
+          <mxGeometry height="145" width="325" x="55" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="clients_box" parent="OgrllGmRCpHiXNS7i_7w-4" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;fontStyle=bold;" value="" vertex="1">
+          <mxGeometry height="145" width="325" as="geometry" />
+        </mxCell>
+        <mxCell id="fl" parent="OgrllGmRCpHiXNS7i_7w-4" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Физ. Лица" vertex="1">
+          <mxGeometry height="60" width="70" x="15" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ul" parent="OgrllGmRCpHiXNS7i_7w-4" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="Юр. Лица" vertex="1">
+          <mxGeometry height="60" width="70" x="125" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="ip" parent="OgrllGmRCpHiXNS7i_7w-4" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=15;" value="ИП" vertex="1">
+          <mxGeometry height="60" width="50" x="225" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="OgrllGmRCpHiXNS7i_7w-2" parent="OgrllGmRCpHiXNS7i_7w-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;fontSize=15;" value="&lt;span&gt;Виды клиентов&lt;/span&gt;" vertex="1">
+          <mxGeometry height="30" width="140" x="25" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="OgrllGmRCpHiXNS7i_7w-5" connectable="0" parent="1" style="group;fontSize=15;" value="" vertex="1">
+          <mxGeometry height="130" width="250" x="-140" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="forms" parent="OgrllGmRCpHiXNS7i_7w-5" style="rounded=1;whiteSpace=wrap;html=1;strokeWidth=2;fontSize=15;" value="Формы и образцы&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="227.27272727272728" x="11.363636363636365" as="geometry" />
+        </mxCell>
+        <mxCell id="forms_note" parent="OgrllGmRCpHiXNS7i_7w-5" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=15;fontStyle=italic;" value="Нужно написать один документ&#xa;со ссылками на все формы" vertex="1">
+          <mxGeometry height="39" width="250.00000000000003" y="65" as="geometry" />
+        </mxCell>
+        <mxCell id="insight1" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="✅ Инсайт 1 — Две коллекции:&#xa;normative_documents + operational_content" vertex="1">
+          <mxGeometry height="50" width="350" x="1020" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="insight2" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="✅ Инсайт 2 — neighbor_chunk_ids в метадате&#xa;(prev / next чанки для подгрузки контекста)" vertex="1">
+          <mxGeometry height="50" width="350" x="1020" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="insight3" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="✅ Инсайт 3 — Стратегия: 1000–4000 символов, overlap 200" vertex="1">
+          <mxGeometry height="40" width="350" x="1020" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="insight4" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="✅ Инсайт 4 — RouterAI + PyMuPDF fallback&#xa;(pdf_parser.py)" vertex="1">
+          <mxGeometry height="50" width="350" x="1020" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="insight5" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=13;fontStyle=bold;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="✅ Инсайт 5 — breadcrumbs в метадате каждого чанка" vertex="1">
+          <mxGeometry height="40" width="350" x="1020" y="310" as="geometry" />
+        </mxCell>
+        <!-- Qdrant Collections -->
+        <mxCell id="qdrant_norm" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;strokeWidth=2;fontSize=13;fillColor=#e8f5e9;" value="normative_documents" vertex="1">
+          <mxGeometry height="60" width="160" x="1400" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="qdrant_oper" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;strokeWidth=2;fontSize=13;fillColor=#fff3e0;" value="operational_content" vertex="1">
+          <mxGeometry height="60" width="160" x="1400" y="160" as="geometry" />
+        </mxCell>
+        <!-- Pipeline Annotation -->
+        <mxCell id="pipeline_label" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;fontSize=12;fontStyle=1;spacingLeft=4;spacingRight=4;whiteSpace=wrap;" value="Пайплайн инжестии:&#xa;PDF Parser → Splitter → LLM Enrichment → Metadata Injector → Qdrant" vertex="1">
+          <mxGeometry height="50" width="420" x="1400" y="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

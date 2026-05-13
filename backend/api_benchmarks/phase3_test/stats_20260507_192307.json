@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-05-07T19:23:07.254866",
+  "total_samples": 10,
+  "valid_samples": 10,
+  "errors": 0,
+  "avg_total_time_sec": 72.33,
+  "avg_retrieval_time_sec": 43.4,
+  "avg_generation_time_sec": 28.93,
+  "avg_confidence": 0.8,
+  "avg_queries": 2.0,
+  "avg_sources": 2.4
+}

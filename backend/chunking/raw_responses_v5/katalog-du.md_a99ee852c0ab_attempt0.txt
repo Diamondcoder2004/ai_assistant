@@ -1,0 +1,33 @@
+[
+  {
+    "chunk_content": "**Источник:** https://www.bashkirenergo.ru/store/\n**Описание:** Каталог дополнительных услуг\n**Категория:** ДУ\n**Тип:** infomaterial\n\n---\n\n# Дополнительные услуги (Каталог ДУ)\n\n- [Автотранспортные услуги](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/auto.php)\n- [Анализ трансформаторного масла](/store/analiz-transformatornogo-masla.php)\n- [Аренда](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/arenda.php)\n- [АСКУЭ для ИВС](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/askue-dlya-ivs.php)\n- [Выдача технических условий и рассмотрение проектной/рабочей документации](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/vydacha-tekhnicheskikh-usloviy-i-rassmotrenie-dokumentatsii.php)\n- [Выполнение организационно-технических мероприятий](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/vypolnenie-organizatsionno-tekhnicheskikh-meropriyatiy.php)\n- [Дополнительные услуги](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/another.php)\n- [Дополнительные услуги при технологическом присоединении](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/dopolnitelnye-uslugi-pri-tekhnologicheskom-prisoedinenii.php)\n- [Замена ответвления (ввода) к объекту, изменение точки (опоры) подключения объекта](/store/zamena-otvetvleniya.php)\n- [Испытания и диагностика. Услуги электролаборатории](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/ispytaniya-i-diagnostika-uslugi-laboratorii.php)\n- [Оперативно-техническое обслуживание ПС 35-110 кВ](/store/operativno-tekhnicheskoe-obsluzhivanie-ps-35-110-kv.php)\n- [Организация бесперебойного электроснабжения с использованием ДГУ](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/organizatsiya-bespereboynogo-elektrosnabzheniya-s-ispolzaniem-dgu.php)\n- [Организация видеонаблюдения](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/organizatsiya-videonablyudeniya-na-obekte.php)\n- [Организация охранно-пожарной сигнализации](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/organizatsiya-okhranno-pozharnoy-signalizatsii.php)\n- [Техническое обслуживание электрических сетей 0,4-10 кВ](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/tekhnicheskoe-obsluzhivanie-elektricheskikh-setey-0-4-10-kv.php)\n- [Техническое обслуживание электрических сетей 35-110 кВ](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/tekhnicheskoe-obsluzhivanie-elektricheskikh-setey-35-110-kv.php)\n- [Услуги в области информационных технологий и связи](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/itis/index.php)\n- [Услуги в области нерегулируемых видов деятельности](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/index.php)\n- [Услуги выполнения ТУ со стороны заявителя](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/uslugi-vypolneniya-tu-so-storony-zayavitelya.php)\n- [Услуги по переносу опор ВЛ](/store/uslugi-po-perenosu-opor-vl.php)\n- [Услуги по ремонту электрических сетей](/store/uslugi-v-oblasti-nereguliruemykh-vidov-deyatelnosti/uslugi-po-remontu-elektricheskikh-setey.php)\n- [Услуги по техническому обследованию объектов электрохозяйства до 10 кВ (включительно)](/store/uslugi-po-tekhnicheskomu-obsledovaniyu-obetov-elektrokhozyaystva-do-10kv-vklyuchitelno.php)\n- [Услуги по установке и изменению места расположения приборов учета Э/Э](/store/electricmeter/index.php)",
+    "breadcrumbs": "Каталог ДУ > Дополнительные услуги",
+    "chunk_summary": "Документ представляет собой каталог дополнительных услуг компании Башкирэнерго. Включает перечень услуг от автотранспорта до технического обслуживания сетей. Предоставляет ссылки на подробные описания каждой услуги.",
+    "hypothetical_questions": [
+      "Где найти каталог дополнительных услуг Башкирэнерго?",
+      "Какие услуги по техническому обслуживанию сетей 0,4-10 кВ предлагаются?",
+      "Как заказать анализ трансформаторного масла?",
+      "Есть ли услуги по переносу опор ВЛ?",
+      "Где посмотреть информацию об АСКУЭ для ИВС?",
+      "Как организовать бесперебойное электроснабжение с ДГУ?"
+    ],
+    "keywords": [
+      "Дополнительные услуги",
+      "Каталог ДУ",
+      "Башкирэнерго",
+      "Техническое обслуживание",
+      "Технологическое присоединение",
+      "АСКУЭ",
+      "Автотранспортные услуги",
+      "Анализ масла",
+      "Опоры ВЛ"
+    ],
+    "entities": [
+      "Башкирэнерго",
+      "0,4-10 кВ",
+      "35-110 кВ",
+      "АСКУЭ",
+      "ДГУ"
+    ]
+  }
+]

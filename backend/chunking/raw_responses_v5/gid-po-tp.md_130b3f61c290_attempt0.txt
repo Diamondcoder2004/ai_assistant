@@ -1,0 +1,37 @@
+[
+  {
+    "chunk_content": "**Источник:** https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/\n**Описание:** Гид по ТП (главная)\n**Категория:** ТПП\n**Тип:** stage_description\n\n---\n\n# Гид по технологическому присоединению\n\n## ТЕХНОЛОГИЧЕСКОЕ ПРИСОЕДИНЕНИЕ К ЭЛЕКТРИЧЕСКИМ СЕТЯМ\n\n### Этапы технологического присоединения\n\n- [До 15 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt/)\n- [От 15 до 150 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt-150kvt/)\n- [От 150 до 670 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/150kvt-670kvt/)\n- [Свыше 670 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/670kvt/)\n- [Узнать статус заявки](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/status/)\n\n### Нормативные документы\n\n- [Нормативная база](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/normative-base/)\n- [Формы и образцы](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/forms-documents/)\n- [Часто задаваемые вопросы](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/questions/)\n\n### Информационные материалы и расчет стоимости услуг\n\n- [Паспорта услуг (процессов)](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/passport/)\n- [Памятка для заявителей с запрашиваемой мощностью до 670 кВт включительно](https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/less670max.pdf)\n- [Памятка для заявителей с запрашиваемой мощностью свыше 670 кВт](https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/more670max.pdf)\n- [Калькулятор стоимости](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc/)\n- [Калькулятор необходимой мощности](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc-school/)\n\n---\n\n### 1 шаг — подача заявки на технологическое присоединение, заключение договора о технологическом присоединении и договора энергоснабжения (10/15/20/30 дней)\n\n### 2 шаг — выполнение работ (от 30 рабочих дней)\n\n### 3 шаг — получение актов готовности после осмотра объекта и подачи напряжения (от 3 дней)\n\n---\n\n**УВАЖАЕМЫЕ КЛИЕНТЫ!**\n\nВ связи с техническими работами, пункты обслуживания клиентов приостанавливают прием документов по технологическому присоединению с 25 декабря 2025 года.\n\nВыдача документов по технологическому присоединению производится в обычном режиме. Прием документов будет возобновлен с 12 января 2026 года.\n\nПо техническим причинам в период с 31.12.2025 по 11.01.2026 также будет недоступна работа Личного кабинета потребителя услуг по технологическому присоединению.\n\nБлагодарим за понимание! Приносим извинения за доставленные неудобства!\n\n**ООО «Башкирэнерго»**\n\n#### Вниманию потребителей!\n\nООО «Башкирэнерго» предоставляет новые платные услуги по технологическому присоединению\n\n[Подробнее](/upload/medialibrary/bd9/gxxgw7qh4rlc4e3qf4to5ulicjb0klww/informatsionnoe_soobshchenie_zayavitelyam2024.pdf)\n\n### Подключайтесь к сетям онлайн\n\n- [Личный кабинет](/personal/docs.php)\n- [ЦОК](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/cok/)\n- [Запись на очный прием в ЦОК](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/cok/)\n- [Подать заявку ОНЛАЙН](/personal/docs.php)\n\n### Полезные ссылки\n\n- [Узнать статус заявки](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/status/)\n- [Перераспределение мощности](/pereraspr/pereraspredelenie2025.pdf)\n- [Адреса и время работы пунктов обслуживания потребителей](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/map/)",
+    "breadcrumbs": "Гид по технологическому присоединению",
+    "chunk_summary": "Документ представляет собой гид по технологическому присоединению к сетям Башкирэнерго. Описаны этапы присоединения в зависимости от мощности, сроки выполнения работ, а также важные уведомления о техническом обслуживании пунктов приема. Предоставлены ссылки на нормативные документы, калькуляторы и возможность подачи заявки онлайн.",
+    "hypothetical_questions": [
+      "Какие этапы технологического присоединения существуют в Башкирэнерго?",
+      "Когда приостанавливается прием документов по ТП в 2025-2026 году?",
+      "Как подать заявку на технологическое присоединение онлайн?",
+      "Какие сроки выполнения работ при подключении до 15 кВт?",
+      "Где найти памятку для заявителей с мощностью свыше 670 кВт?",
+      "Доступен ли личный кабинет потребителя в период с 31.12.2025 по 11.01.2026?"
+    ],
+    "keywords": [
+      "технологическое присоединение",
+      "Башкирэнерго",
+      "этапы ТП",
+      "подача заявки",
+      "сроки подключения",
+      "личный кабинет",
+      "калькулятор стоимости",
+      "памятка заявителя",
+      "акты готовности",
+      "технические работы"
+    ],
+    "entities": [
+      "ООО «Башкирэнерго»",
+      "15 кВт",
+      "150 кВт",
+      "670 кВт",
+      "25 декабря 2025 года",
+      "12 января 2026 года",
+      "31.12.2025",
+      "11.01.2026"
+    ]
+  }
+]

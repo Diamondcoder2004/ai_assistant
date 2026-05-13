@@ -1,0 +1,31 @@
+{
+  "chunk_content": "# Гид по технологическому присоединению\n\n## ТЕХНОЛОГИЧЕСКОЕ ПРИСОЕДИНЕНИЕ К ЭЛЕКТРИЧЕСКИМ СЕТЯМ\n\n### Этапы технологического присоединения\n\n- [До 15 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt/)\n- [От 15 до 150 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt-150kvt/)\n- [От 150 до 670 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/150kvt-670kvt/)\n- [Свыше 670 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/670kvt/)\n- [Узнать статус заявки](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/status/)\n\n### Нормативные документы\n\n- [Нормативная база](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/normative-base/)\n- [Формы и образцы](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/forms-documents/)\n- [Часто задаваемые вопросы](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/questions/)\n\n### Информационные материалы и расчет стоимости услуг\n\n- [Паспорта услуг (процессов)](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/passport/)\n- [Памятка для заявителей с запрашиваемой мощностью до 670 кВт включительно](https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/less670max.pdf)\n- [Памятка для заявителей с запрашиваемой мощностью свыше 670 кВт](https://www.bashkirenergo.ru/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/more670max.pdf)\n- [Калькулятор стоимости](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc/)\n- [Калькулятор необходимой мощности](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/calc-school/)\n\n---\n\n### 1 шаг — подача заявки на технологическое присоединение, заключение договора о технологическом присоединении и договора энергоснабжения (10/15/20/30 дней)\n\n### 2 шаг — выполнение работ (от 30 рабочих дней)\n\n### 3 шаг — получение актов готовности после осмотра объекта и подачи напряжения (от 3 дней)",
+  "breadcrumbs": "Гид по технологическому присоединению > Этапы и материалы",
+  "chunk_summary": "Основной раздел гида по технологическому присоединению, описывающий этапы подключения в зависимости от мощности, нормативную базу и инструменты для расчета стоимости. Включает ссылки на памятки, калькуляторы и формы документов.",
+  "hypothetical_questions": [
+    "Какие этапы технологического присоединения существуют?",
+    "Где найти калькулятор стоимости ТП для Башкирэнерго?",
+    "Какие документы нужны для подачи заявки на подключение?",
+    "Сколько дней занимает подключение до 15 кВт?",
+    "Где скачать памятку для заявителей с мощностью до 670 кВт?"
+  ],
+  "keywords": [
+    "технологическое присоединение",
+    "Башкирэнерго",
+    "этапы ТП",
+    "15 кВт",
+    "150 кВт",
+    "670 кВт",
+    "калькулятор стоимости",
+    "памятка заявителя",
+    "договор энергоснабжения",
+    "акты готовности"
+  ],
+  "category": "ТПП",
+  "collection_name": "operational_content",
+  "document_type": "stage_description",
+  "power_range": "any",
+  "client_type": "any",
+  "chunk_id": "130b3f61c290_p1",
+  "source_file": "gid-po-tp"
+}

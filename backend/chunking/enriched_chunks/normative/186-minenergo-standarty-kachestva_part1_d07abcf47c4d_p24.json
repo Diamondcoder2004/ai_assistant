@@ -1,0 +1,27 @@
+{
+  "chunk_content": "3.5. Стоимость технологического присоединения к электрическим сетям сетевой организации (не заполняется, в случае наличия на официальном сайте сетевой организации в сети Интернет интерактивного инструмента, который позволяет автоматически рассчитывать стоимость технологического присоединения при вводе параметров, предусмотренных настоящим пунктом).\n\n<table>\n  <thead>\n    <tr>\n        <th colspan=\"3\">Мощность энергопринимающих устройств заявителя, кВт</th>\n        <th colspan=\"2\">15</th>\n        <th colspan=\"2\">150</th>\n        <th colspan=\"2\">250</th>\n        <th colspan=\"2\">670</th>\n    </tr>\n<tr>\n        <th colspan=\"3\">Категория надежности</th>\n        <th>I - II</th>\n        <th>III</th>\n        <th>I - II</th>\n        <th>III</th>\n        <th>I - II</th>\n        <th>III</th>\n        <th>I - II</th>\n        <th>III</th>\n    </tr>\n<tr>\n        <th>Расстояние до границ земельного участка заявителя, м</th>\n        <th>Необходимость строительства подстанции</th>\n        <th>Тип линии</th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n        <th> </th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n        <td rowspan=\"4\">500 - сельская местность/300 - городская местность</td>\n        <td rowspan=\"2\">Да</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"2\">Нет</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"4\">750</td>\n        <td rowspan=\"2\">Да</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"2\">Нет</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"2\">1000</td>\n        <td rowspan=\"2\">Да</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n  </tbody>\n</table>\n\n<table>\n  <tbody>\n    <tr>\n        <td rowspan=\"6\">1250</td>\n        <td rowspan=\"2\">Нет</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"2\">Да</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td rowspan=\"2\">Нет</td>\n<td>КЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n<tr>\n        <td>ВЛ</td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n<td> </td>\n    </tr>\n  </tbody>\n</table>",
+  "breadcrumbs": "Приложение N 7 (Часть 4)",
+  "chunk_summary": "Стоимость технологического присоединения. Таблица расчета стоимости в зависимости от мощности, категории надежности и расстояния.",
+  "hypothetical_questions": [
+    "Как рассчитывается стоимость ТП?",
+    "Сколько стоит ТП для мощности 15 кВт?",
+    "Влияет ли расстояние на стоимость ТП?",
+    "Где найти калькулятор стоимости ТП?"
+  ],
+  "keywords": [
+    "стоимость ТП",
+    "расчет стоимости",
+    "мощность",
+    "категория надежности",
+    "расстояние",
+    "Башкирэнерго",
+    "Приложение N 7"
+  ],
+  "category": "ТПП",
+  "collection_name": "normative_documents",
+  "document_type": "regulation",
+  "power_range": "any",
+  "client_type": "any",
+  "chunk_id": "d07abcf47c4d_p24",
+  "source_file": "186-minenergo-standarty-kachestva"
+}

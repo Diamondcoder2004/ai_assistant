@@ -1,0 +1,15 @@
+{
+  "judge_model": "deepseek/deepseek-v3.2",
+  "judge_evaluated": 308,
+  "judge_binary_correct": 66,
+  "judge_binary_rate": "21.4%",
+  "judge_avg_relevance": 4.01,
+  "judge_avg_completeness": 2.6,
+  "judge_avg_helpfulness": 3.88,
+  "judge_avg_clarity": 4.34,
+  "judge_avg_hallucination_risk": 4.0,
+  "judge_avg_context_recall": 2.72,
+  "judge_avg_faithfulness": 3.96,
+  "judge_avg_currency": 4.45,
+  "judge_avg_overall_score": 3.45
+}

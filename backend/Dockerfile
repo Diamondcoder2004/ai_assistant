@@ -19,6 +19,7 @@ COPY utils/ ./utils/
 COPY prompts/ ./prompts/
 COPY config.py .
 COPY main.py .
+COPY llm_judge.py .
 
 # Создание директории для логов
 RUN mkdir -p logs

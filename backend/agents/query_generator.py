@@ -7,11 +7,12 @@ import time
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
-from openai import OpenAI
+from langfuse.openai import OpenAI
 import config
 from prompts.query_generation import get_query_generation_prompt
 from utils.timing import timing
 from utils.agent_logger import log_agent_response
+from utils.langfuse_tracer import observe_rag
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class QueryGenerationResult:
     search_params: Dict[str, Any]
     confidence: float
     reasoning: str
+    detected_category: str = "\u043d\u0435 \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u0430"
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "QueryGenerationResult":
@@ -35,7 +37,8 @@ class QueryGenerationResult:
             queries=data.get("queries", []),
             search_params=data.get("search_params", {}),
             confidence=data.get("confidence", 0.5),
-            reasoning=data.get("reasoning", "")
+            reasoning=data.get("reasoning", ""),
+            detected_category=data.get("detected_category", "\u043d\u0435 \u0438\u0437\u0432\u0435\u0441\u0442\u043d\u0430")
         )
 
 
@@ -55,10 +58,11 @@ class QueryGeneratorAgent:
             api_key=config.ROUTERAI_API_KEY,
             base_url=config.ROUTERAI_BASE_URL
         )
-        self.model = config.DEFAULT_LLM_MODEL
+        self.model = config.QUERY_GENERATOR_MODEL
         logger.info(f"QueryGeneratorAgent инициализирован: {self.model}")
     
     @timing("QueryGenerator.generate")
+    @observe_rag(name="QueryGenerator.generate")
     def generate(
         self,
         user_query: str,
@@ -96,7 +100,7 @@ class QueryGeneratorAgent:
             user_query=user_query,
             history=history,
             category=category,
-            user_hints=user_hints  # Передаём рекомендации
+            user_hints=user_hints,
         )
 
         logger.info(f"Генерация запросов для: '{user_query[:50]}...'")
@@ -281,7 +285,8 @@ class QueryGeneratorAgent:
                 "strategy": "separate"
             },
             confidence=0.5,
-            reasoning="Использован дефолтный запрос из-за ошибки генерации"
+            reasoning="Использован дефолтный запрос из-за ошибки генерации",
+            detected_category="не известна"
         )
     
     def needs_clarification(self, result: QueryGenerationResult) -> bool:

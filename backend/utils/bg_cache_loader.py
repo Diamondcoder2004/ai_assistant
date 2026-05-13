@@ -37,7 +37,7 @@ def load_bm25_background():
     try:
         from tools.search_tool import SearchTool
         
-        logger.info("🔄 Начата фоновая загрузка BM25 кэша...")
+        logger.info("[WARMUP] Начата фоновая загрузка BM25 кэша...")
         start = time.time()
         
         # Создаём временный экземпляр для загрузки кэша
@@ -47,10 +47,10 @@ def load_bm25_background():
         elapsed = time.time() - start
         _bm25_loaded = True
         
-        logger.info(f"✅ BM25 кэш загружен за {elapsed:.1f}с ({len(tool.documents)} документов)")
+        logger.info(f"[OK] BM25 кэш загружен за {elapsed:.1f}с ({len(tool.documents)} документов)")
         
     except Exception as e:
-        logger.error(f"❌ Ошибка загрузки BM25 кэша: {e}")
+        logger.error(f"[ERROR] Ошибка загрузки BM25 кэша: {e}")
         _bm25_loaded = False
     finally:
         _bm25_loading = False
@@ -76,7 +76,7 @@ def schedule_bm25_warmup(delay: float = 0.5):
     )
     _loading_thread.start()
     
-    logger.info(f"📅 Загрузка BM25 кэша запланирована через {delay}с")
+    logger.info(f"[TIMER] Загрузка BM25 кэша запланирована через {delay}с")
 
 
 def is_bm25_loaded() -> bool:

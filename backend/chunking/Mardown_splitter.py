@@ -11,7 +11,7 @@ from langchain_text_splitters import (
 
 # ================= НАСТРОЙКИ =================
 
-INPUT_DIR = "../deepseek_groups"          # папка с исходными .md файлами
+INPUT_DIR = "../../new_data/source"          # папка с исходными .md файлами
 OUTPUT_DIR = "chunks_universal"         # папка для результатов
 MIN_CHUNK_SIZE = 1000                    # минимальный размер чанка (символов)
 MAX_CHUNK_SIZE = 20_000                    # максимальный размер чанка
@@ -27,6 +27,17 @@ HEADERS_TO_SPLIT_ON = [
 ]
 
 # ================= ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =================
+
+def strip_images(text: str) -> str:
+    """
+    Удаляет markdown-изображения вида ![alt](url), но сохраняет обычные ссылки [text](url).
+    Пример удаляемого: ![Скриншот раздела](page_6_image_2_v2.jpg)
+    Пример сохраняемого: [до 150 кВт](/consumers/gid-po-tekhnologicheskomu-prisoedineniyu/15kvt-150kvt/)
+    """
+    # Удаляем: ![любой_текст](любой_url)
+    # Не трогаем: [любой_текст](любой_url) — это обычные ссылки
+    return re.sub(r'!\[.*?\]\(.*?\)', '', text)
+
 
 def merge_small_chunks(chunks: List[str], min_size: int, max_size: int) -> List[str]:
     """
@@ -142,6 +153,9 @@ def smart_chunking(text: str) -> List[str]:
 def process_file(input_path: str, output_path: str):
     with open(input_path, "r", encoding="utf-8") as f:
         text = f.read()
+
+    # Удаляем изображения, но сохраняем ссылки
+    text = strip_images(text)
 
     chunks = smart_chunking(text)
 

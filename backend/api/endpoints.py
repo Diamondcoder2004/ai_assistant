@@ -28,6 +28,7 @@ from .database import (
     save_feedback, get_feedback_by_query_id, delete_feedback_by_query_id
 )
 from main import AgenticRAG
+from utils.langfuse_tracer import observe_rag, get_trace_id
 import config
 
 
@@ -190,7 +191,10 @@ async def stream_query(
                 user_query=request.query,
                 auto_retry=True,
                 history=history,
-                user_hints=user_hints if user_hints else None
+                user_hints=user_hints if user_hints else None,
+                langfuse_trace_id=get_trace_id(),
+                langfuse_user_id=user_id,
+                langfuse_session_id=session_id,
             )
 
             # Проверка на уточнение
@@ -295,6 +299,7 @@ async def stream_query(
 
 
 @router.post("/query", response_model=QueryResponse)
+@observe_rag(name="/query")
 async def query(
     request: QueryRequest,
     background_tasks: BackgroundTasks,
@@ -338,7 +343,10 @@ async def query(
             user_query=request.query,
             auto_retry=True,
             history=history,  # Передаём историю из БД
-            user_hints=user_hints if user_hints else None  # Передаём рекомендации
+            user_hints=user_hints if user_hints else None,  # Передаём рекомендации
+            langfuse_trace_id=get_trace_id(),
+            langfuse_user_id=user_id,
+            langfuse_session_id=session_id,
         )
 
         # Формирование источников

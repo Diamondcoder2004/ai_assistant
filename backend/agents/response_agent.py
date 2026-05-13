@@ -6,13 +6,15 @@ import json
 import re
 from typing import List, Optional, Dict, Any
 
-from openai import OpenAI
+from langfuse.openai import OpenAI
 import config
 from prompts.synthesis_prompt import get_synthesis_prompt
 from tools.search_tool import SearchResult
 from agents.search_agent import SearchAgent
 from utils.timing import timing, timing_context
 from utils.agent_logger import log_agent_response
+from utils.langfuse_tracer import observe_rag
+from agents.price_list_formatter import _disambiguate_price_lists
 
 logger = logging.getLogger(__name__)
 
@@ -106,10 +108,11 @@ class ResponseAgent:
             api_key=config.ROUTERAI_API_KEY,
             base_url=config.ROUTERAI_BASE_URL
         )
-        self.model = config.DEFAULT_LLM_MODEL
+        self.model = config.RESPONSE_AGENT_MODEL
         logger.info(f"ResponseAgent инициализирован: {self.model}")
     
     @timing("ResponseAgent.generate_response")
+    @observe_rag(name="ResponseAgent.generate_response")
     def generate_response(
         self,
         user_query: str,
@@ -118,6 +121,8 @@ class ResponseAgent:
         temperature: float = 0.7,
         max_tokens: int = 2000,
         user_hints: Optional[Dict[str, Any]] = None,
+        source_quality: Optional[Dict[str, Any]] = None,
+        search_agent_confidence: Optional[float] = None,
         query_id: Optional[str] = None,
         session_id: Optional[str] = None,
         session_logger: Optional[Any] = None
@@ -131,6 +136,9 @@ class ResponseAgent:
             history: История диалога
             temperature: Температура генерации
             max_tokens: Максимум токенов
+            user_hints: Рекомендации от пользователя
+            source_quality: Метрики качества источников (от SearchAgent)
+            search_agent_confidence: Уверенность от SearchAgent (опционально)
             query_id: Уникальный ID запроса (для логирования)
             session_id: ID сессии (для логирования)
 
@@ -165,7 +173,8 @@ class ResponseAgent:
                 user_query=user_query,
                 context=context,
                 history=history_context,
-                user_hints=user_hints
+                user_hints=user_hints,
+                source_quality=source_quality,
             )
 
         logger.info(f"Генерация ответа для '{user_query[:50]}...'")
@@ -221,10 +230,19 @@ class ResponseAgent:
 
             logger.info(f"Ответ сгенерирован: {len(updated_answer)} символов, источников: {len(sources)}")
 
+            # Динамическая уверенность: приоритет search_agent_confidence,
+            # затем source_quality, затем fallback
+            if search_agent_confidence is not None:
+                dyn_confidence = search_agent_confidence
+            elif source_quality and source_quality.get("is_low_quality"):
+                dyn_confidence = 0.3
+            else:
+                dyn_confidence = 0.6 if search_results else 0.3
+
             response_data = {
                 "answer": updated_answer,
                 "sources": sources,
-                "confidence": 0.8 if search_results else 0.3,
+                "confidence": dyn_confidence,
                 "context_used": context
             }
             
@@ -263,6 +281,9 @@ class ResponseAgent:
             # Исправляем LaTeX формулы в контенте источника
             fixed_content = fix_latex_in_text(result.content)
             
+            # NEW: Reformat price lists into tables to prevent cross-contamination
+            fixed_content = _disambiguate_price_lists(fixed_content)
+            
             part = (
                 f"[src_{i}]\n"
                 f"Файл: {result.filename}\n"
@@ -285,15 +306,37 @@ class ResponseAgent:
         user_query: str,
         context: str,
         history: str,
-        user_hints: Optional[Dict[str, Any]] = None
+        user_hints: Optional[Dict[str, Any]] = None,
+        source_quality: Optional[Dict[str, Any]] = None,
     ) -> str:
         """Создание пользовательского промпта."""
+
+        # P3.2: Low-quality warning when sources lack lexical overlap
+        low_quality_warning = ""
+        if source_quality and source_quality.get("is_low_quality"):
+            score = source_quality.get("score", 0)
+            kept = source_quality.get("survived_count", 0)
+            low_quality_warning = (
+                f"\n"
+                f"⚠️ ВНИМАНИЕ: Качество источников для этого вопроса НИЗКОЕ "
+                f"(score={score}, найдено чанков={kept}). "
+                f"Предоставленные источники могут НЕ содержать точного ответа "
+                f"на вопрос пользователя. "
+                f"Если информации действительно недостаточно — честно укажи это, "
+                f"не додумывай детали. "
+                f"Можно предложить обратиться в клиентский сервис: 8-800-234-77-00.\n"
+            )
+            logger.warning(
+                f"Low-quality sources detected: score={score}, "
+                f"kept={kept}, injecting warning into prompt"
+            )
+
         return f"""
 {history}
 
 {context}
 
----
+{low_quality_warning}---
 Вопрос пользователя: {user_query}
 
 Используя приведённую выше информацию из базы знаний, дай точный и развёрнутый ответ на вопрос.
@@ -349,6 +392,11 @@ class ResponseAgent:
                 "score_hybrid": result.score_hybrid,
                 "score_semantic": result.score_semantic,
                 "score_lexical": result.score_lexical,
+                # Per-component scores для анализа вклада каждого вектора
+                "pref_score": result.metadata.get("pref_score", 0.0),
+                "hype_score": result.metadata.get("hype_score", 0.0),
+                "contextual_score": result.metadata.get("contextual_score", 0.0),
+                "bm25_score": result.metadata.get("bm25_score", 0.0),
                 # Добавляем метрики для ранжирования
                 "citation_count": citation_counts.get(i, 0),
                 "original_rank": i,  # Позиция в исходном поиске (0-based)
@@ -370,6 +418,10 @@ class ResponseAgent:
                     "score_hybrid": source["score_hybrid"],
                     "score_semantic": source["score_semantic"],
                     "score_lexical": source["score_lexical"],
+                    "pref_score": source["pref_score"],
+                    "hype_score": source["hype_score"],
+                    "contextual_score": source["contextual_score"],
+                    "bm25_score": source["bm25_score"],
                 }
                 final_sources.append(final_source)
             return final_sources, answer_text
@@ -422,6 +474,10 @@ class ResponseAgent:
                 "score_hybrid": source["score_hybrid"],
                 "score_semantic": source["score_semantic"],
                 "score_lexical": source["score_lexical"],
+                "pref_score": source["pref_score"],
+                "hype_score": source["hype_score"],
+                "contextual_score": source["contextual_score"],
+                "bm25_score": source["bm25_score"],
             }
             final_sources.append(final_source)
 

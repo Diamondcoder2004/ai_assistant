@@ -12,7 +12,6 @@ import config
 from agents.search_agent import SearchAgent
 from agents.response_agent import ResponseAgent
 from prompts.system_prompt import get_system_prompt
-from wiki.wiki_router import WikiRouterAgent
 from utils.bg_cache_loader import schedule_bm25_warmup
 from utils.agent_debug_logger import get_debug_logger
 from utils.langfuse_tracer import observe_rag
@@ -45,10 +44,9 @@ class AgenticRAG:
     def __init__(self):
         self.search_agent = SearchAgent()
         self.response_agent = ResponseAgent()
-        self.wiki_router = WikiRouterAgent()
         self.history = ""
         self.category = "не известна"
-        logger.info("AgenticRAG инициализирован (Wiki Router включён)")
+        logger.info("AgenticRAG инициализирован")
         
         # Фоновая загрузка BM25 кэша
         schedule_bm25_warmup(delay=1.0)
@@ -59,7 +57,8 @@ class AgenticRAG:
         user_query: str,
         auto_retry: bool = True,
         history: List[Dict[str, str]] = None,
-        user_hints: Optional[Dict[str, Any]] = None
+        user_hints: Optional[Dict[str, Any]] = None,
+        skip_query_generator: bool = True,
     ) -> dict:
         """
         Обработка запроса пользователя.
@@ -69,6 +68,7 @@ class AgenticRAG:
             auto_retry: Автоматическая повторная попытка поиска
             history: История диалога (список сообщений)
             user_hints: Рекомендации от пользователя (k, temperature, и т.д.)
+            skip_query_generator: Пропустить QueryGenerator (поиск по сырому запросу)
 
         Returns:
             Словарь с результатом:
@@ -106,26 +106,6 @@ class AgenticRAG:
             dialog_history = self.history
 
         try:
-            # 0. Wiki Router — поиск релевантных бизнес-концепций
-            wiki_context = ""
-            document_filters = None
-            if config.ENABLE_WIKI_ROUTER:
-                try:
-                    wiki_result = self.wiki_router.route_with_fallback(user_query)
-                    wiki_context = wiki_result.wiki_context
-                    document_filters = wiki_result.document_filters
-                    if wiki_context:
-                        logger.info(
-                            f"Wiki Router: найдено {len(wiki_result.concepts)} концепций "
-                            f"({', '.join(wiki_result.matched_categories[:3])})"
-                        )
-                    else:
-                        logger.info("Wiki Router: концепции не найдены")
-                except Exception as e:
-                    logger.warning(f"Wiki Router: ошибка маршрутизации — {e}")
-                    wiki_context = ""  # Graceful degradation
-                    document_filters = None
-
             # 1. Поиск с использованием Search Agent
             with session_logger.step(
                 "SearchAgent", 
@@ -143,11 +123,10 @@ class AgenticRAG:
                     category=self.category,
                     auto_retry=auto_retry,
                     user_hints=user_hints,
-                    wiki_context=wiki_context,
-                    document_filters=document_filters,
                     query_id=query_id,
                     session_id=session_id,
-                    session_logger=session_logger
+                    session_logger=session_logger,
+                    skip_query_generator=skip_query_generator,
                 )
                 
                 search_step.set_output({
@@ -205,7 +184,8 @@ class AgenticRAG:
                     history=dialog_history,
                     max_tokens=user_hints.get("max_tokens", 2000) if user_hints else 2000,
                     user_hints=user_hints,
-                    wiki_context=wiki_context,
+                    source_quality=search_result.get("source_quality"),
+                    search_agent_confidence=search_result.get("confidence"),
                     query_id=query_id,
                     session_id=session_id,
                     session_logger=session_logger
@@ -222,7 +202,7 @@ class AgenticRAG:
             self._update_history(user_query, response_result["answer"])
 
             # Логирование ответа
-            logger.info(f"✅ LLM ответ (длина: {len(response_result['answer'])}): {response_result['answer'][:200]}...")
+            logger.info(f"[OK] LLM ответ (длина: {len(response_result['answer'])}): {response_result['answer'][:200]}...")
             logger.info(f"   Источники: {len(response_result['sources'])} шт.")
             logger.info(f"   Уверенность: {response_result['confidence']:.2f}")
 

@@ -129,20 +129,20 @@ class TimingStatistics:
             }
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
-            logger.info(f"📊 Статистика таймингов сохранена в {filepath}")
+            logger.info(f"[STATS] Статистика таймингов сохранена в {filepath}")
     
     def reset(self):
         """Сброс статистики."""
         with self._lock:
             self.stats.clear()
             self.requests.clear()
-            logger.info("📊 Статистика таймингов сброшена")
+            logger.info("[STATS] Статистика таймингов сброшена")
     
     def print_summary(self):
         """Вывод сводки в лог."""
         with self._lock:
             logger.info("=" * 60)
-            logger.info("📊 СТАТИСТИКА ТАЙМИНГОВ")
+            logger.info("[STATS] СТАТИСТИКА ТАЙМИНГОВ")
             logger.info("=" * 60)
             
             if not self.stats:
@@ -204,7 +204,7 @@ def timing(name: Optional[str] = None, log_level: str = "info"):
                 
                 # Логирование
                 log_func = getattr(logger, log_level, logger.info)
-                log_func(f"⏱️ {operation_name}: {elapsed_ms:.2f}ms")
+                log_func(f"[TIMING] {operation_name}: {elapsed_ms:.2f}ms")
         
         return wrapper
     return decorator
@@ -230,7 +230,7 @@ def timing_context(operation_name: str, details: Optional[Dict[str, Any]] = None
             results = search_tool.search(...)
     """
     start = time.perf_counter()
-    logger.info(f"🚀 Начало: {operation_name}")
+    logger.info(f"[START] {operation_name}")
     
     try:
         yield
@@ -238,10 +238,10 @@ def timing_context(operation_name: str, details: Optional[Dict[str, Any]] = None
         timing_stats.record(operation_name, elapsed_ms)
         
         extra = f" | {details}" if details else ""
-        logger.info(f"✅ Завершено: {operation_name} за {elapsed_ms:.2f}ms{extra}")
+        logger.info(f"[OK] {operation_name} за {elapsed_ms:.2f}ms{extra}")
     except Exception as e:
         elapsed_ms = (time.perf_counter() - start) * 1000
-        logger.error(f"❌ Ошибка: {operation_name} после {elapsed_ms:.2f}ms - {e}")
+        logger.error(f"[ERROR] {operation_name} после {elapsed_ms:.2f}ms - {e}")
         raise
 
 
@@ -293,4 +293,4 @@ def start_periodic_save(interval_seconds: int = 300, filepath: str = "logs/timin
     
     thread = threading.Thread(target=periodic_save, daemon=True)
     thread.start()
-    logger.info(f"🕐 Запущено периодическое сохранение статистики (каждые {interval_seconds}с)")
+    logger.info(f"[TIMER] Периодическое сохранение статистики запущено (каждые {interval_seconds}с)")

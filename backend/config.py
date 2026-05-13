@@ -67,10 +67,32 @@ LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "2000"))
 # SEARCH WEIGHTS (default)
 # =============================================================================
 
-RETRIEVE_PREF_WEIGHT = float(os.getenv("RETRIEVE_PREF_WEIGHT", "0.4"))
-RETRIEVE_HYPE_WEIGHT = float(os.getenv("RETRIEVE_HYPE_WEIGHT", "0.3"))
-RETRIEVE_LEXICAL_WEIGHT = float(os.getenv("RETRIEVE_LEXICAL_WEIGHT", "0.2"))
-RETRIEVE_CONTEXTUAL_WEIGHT = float(os.getenv("RETRIEVE_CONTEXTUAL_WEIGHT", "0.1"))
+RETRIEVE_PREF_WEIGHT = float(os.getenv("RETRIEVE_PREF_WEIGHT", "0.25"))
+RETRIEVE_HYPE_WEIGHT = float(os.getenv("RETRIEVE_HYPE_WEIGHT", "0.25"))
+RETRIEVE_LEXICAL_WEIGHT = float(os.getenv("RETRIEVE_LEXICAL_WEIGHT", "0.25"))
+RETRIEVE_CONTEXTUAL_WEIGHT = float(os.getenv("RETRIEVE_CONTEXTUAL_WEIGHT", "0.25"))
+
+# Adaptive BM25 boost: when semantic (pref) scores are low, shift weight to lexical
+ADAPTIVE_BM25_BOOST = os.getenv("ADAPTIVE_BM25_BOOST", "true").lower() in ("1", "true", "yes")
+# Pref score threshold below which to trigger the boost
+ADAPTIVE_BM25_THRESHOLD = float(os.getenv("ADAPTIVE_BM25_THRESHOLD", "0.7"))
+
+# Regulatory query boost: when query contains legal/regulatory keywords,
+# boost normative_documents results by this multiplier to overcome
+# operational_content (FAQ) results that rank higher semantically
+REGULATORY_QUERY_BOOST = os.getenv("REGULATORY_QUERY_BOOST", "true").lower() in ("1", "true", "yes")
+# Boost factor multiplied into score_hybrid of normative_documents results
+REGULATORY_QUERY_BOOST_FACTOR = float(os.getenv("REGULATORY_QUERY_BOOST_FACTOR", "1.15"))
+
+# Source quality threshold: if average overlap/length ratio of surviving
+# chunks falls below this, response agent injects a "low confidence" warning
+SOURCE_QUALITY_THRESHOLD = float(os.getenv("SOURCE_QUALITY_THRESHOLD", "0.25"))
+
+# Category-aware partial filtering: when QueryGenerator detects ЛК/ДУ category,
+# 30% of results come from filtered search, 70% from unfiltered (blended approach)
+CATEGORY_FILTER_ENABLED = os.getenv("CATEGORY_FILTER_ENABLED", "true").lower() in ("1", "true", "yes")
+# Proportion of results taken from the category-filtered search (0.0-1.0)
+CATEGORY_FILTER_BLEND_RATIO = float(os.getenv("CATEGORY_FILTER_BLEND_RATIO", "0.3"))
 
 # =============================================================================
 # AGENT SETTINGS
@@ -79,16 +101,6 @@ RETRIEVE_CONTEXTUAL_WEIGHT = float(os.getenv("RETRIEVE_CONTEXTUAL_WEIGHT", "0.1"
 MAX_QUERY_GENERATION_ATTEMPTS = int(os.getenv("MAX_QUERY_GENERATION_ATTEMPTS", "3"))
 ENABLE_CLARIFICATION = os.getenv("ENABLE_CLARIFICATION", "true").lower() == "true"
 MAX_CLARIFICATION_QUESTIONS = int(os.getenv("MAX_CLARIFICATION_QUESTIONS", "2"))
-
-# =============================================================================
-# WIKI ROUTER (JSON-based Agentic Knowledge Layer)
-# =============================================================================
-
-ENABLE_WIKI_ROUTER = os.getenv("ENABLE_WIKI_ROUTER", "true").lower() == "true"
-WIKI_INDEX_PATH = Path(os.getenv("WIKI_INDEX_PATH", str(BASE_DIR / "wiki" / "data" / "index.json")))
-WIKI_ROUTER_MODEL = os.getenv("WIKI_ROUTER_MODEL", "inception/mercury-2")
-WIKI_TOP_K = int(os.getenv("WIKI_TOP_K", "3"))  # LLM-selected documents
-WIKI_SEARCH_TOP_K = int(os.getenv("WIKI_SEARCH_TOP_K", "5"))  # Keyword candidates before LLM
 
 # =============================================================================
 # LOGGING

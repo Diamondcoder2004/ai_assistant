@@ -34,3 +34,6 @@ pandas>=2.0.0
 
 # Chunking
 tiktoken>=0.7.0
+
+# Observability
+langfuse>=2.60.0

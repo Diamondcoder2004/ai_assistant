@@ -12,20 +12,24 @@ ai_assistant/
 │   ├── agents/           # SearchAgent + ResponseAgent + QueryGenerator
 │   ├── api/              # REST: /query, /query/stream, /history, /feedback
 │   ├── prompts/          # FROZEN — do not modify style
-│   ├── tools/            # Hybrid search tool (Qdrant + BM25)
-│   └── utils/            # Embeddings, debug logging
+│   ├── tools/            # Hybrid search tool (Qdrant dual-collection + BM25)
+│   ├── wiki/             # WikiRouter — JSON-based agentic knowledge layer
+│   ├── chunking/         # Two-stage chunking pipeline (pre-split + LLM)
+│   ├── benchmark.py      # Full pipeline benchmark with LLM Judge
+│   └── llm_judge.py      # LLM-as-a-Judge evaluation (9 criteria)
 ├── frontend/             # Vue 3 + Vite + Pinia + Tailwind SPA
 ├── api_benchmarks/       # Benchmark results (CSV with judge scores)
-├── new_data/             # Benchmark datasets (question + expected + source)
-├── practice/             # Test documents, expert review artifacts (.docx)
+├── new_data/             # Benchmark datasets + source documents
+│   ├── benchmark_dataset.csv  # 518 questions + expected answers
+│   ├── source/           # Raw PDF + Markdown source files
+│   └── enriched_chunks/  # Chunking pipeline output
 ├── docs/specs/           # Durable project specifications
+├── practice/             # Test documents, expert review artifacts
 ├── .opencode/            # OpenCode layer: agents, skills
-│   ├── agents/           # Role-based sub-agents (doc-specialist)
-│   └── skills/           # Playbooks (matt-*, doc-specialist, docx, pdf, pptx)
 ├── instructions/         # Base rules loaded by opencode.json
 ├── AGENTS.md             # This file — project contract
 ├── opencode.json         # OpenCode control plane
-└── SKILL.md              # Legacy detailed guide (being absorbed into docs/specs/)
+└── SKILL.md              # Legacy detailed guide (absorbed into docs/specs/)
 ```
 
 ## Architecture
@@ -33,12 +37,23 @@ ai_assistant/
 ```
 Browser → nginx :80 → Vue SPA (static files)
 Browser → nginx :8877 → FastAPI :8880
-                           ├── Qdrant :6333  (vector search, collection: BASHKIR_ENERGO_PERPLEXITY)
+                           ├── WikiRouter (JSON-based document selection)
+                           ├── Qdrant :6333  (dual-collection: normative_documents + operational_content)
                            ├── Supabase :8000 (JWT auth + PostgreSQL chat history)
-                           └── RouterAI API   (LLM: inception/mercury-2, embeddings: pplx-embed-v1-4b)
+                           └── RouterAI API   (LLM + embeddings)
 ```
 
-**Agent pipeline:** User Query → SearchAgent (generates search queries → hybrid search) → ResponseAgent (LLM response with sources).
+**Agent pipeline:** User Query → WikiRouter (document context injection) → QueryGenerator (search queries) → SearchAgent (dual-collection hybrid search) → ResponseAgent (LLM response with sources).
+
+**Per-agent models:**
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| QueryGenerator | `inception/mercury-2` | Speed-critical, intermediate |
+| WikiRouter | `inception/mercury-2` | Fast document selection |
+| ResponseAgent | `deepseek/deepseek-v4-flash` | Quality-critical, final answer |
+| LLM Judge | `deepseek/deepseek-v4-flash` | Evaluation quality |
+
+**Qdrant collections:** `normative_documents` (regulations) + `operational_content` (FAQs, instructions, stage descriptions).
 
 ## Delivery Workflow
 
@@ -48,20 +63,24 @@ Browser → nginx :8877 → FastAPI :8880
 4. **Test**: `cd backend && pytest` + `cd frontend && npm run lint && npm run test:unit`
 5. **Update documentation** if architecture/hard rules changed
 
-## Task Routing by Role
+## Benchmark Pipeline
 
-| Task type | Use |
-|-----------|-----|
-| Code review | Load `adk-code-review-pr` skill |
-| Feature development | Load `adk-dev-build` skill |
-| Refactoring | Load `adk-dev-refactor` skill |
-| Document creation (docx/pdf/pptx) | Load `doc-specialist` skill |
-| Architecture improvement | Load `matt-improve-architecture` skill |
-| TDD | Load `matt-tdd` skill |
-| Planning/brainstorming | Load `matt-grill-me` skill |
-| Domain modeling | Load `matt-ubiquitous-language` skill |
-| PRD generation | Load `matt-to-prd` skill |
-| Benchmark analysis | See `docs/specs/project-architecture.md` |
+Run with:
+```bash
+cd backend
+# Full benchmark (518 questions, default model, with judge)
+python benchmark.py --csv ../new_data/benchmark_dataset.csv
+
+# Custom limit, specific output dir
+python benchmark.py --csv ../new_data/benchmark_dataset.csv --limit 50 --output ../api_benchmarks/
+
+# No judge (faster, just retrieval + generation)
+python benchmark.py --csv ../new_data/benchmark_dataset.csv --limit 20 --no-judge
+```
+
+**Judge criteria:** relevance, completeness, helpfulness, clarity, hallucination_risk, context_recall, faithfulness, currency, binary_correctness (vs expected), overall_score.
+
+**Benchmark CSV columns:** question, expected_answer, source_file — generated by LLM from knowledge base content.
 
 ## Critical Constraints
 
@@ -71,6 +90,7 @@ Browser → nginx :8877 → FastAPI :8880
 - **Encoding:** all Cyrillic UTF-8, CSV with BOM (`utf-8-sig`), Windows console broken for Cyrillic — write to file
 - **Search weights** must sum to 1.0: PREF(0.4) + HYPE(0.3) + LEXICAL(0.2) + CONTEXTUAL(0.1)
 - **Supabase** serves dual role: JWT auth + chat history storage
+- **Collections:** search across `normative_documents` AND `operational_content` simultaneously
 - **Config:** copy `.env.example` → `.env`, fill `ROUTERAI_API_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_JWT_SECRET`
 
 ## Definition of Success

@@ -13,6 +13,14 @@ services:
     environment:
       - JUDGE_LLM_MODEL=${JUDGE_LLM_MODEL}
       - AGENT_DEBUG_ENABLED=${AGENT_DEBUG_ENABLED:-true}
+      - NORMATIVE_COLLECTION=${NORMATIVE_COLLECTION:-normative_documents}
+      - OPERATIONAL_COLLECTION=${OPERATIONAL_COLLECTION:-operational_content}
+      - CHUNKS_DIR=${CHUNKS_DIR:-chunking/enriched_chunks}
+      - LANGFUSE_SECRET_KEY=${LANGFUSE_SECRET_KEY}
+      - LANGFUSE_PUBLIC_KEY=${LANGFUSE_PUBLIC_KEY}
+      - LANGFUSE_HOST=${LANGFUSE_BASE_URL:-https://cloud.langfuse.com}
+      - LANGFUSE_BASE_URL=${LANGFUSE_BASE_URL:-https://cloud.langfuse.com}
+      - ENABLE_LANGFUSE=${ENABLE_LANGFUSE:-true}
     ports:
       - "8880:8880"
     volumes:

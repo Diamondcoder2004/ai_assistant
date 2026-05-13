@@ -1,6 +1,6 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36" version="29.6.6">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.6.6 Chrome/144.0.7559.236 Electron/40.8.4 Safari/537.36">
   <diagram id="page-1" name="Pipeline обработки документов (упрощённая)">
-    <mxGraphModel dx="1097" dy="695" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="600" math="0" shadow="0">
+    <mxGraphModel dx="1084" dy="695" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="600" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -64,6 +64,76 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="CCcnfFGttbOUD_Fy64FK-2" connectable="0" parent="e-qdrant" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Точки&lt;/font&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.4057" y="1" as="geometry">
+            <mxPoint x="-4" y="7" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-1" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#fff3e0;strokeColor=#e65100;fontStyle=0;fontSize=14;fontColor=#000000;" value="1. Guiding documents&#xa;&#xa;22 PDF documents" vertex="1">
+          <mxGeometry height="80" width="180" x="197" y="627" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-2" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontSize=14;fontColor=#000000;" value="2. Text extracting by&#xa;vision-language model&#xa;Converting from PDF to Markdown preserving the structure" vertex="1">
+          <mxGeometry height="98" width="202.5" x="197" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-3" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#e0f2f1;strokeColor=#00695c;fontSize=14;fontColor=#000000;" value="3. Chunking&#xa;&#xa;Splitting by headings&#xa;Recursive division&#xa;Token Control" vertex="1">
+          <mxGeometry height="92" width="190.5" x="402" y="625" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-16" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="A8yhJskwo4hyczPOLnqK-10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-4" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#e8f0fe;strokeColor=#4285f4;fontSize=14;fontColor=#000000;" value="4. Enrichment by LLM&#xa;&#xa;Formation of complete enriched chunks" vertex="1">
+          <mxGeometry height="95" width="216" x="719" y="627" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-5" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#e6f4ea;strokeColor=#0d652d;fontSize=14;fontColor=#000000;" value="5. Ingestion to vector database&#xa;&#xa;Text embedding&#xa;Normalizing the vectors&#xa;Upload to vector store&#xa;" vertex="1">
+          <mxGeometry height="119" width="184" x="1058" y="627" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-6" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=14;fontColor=#000000;" target="A8yhJskwo4hyczPOLnqK-2" value="PDF files">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="287" y="769" />
+              <mxPoint x="287" y="769" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-7" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=14;fontColor=#000000;" target="A8yhJskwo4hyczPOLnqK-3" value="Markdown&#xa;files">
+          <mxGeometry relative="1" x="-0.0023" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="483" y="849" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-8" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=14;fontColor=#000000;" target="A8yhJskwo4hyczPOLnqK-4" value="Large&#xa;fragments&#xa;Markdown">
+          <mxGeometry relative="1" x="0.003" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-9" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#333333;fontSize=14;fontColor=#000000;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="A8yhJskwo4hyczPOLnqK-5" value="Enriched files&#xa;JSON">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="935" y="676" />
+            </Array>
+            <mxPoint x="956" y="682" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-10" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#4285f4;fontSize=14;fontColor=#000000;fontStyle=0" value="Content&#xa;Brief content&#xa; Hypothetical questions&#xa; Keywords&#xa;Entities" vertex="1">
+          <mxGeometry height="106" width="182" x="736" y="782" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-11" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#4285f4;dashed=1;fontSize=16;" target="A8yhJskwo4hyczPOLnqK-10" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-12" connectable="0" parent="A8yhJskwo4hyczPOLnqK-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];labelBackgroundColor=#FFFFFF;" value="&lt;span style=&quot;font-size: 14px; text-wrap-mode: wrap;&quot;&gt;Chunk data&lt;/span&gt;" vertex="1">
+          <mxGeometry relative="1" x="-0.2822" y="-2" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-13" parent="1" style="rounded=1;whiteSpace=wrap;fillColor=#ffffff;strokeColor=#0d652d;fontSize=14;fontColor=#000000;" value="Data of chunk&#xa;3 vectors per chunk" vertex="1">
+          <mxGeometry height="80" width="214" x="1028" y="808" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-14" edge="1" parent="1" source="A8yhJskwo4hyczPOLnqK-5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeWidth=2;strokeColor=#0d652d;dashed=1;fontSize=16;" target="A8yhJskwo4hyczPOLnqK-13" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="A8yhJskwo4hyczPOLnqK-15" connectable="0" parent="A8yhJskwo4hyczPOLnqK-14" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Points&lt;/font&gt;" vertex="1">
           <mxGeometry relative="1" x="-0.4057" y="1" as="geometry">
             <mxPoint x="-4" y="7" as="offset" />
           </mxGeometry>

@@ -113,7 +113,7 @@ watch(() => props.modelValue, autoResize)
 
 <style scoped>
 .chat-input-section {
-  padding: 16px 20px;
+  padding: 8px 16px;
   background: #fff;
   border-top: 1px solid #e5e7eb;
   flex-shrink: 0;
@@ -122,7 +122,7 @@ watch(() => props.modelValue, autoResize)
 .input-area {
   display: flex;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .chat-textarea {

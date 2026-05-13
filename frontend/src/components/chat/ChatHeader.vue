@@ -1,11 +1,17 @@
 <template>
   <div class="chat-header">
+    <!-- Слот для гамбургера / левых кнопок -->
+    <div class="header-left">
+      <slot name="left" />
+    </div>
+
     <button @click="$emit('newChat')" class="new-chat-btn" :disabled="isLoading">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M12 5v14M5 12h14"/>
       </svg>
       Новый чат
     </button>
+
     <div v-if="sessionTitle" class="current-session-indicator">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -32,13 +38,19 @@ defineEmits(['newChat'])
 
 <style scoped>
 .chat-header {
-  padding: 12px 20px;
+  padding: 6px 16px;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
   background: #f9fafb;
+  min-height: 44px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
 }
 
 .new-chat-btn {

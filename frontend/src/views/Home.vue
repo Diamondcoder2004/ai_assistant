@@ -3,6 +3,25 @@
     <Header />
 
     <div class="main-layout">
+      <!-- Левый сайдбар с форматом ответа -->
+      <aside class="left-sidebar" :class="{ 'is-open': showLeftSidebar }">
+        <div class="sidebar-inner">
+          <div class="sidebar-header">
+            <span class="sidebar-title">Формат ответа</span>
+            <button @click="showLeftSidebar = false" class="close-btn" title="Закрыть">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <div class="sidebar-params-body">
+            <SearchParamsPanel
+              v-model="searchParams"
+            />
+          </div>
+        </div>
+      </aside>
+
       <!-- Основная область чата -->
       <main class="chat-area">
         <!-- Шапка чата -->
@@ -10,7 +29,16 @@
           :session-title="chatStore.currentSessionTitle"
           :is-loading="chatStore.isLoading"
           @new-chat="handleNewChat"
-        />
+        >
+          <template #left>
+            <!-- Гамбургер для левого сайдбара (формат ответа) -->
+            <button @click="showLeftSidebar = !showLeftSidebar" class="hamburger-btn" title="Формат ответа">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12h18M3 6h18M3 18h18"/>
+              </svg>
+            </button>
+          </template>
+        </ChatHeader>
 
         <!-- Сообщения -->
         <ChatMessages
@@ -33,69 +61,38 @@
         />
       </main>
 
-      <!-- Единый правый сайдбар: параметры + источники -->
-      <aside class="unified-sidebar" :class="{ 'is-open': showSidebar }">
-        <!-- Хедер сайдбара с кнопкой закрытия -->
+      <!-- Правый сайдбар: только источники -->
+      <aside class="right-sidebar" :class="{ 'is-open': showSidebar }">
         <div class="sidebar-header">
-          <button @click="closeSidebar" class="sidebar-close-btn" title="Закрыть">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <span class="sidebar-title">📚 Источники</span>
+          <button @click="closeSidebar" class="close-btn" title="Закрыть">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 6L6 18M6 6l12 12"/>
             </svg>
           </button>
         </div>
-
-        <!-- Контент сайдбара -->
         <div class="sidebar-content">
-          <!-- Секция параметров (сворачиваемая) -->
-          <div class="sidebar-section params-section">
-            <div class="section-header" @click="showParams = !showParams">
-              <span class="section-title">⚙️ Формат ответа</span>
-              <span class="section-toggle">{{ showParams ? '▼' : '▶' }}</span>
-            </div>
-            <div class="section-body" v-show="showParams">
-              <SearchParamsPanel
-                v-model="searchParams"
-              />
-            </div>
+          <div v-if="expandedMessage" class="sources-body">
+            <SourcesPanel
+              :expanded-message="expandedMessage"
+              :compact="true"
+              @open-source="openSourceModal"
+            />
           </div>
-
-          <!-- Секция источников (показывается если есть развёрнутое сообщение) -->
-          <div v-if="expandedMessage" class="sidebar-section sources-section">
-            <div class="section-header">
-              <span class="section-title">📚 Источники</span>
-            </div>
-            <div class="section-body sources-body">
-              <SourcesPanel
-                :expanded-message="expandedMessage"
-                :compact="true"
-                @open-source="openSourceModal"
-              />
-            </div>
+          <div v-else class="sources-empty">
+            <p class="empty-text">Нажмите "📄 N источников" под ответом, чтобы увидеть источники</p>
           </div>
         </div>
       </aside>
     </div>
 
-    <Footer :force-show="showFooter" @hide="showFooter = false" />
-
-    <!-- Кнопка для показа футера -->
-    <button v-if="!showFooter" @click="showFooter = true" class="show-footer-btn" title="Показать футер">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 5v14M5 12l7 7 7-7"/>
-      </svg>
-    </button>
+    <Footer />
 
     <!-- Модальное окно деталей источника -->
     <SourceDetailModal
       v-if="selectedSource"
       :source="selectedSource"
       @close="selectedSource = null"
-    />
-
-    <!-- Модальное окно информации о параметрах -->
-    <ParamsInfoModal
-      v-if="showInfoModal === 'settings'"
-      @close="showInfoModal = null"
     />
 
     <!-- Модальное окно звёздного рейтинга -->
@@ -118,11 +115,12 @@ import ChatMessages from '../components/chat/ChatMessages.vue'
 import ChatInputArea from '../components/chat/ChatInputArea.vue'
 import SourcesPanel from '../components/chat/SourcesPanel.vue'
 import SourceDetailModal from '../components/chat/modals/SourceDetailModal.vue'
-import ParamsInfoModal from '../components/chat/modals/ParamsInfoModal.vue'
 import StarRatingModal from '../components/chat/modals/StarRatingModal.vue'
 import { useChatStore } from '../stores/chatStore'
 import { useAuthStore } from '../stores/authStore'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const chatStore = useChatStore()
 
@@ -139,7 +137,6 @@ const searchParams = ref({
 
 // Модальные окна
 const selectedSource = ref(null)
-const showInfoModal = ref(null)
 const showStarRating = ref(false)
 const currentFeedbackSessionId = ref(null)
 const selectedStars = ref(0)
@@ -151,12 +148,11 @@ const feedbackCooldowns = ref({})
 const expandedMessage = ref(null)
 const expandedMessageId = computed(() => expandedMessage.value?.id || null)
 
-// Управление единым сайдбаром
-const showSidebar = ref(false)
-const showParams = ref(true)
+// Управление левым сайдбаром (формат ответа)
+const showLeftSidebar = ref(false)
 
-// Показывать ли футер
-const showFooter = ref(false)
+// Управление правым сайдбаром (только источники)
+const showSidebar = ref(false)
 
 // Использование шаблона (быстрый вопрос)
 function handleUseTemplate(text) {
@@ -198,9 +194,10 @@ function handleNewChat() {
   newMessage.value = ''
   expandedMessage.value = null
   showSidebar.value = false
+  showLeftSidebar.value = false
 }
 
-// Закрыть сайдбар
+// Закрыть правый сайдбар
 function closeSidebar() {
   showSidebar.value = false
   expandedMessage.value = null
@@ -453,7 +450,58 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Центральная колонка (чат) */
+/* ==================================================
+   Левый сайдбар — формат ответа
+   ================================================== */
+.left-sidebar {
+  width: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f8f9fa;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.25s ease, border-right 0.25s ease;
+}
+
+.left-sidebar.is-open {
+  width: 280px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar-inner {
+  width: 280px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-inner .sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.sidebar-inner .sidebar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.sidebar-params-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* ==================================================
+   Правая часть (чат)
+   ================================================== */
 .chat-area {
   flex: 1;
   display: flex;
@@ -463,8 +511,10 @@ onMounted(async () => {
   overflow: hidden;
 }
 
-/* Унифицированный правый сайдбар */
-.unified-sidebar {
+/* ==================================================
+   Правый сайдбар — только источники
+   ================================================== */
+.right-sidebar {
   width: 0;
   overflow: hidden;
   flex-shrink: 0;
@@ -475,22 +525,59 @@ onMounted(async () => {
   transition: width 0.25s ease, border-left 0.25s ease;
 }
 
-.unified-sidebar.is-open {
+.right-sidebar.is-open {
   width: 380px;
   border-left: 1px solid #ddd;
 }
 
-/* Хедер сайдбара */
-.sidebar-header {
+.right-sidebar .sidebar-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
   background: #f9fafb;
   flex-shrink: 0;
 }
 
-.sidebar-close-btn {
+.right-sidebar .sidebar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.right-sidebar .sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.right-sidebar .sources-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.right-sidebar .sources-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.empty-text {
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ==================================================
+   Общие кнопки (левый + правый сайдбары)
+   ================================================== */
+.close-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -503,122 +590,46 @@ onMounted(async () => {
   transition: all 0.2s;
 }
 
-.sidebar-close-btn:hover {
+.close-btn:hover {
   background: #e5e7eb;
   color: #1f2937;
 }
 
-/* Контент сайдбара (скроллируемый) */
-.sidebar-content {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Секции сайдбара */
-.sidebar-section {
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.section-header {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-  user-select: none;
-  transition: background 0.15s;
-}
-
-.section-header:hover {
-  background: #f3f4f6;
-}
-
-.section-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.section-toggle {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
-.section-body {
-  padding: 14px 16px;
-}
-
-/* Секция параметров */
-.params-section {
-  flex-shrink: 0;
-}
-
-/* Секция источников (заполняет оставшееся пространство) */
-.sources-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.sources-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0;
-}
-
-/* Кнопка для показа футера */
-.show-footer-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: #0066cc;
-  color: white;
+/* Гамбургер */
+.hamburger-btn {
+  background: none;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+  color: #6b7280;
+  padding: 6px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  z-index: 100;
+  margin-right: 4px;
 }
 
-.show-footer-btn:hover {
-  background: #0052a3;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+.hamburger-btn:hover {
+  background: #e5e7eb;
+  color: #1f2937;
 }
 
-.show-footer-btn:active {
-  transform: translateY(0);
-}
-
-/* FAQ под чатом */
-.faq-below-chat {
-  padding: 20px;
-  border-top: 1px solid #e5e7eb;
-  background: #f9fafb;
-  overflow-y: auto;
-  max-height: 300px;
-  flex-shrink: 0;
-}
-
-/* Адаптивность */
+/* ==================================================
+   Адаптивность
+   ================================================== */
 @media (max-width: 992px) {
-  .unified-sidebar.is-open {
+  .left-sidebar.is-open {
+    width: 240px;
+  }
+  .right-sidebar.is-open {
     width: 340px;
   }
 }
 
 @media (max-width: 768px) {
-  .unified-sidebar {
+  .left-sidebar,
+  .right-sidebar {
     display: none;
   }
 }
